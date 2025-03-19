@@ -1,0 +1,35 @@
+NMAE - 13057.8962    NRMSE - 85.8351    MAE - 0.0018    RMSE - 0.1206    Acc_10 - 0.1200    train_time - 119.3830
+NMAE - 0.3177    NRMSE - 0.3875    MAE - 0.0015    RMSE - 0.0020    Acc_10 - 0.3065    train_time - 17.6840
+NMAE - 0.0667    NRMSE - 0.0908    MAE - 0.0003    RMSE - 0.0005    Acc_10 - 0.7405    train_time - 12.7417
+NMAE - 0.1455    NRMSE - 0.1726    MAE - 0.0007    RMSE - 0.0009    Acc_10 - 0.4033    train_time - 3.1032
+NMAE - 0.1392    NRMSE - 0.1677    MAE - 0.0007    RMSE - 0.0009    Acc_10 - 0.4348    train_time - 2.4538
+NMAE - 0.0667    NRMSE - 0.0908    MAE - 0.0003    RMSE - 0.0005    Acc_10 - 0.7405    train_time - 12.6550
+NMAE - 0.0714    NRMSE - 0.0963    MAE - 0.0003    RMSE - 0.0005    Acc_10 - 0.7317    train_time - 24.4018
+NMAE - 0.0699    NRMSE - 0.0944    MAE - 0.0003    RMSE - 0.0005    Acc_10 - 0.7316    train_time - 24.4817
+NMAE - 0.0699    NRMSE - 0.0944    MAE - 0.0003    RMSE - 0.0005    Acc_10 - 0.7316    train_time - 24.1245
+NMAE - 0.0809    NRMSE - 0.1040    MAE - 0.0004    RMSE - 0.0005    Acc_10 - 0.6945    train_time - 23.0271
+NMAE - 0.0709    NRMSE - 0.0955    MAE - 0.0003    RMSE - 0.0005    Acc_10 - 0.7611    train_time - 18.3383
+NMAE - 0.0588    NRMSE - 0.0768    MAE - 0.0003    RMSE - 0.0004    Acc_10 - 0.7765    train_time - 19.6420
+NMAE - 0.0574    NRMSE - 0.0764    MAE - 0.0003    RMSE - 0.0004    Acc_10 - 0.7933    train_time - 14.3526
+NMAE - 0.0336    NRMSE - 0.0572    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9381    train_time - 23.7525
+
+NMAE - 0.0408    NRMSE - 0.0571    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.8840    train_time - 22.8934    
+NMAE - 0.0526    NRMSE - 0.0726    MAE - 0.0003    RMSE - 0.0004    Acc_10 - 0.8549    train_time - 18.3501    
+NMAE - 0.0408    NRMSE - 0.0571    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.8840    train_time - 22.0323    
+NMAE - 0.0438    NRMSE - 0.0615    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9057    train_time - 21.1750    
+NMAE - 0.0504    NRMSE - 0.0731    MAE - 0.0002    RMSE - 0.0004    Acc_10 - 0.8729    train_time - 31.5180    
+NMAE - 0.0559    NRMSE - 0.0782    MAE - 0.0003    RMSE - 0.0004    Acc_10 - 0.8360    train_time - 17.0664    
+NMAE - 0.0379    NRMSE - 0.0505    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9379    train_time - 20.1837    
+NMAE - 0.0916    NRMSE - 0.1714    MAE - 0.0004    RMSE - 0.0009    Acc_10 - 0.7544    train_time - 13.9777    
+NMAE - 0.0602    NRMSE - 0.0785    MAE - 0.0003    RMSE - 0.0004    Acc_10 - 0.8020    train_time - 13.7852    
+NMAE - 0.0379    NRMSE - 0.0505    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9379    train_time - 19.3757    
+[2025-03-19 21:14:37] Experiment Start!!!
+NMAE - 0.0455    NRMSE - 0.0646    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.8836    train_time - 36.9400    
+NMAE - 0.0494    NRMSE - 0.0651    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.8749    train_time - 18.6154    
+================== Sequential Hyper Search ==================
+[2025-03-19 21:23:38] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:23:43] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:24:47] Experiment Start!!!
+================== Sequential Hyper Search ==================
