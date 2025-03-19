@@ -7,12 +7,11 @@ from datetime import datetime
 # 在这里写下超参数探索空间
 hyper_dict = {
     'rounds': [1],
-    'gcn_method': ['gcn', 'gat', 'graphsage', 'gin'],  #
+    'gcn_method': ['gat', 'gcn', 'graphsage', 'gin'],  #
     'norm_method': ['batch', 'rms', 'layer'],  #
     'ffn_method': ['ffn', 'moe'],  #
-
-    'rank': [32, 64, 128],
-    'num_layers': [2, 3, 4, 5, 8],
+    'rank': [128, 32, 64, 256],
+    'num_layers': [4, 2, 3, 5, 8],
     'loss_coef': [0.001, 0.0001, 0.01, 0.1, 1],  # weather electricity
 }
 

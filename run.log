@@ -33,3 +33,85 @@ NMAE - 0.0494    NRMSE - 0.0651    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.8
 ================== Sequential Hyper Search ==================
 [2025-03-19 21:24:47] Experiment Start!!!
 ================== Sequential Hyper Search ==================
+[2025-03-19 21:37:47] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:38:28] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:39:15] Experiment Start!!!
+NMAE - 0.7913    NRMSE - 0.8177    MAE - 0.0039    RMSE - 0.0042    Acc_10 - 0.0297    train_time - 0.4450    
+================== Sequential Hyper Search ==================
+[2025-03-19 21:42:14] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:46:46] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:46:59] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:48:09] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:48:30] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:49:11] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:49:51] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:50:27] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:50:47] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:50:56] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:51:06] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:52:30] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:53:36] Experiment Start!!!
+================== Sequential Hyper Search ==================
+[2025-03-19 21:53:50] Experiment Start!!!
+NMAE - 0.0379    NRMSE - 0.0505    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9379    train_time - 16.8833    
+================== Sequential Hyper Search ==================
+[2025-03-19 21:57:17] Experiment Start!!!
+================== Sequential Hyper Search ==================
+
+Hyper: gcn_method, Values: ['gat', 'gcn', 'graphsage', 'gin']
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --gcn_method gat --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 
+Value: gat, Metric: 0.00018515449946699308
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gcn 
+Value: gcn, Metric: 0.00018515449946699308
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method graphsage 
+Value: graphsage, Metric: 0.00018515449946699308
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gin 
+Value: gin, Metric: 0.00018515449946699308
+==> Best gcn_method: gat, local_best_metric: 0.00018515449946699308
+The Best Hyperparameters: {'rounds': 1, 'norm_method': 'batch', 'ffn_method': 'moe', 'rank': 128, 'num_layers': 4, 'loss_coef': 0.001, 'gcn_method': 'gat'}
+
+Hyper: norm_method, Values: ['batch', 'rms', 'layer']
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --norm_method batch 
+Value: batch, Metric: 0.00018515449946699308
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --norm_method rms 
+Value: rms, Metric: 0.00018515449946699308
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --norm_method layer 
+Value: layer, Metric: 0.00018515449946699308
+==> Best norm_method: batch, local_best_metric: 0.00018515449946699308
+The Best Hyperparameters: {'rounds': 1, 'norm_method': 'batch', 'ffn_method': 'moe', 'rank': 128, 'num_layers': 4, 'loss_coef': 0.001, 'gcn_method': 'gat'}
+
+Hyper: ffn_method, Values: ['moe', 'moe']
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --ffn_method moe 
+Value: moe, Metric: 0.00018515449946699308
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --ffn_method moe 
+Value: moe, Metric: 0.00018515449946699308
+==> Best ffn_method: moe, local_best_metric: 0.00018515449946699308
+The Best Hyperparameters: {'rounds': 1, 'norm_method': 'batch', 'ffn_method': 'moe', 'rank': 128, 'num_layers': 4, 'loss_coef': 0.001, 'gcn_method': 'gat'}
+
+Hyper: rank, Values: [128, 32, 64, 256]
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --rank 128 
+Value: 128, Metric: 0.00018515449946699308
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --rank 32 
+Value: 32, Metric: 0.00022262891069928638
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --rank 64 
+Value: 64, Metric: 0.00024137295143611677
+COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --rank 256 
+[2025-03-19 21:57:31] Experiment Start!!!
+================== Sequential Hyper Search ==================
+
+Hyper: gcn_method, Values: ['gat', 'gcn', 'graphsage', 'gin']
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --gcn_method gat --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 

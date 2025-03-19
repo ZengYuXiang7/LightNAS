@@ -15,7 +15,7 @@ class TestConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, T
     patience: int = 50
     verbose: int = 10
     try_exp: int = 1
-    num_layers: int = 32
+    num_layers: int = 4
 
     norm_method: str = 'batch'
     ffn_method: str = 'ffn'

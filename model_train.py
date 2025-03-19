@@ -43,6 +43,9 @@ class Model(torch.nn.Module):
     # 在这里加上每个Batch的loss，如果有其他的loss，请在这里添加，
     def compute_loss(self, pred, label):
         loss = self.loss_function(pred, label)
+        if self.config.ffn_method == 'ours':
+            for i in range(len(self.model.encoder.layers)):
+                loss += self.model.encoder.layers[i][3].aux_loss
         return loss
 
     # 2025年3月9日17:45:11 这行及以下的全部代码几乎可以不用动了，几乎固定
