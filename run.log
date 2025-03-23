@@ -115,3 +115,105 @@ COMMAND: python train_model.py --exp_name TestConfig --hyper_search 1 --retrain 
 
 Hyper: gcn_method, Values: ['gat', 'gcn', 'graphsage', 'gin']
 COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 1 --gcn_method gat --norm_method batch --ffn_method moe --rank 128 --num_layers 4 --loss_coef 0.001 
+[2025-03-19 22:00:24] Experiment Start!!!
+NMAE - 0.0421    NRMSE - 0.0590    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9152    train_time - 14.5701    
+NMAE - 0.0827    NRMSE - 0.1092    MAE - 0.0004    RMSE - 0.0006    Acc_10 - 0.6845    train_time - 17.8730    
+NMAE - 0.0637    NRMSE - 0.0847    MAE - 0.0003    RMSE - 0.0004    Acc_10 - 0.7989    train_time - 12.1488    
+NMAE - 0.0884    NRMSE - 0.1504    MAE - 0.0004    RMSE - 0.0008    Acc_10 - 0.7369    train_time - 15.5914    
+NMAE - 0.0421    NRMSE - 0.0590    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9152    train_time - 15.6261    
+NMAE - 0.0500    NRMSE - 0.0701    MAE - 0.0002    RMSE - 0.0004    Acc_10 - 0.8689    train_time - 21.9771    
+NMAE - 0.0529    NRMSE - 0.0739    MAE - 0.0003    RMSE - 0.0004    Acc_10 - 0.8496    train_time - 15.5649    
+NMAE - 0.0421    NRMSE - 0.0590    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9152    train_time - 16.1153    
+NMAE - 0.4237    NRMSE - 0.4490    MAE - 0.0021    RMSE - 0.0023    Acc_10 - 0.4344    train_time - 12.5970    
+NMAE - 0.0421    NRMSE - 0.0590    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9152    train_time - 15.7682    
+NMAE - 0.0472    NRMSE - 0.0632    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.8604    train_time - 26.3131    
+NMAE - 0.0387    NRMSE - 0.0520    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9354    train_time - 21.6859    
+NMAE - 0.4233    NRMSE - 0.4487    MAE - 0.0021    RMSE - 0.0023    Acc_10 - 0.4344    train_time - 15.0990    
+NMAE - 0.0387    NRMSE - 0.0520    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9354    train_time - 21.9199    
+NMAE - 0.0440    NRMSE - 0.0586    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.8762    train_time - 21.6746    
+NMAE - 0.0413    NRMSE - 0.0559    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9227    train_time - 19.2999    
+NMAE - 0.0410    NRMSE - 0.0554    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9110    train_time - 18.4254    
+NMAE - 0.0409    NRMSE - 0.0562    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9142    train_time - 22.1700    
+NMAE - 0.0387    NRMSE - 0.0520    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9354    train_time - 21.8028    
+NMAE - 0.0387    NRMSE - 0.0520    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9354    train_time - 21.8830    
+NMAE - 0.0387    NRMSE - 0.0520    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9354    train_time - 22.3771    
+NMAE - 0.0387    NRMSE - 0.0520    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9354    train_time - 21.6779    
+NMAE - 0.0387    NRMSE - 0.0520    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9354    train_time - 22.2251    
+================== Sequential Hyper Search ==================
+
+Hyper: gcn_method, Values: ['gat', 'gcn', 'graphsage', 'gin']
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --gcn_method gat --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 
+Value: gat, Metric: 0.00020544529775219357
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gcn 
+Value: gcn, Metric: 0.00040376937835332437
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method graphsage 
+Value: graphsage, Metric: 0.0003110608296468445
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gin 
+Value: gin, Metric: 0.00043183374537386773
+==> Best gcn_method: gat, local_best_metric: 0.00020544529775219357
+The Best Hyperparameters: {'rounds': 2, 'norm_method': 'batch', 'ffn_method': 'ffn', 'rank': 128, 'num_layers': 4, 'loss_coef': 0.001, 'gcn_method': 'gat'}
+
+Hyper: norm_method, Values: ['batch', 'rms', 'layer']
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --norm_method batch 
+Value: batch, Metric: 0.00020544529775219357
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --norm_method rms 
+Value: rms, Metric: 0.00024404628979273775
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --norm_method layer 
+Value: layer, Metric: 0.0002584280093797176
+==> Best norm_method: batch, local_best_metric: 0.00020544529775219357
+The Best Hyperparameters: {'rounds': 2, 'norm_method': 'batch', 'ffn_method': 'ffn', 'rank': 128, 'num_layers': 4, 'loss_coef': 0.001, 'gcn_method': 'gat'}
+
+Hyper: ffn_method, Values: ['ffn', 'moe']
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --ffn_method ffn 
+Value: ffn, Metric: 0.00020544529775219357
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --ffn_method moe 
+Value: moe, Metric: 0.002067635752528945
+==> Best ffn_method: ffn, local_best_metric: 0.00020544529775219357
+The Best Hyperparameters: {'rounds': 2, 'norm_method': 'batch', 'ffn_method': 'ffn', 'rank': 128, 'num_layers': 4, 'loss_coef': 0.001, 'gcn_method': 'gat'}
+
+Hyper: rank, Values: [128, 32, 64, 256]
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --rank 128 
+Value: 128, Metric: 0.00020544529775219357
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --rank 32 
+Value: 32, Metric: 0.00023037337533137739
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --rank 64 
+Value: 64, Metric: 0.00018888437350366647
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 128 --num_layers 4 --loss_coef 0.001 --gcn_method gat --rank 256 
+Value: 256, Metric: 0.002065833476920722
+==> Best rank: 64, local_best_metric: 0.00018888437350366647
+The Best Hyperparameters: {'rounds': 2, 'norm_method': 'batch', 'ffn_method': 'ffn', 'rank': 64, 'num_layers': 4, 'loss_coef': 0.001, 'gcn_method': 'gat'}
+
+Hyper: num_layers, Values: [4, 2, 3, 5, 8]
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --num_layers 4 
+Value: 4, Metric: 0.00018888437350366647
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --num_layers 2 
+Value: 2, Metric: 0.0002147476392241351
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --num_layers 3 
+Value: 3, Metric: 0.00020165288242264299
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --num_layers 5 
+Value: 5, Metric: 0.00020018577893813865
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --num_layers 8 
+Value: 8, Metric: 0.00019956617962737312
+==> Best num_layers: 4, local_best_metric: 0.00018888437350366647
+The Best Hyperparameters: {'rounds': 2, 'norm_method': 'batch', 'ffn_method': 'ffn', 'rank': 64, 'num_layers': 4, 'loss_coef': 0.001, 'gcn_method': 'gat'}
+
+Hyper: loss_coef, Values: [0.001, 0.0001, 0.01, 0.1, 1]
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --loss_coef 0.001 
+Value: 0.001, Metric: 0.00018888437350366647
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --loss_coef 0.0001 
+Value: 0.0001, Metric: 0.00018888437350366647
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --loss_coef 0.01 
+Value: 0.01, Metric: 0.00018888437350366647
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --loss_coef 0.1 
+Value: 0.1, Metric: 0.00018888437350366647
+COMMAND: python model_train.py --exp_name TestConfig --hyper_search 1 --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat --loss_coef 1 
+Value: 1, Metric: 0.00018888437350366647
+==> Best loss_coef: 0.001, local_best_metric: 0.00018888437350366647
+The Best Hyperparameters: {'rounds': 2, 'norm_method': 'batch', 'ffn_method': 'ffn', 'rank': 64, 'num_layers': 4, 'loss_coef': 0.001, 'gcn_method': 'gat'}
+Running at 2025-03-19 23:03: python model_train.py --exp_name TestConfig --retrain 1 --rounds 2 --norm_method batch --ffn_method ffn --rank 64 --num_layers 4 --loss_coef 0.001 --gcn_method gat
+NMAE - 0.0387    NRMSE - 0.0520    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9354    train_time - 22.1134    
+[2025-03-19 23:06:33] All commands executed successfully.
+
+NMAE - 0.0375    NRMSE - 0.0519    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9375    train_time - 20.2017    
+NMAE - 0.0413    NRMSE - 0.0571    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9105    train_time - 16.6881    
+NMAE - 0.0402    NRMSE - 0.0547    MAE - 0.0002    RMSE - 0.0003    Acc_10 - 0.9176    train_time - 17.2564    

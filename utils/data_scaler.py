@@ -21,8 +21,8 @@ class DataScalerMinMax:
     def __init__(self, y, config):
         self.config = config
         # 根据训练集的数值进行归一化
-        # scaler = y[:int(len(y) * self.config.density)].astype(np.float32) * 1.2
-        scaler = y
+        scaler = y[:int(len(y) * self.config.density)].astype(np.float32) * 1.2
+        # scaler = y
         self.y_min = scaler.min()
         self.y_max = scaler.max()
 
@@ -34,5 +34,7 @@ class DataScalerMinMax:
 
 
 def get_scaler(y, config):
-    # return DataScalerStander(y, config)
-    return DataScalerMinMax(y, config)
+    if config.scaler_method == 'stander':
+        return DataScalerStander(y, config)
+    elif config.scaler_method == 'minmax':
+        return DataScalerMinMax(y, config)

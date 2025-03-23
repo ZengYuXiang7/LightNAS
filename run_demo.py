@@ -6,7 +6,7 @@ from datetime import datetime
 
 # 在这里写下超参数探索空间
 hyper_dict = {
-    'rounds': [1],
+    'rounds': [2],
     'gcn_method': ['gat', 'gcn', 'graphsage', 'gin'],  #
     'norm_method': ['batch', 'rms', 'layer'],  #
     'ffn_method': ['ffn', 'moe'],  #

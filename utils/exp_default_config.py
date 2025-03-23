@@ -40,6 +40,8 @@ class DatasetInfo:
     eval_set: bool = True
     shuffle: bool = True
     use_train_size: bool = True
+    scaler_method: str = 'minmax'
+
 
 
 @dataclass

@@ -56,9 +56,9 @@ class GnnFamily(torch.nn.Module):
 
     def forward(self, graph, x):
         graph, x = graph, x
-        # print(x.shape)
+
         for norm1, gcn, norm2, ff in self.layers:
-            x = gcn(graph, norm1(x)) if not self.gcn_method == 'gat' else gcn(graph, norm1(x)).mean(dim=1) + x
+            x = gcn(graph, norm1(x)) + x if not self.gcn_method == 'gat' else gcn(graph, norm1(x)).mean(dim=1) + x
             x = ff(norm2(x)) + x
 
         batch_sizes = torch.as_tensor(
