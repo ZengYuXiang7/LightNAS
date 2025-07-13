@@ -1,0 +1,2 @@
+|2025-07-12 16:44:52| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-12 16:44:52| MAE - 0.0002 MSE - 0.0000 RMSE - 0.0004 MAPE - 0.0797 NMAE - 0.0502 NRMSE - 0.0685 Acc_10 - 0.8225 train_time - 29.0734

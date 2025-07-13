@@ -55,8 +55,6 @@ class MoE(torch.nn.Module):
         # K' = mk - ks
         self.router_num_k = num_m * num_k - num_share_experts
         self.router_gates = Gating(self.d_model, self.num_router_experts, self.router_num_k, self.loss_coef)
-        # print(self)
-
 
     def forward(self, x):
         x = self.__checkinput(x)
@@ -100,6 +98,10 @@ class MoE(torch.nn.Module):
         elif len(x.shape) == 3:
             self.flag = 2
             return x
+        elif len(x.shape) == 4:
+            self.flag = 3
+            self.bs, self.seq_len, self.channels, self.dim = x.shape
+            return x.reshape(x.shape[0], x.shape[1], -1)
         else:
             raise ValueError
 
@@ -108,12 +110,19 @@ class MoE(torch.nn.Module):
             return x.squeeze(1)
         elif self.flag == 2:
             return x
+        elif self.flag == 3:
+            return x.reshape(self.bs, self.seq_len, self.channels, self.dim)
         else:
             raise ValueError
 
 if __name__ == '__main__':
     inputs = torch.randn(1, 2, 50)
     expert = MoE(50, 50, 1, 8, 1, 3, 0.01)
+    output = expert(inputs)
+    print(output.size())
+
+    inputs = torch.randn(1, 2, 50)
+    expert = MoE(50, 50, 1, 8, 0, 3, 0.01)
     output = expert(inputs)
     print(output.size())
 

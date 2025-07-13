@@ -4,9 +4,10 @@ import time
 import subprocess
 import numpy as np
 from datetime import datetime
-from model_train import get_experiment_name
 import pickle
 from itertools import product
+
+from run_train import get_experiment_name
 from utils.exp_config import get_config
 
 
@@ -22,7 +23,7 @@ def once_experiment(exper_name, hyper_dict, grid_search=0, retrain=1, debug=0):
 
     # 再跑最佳参数实验
     commands = []
-    command = f"python model_train.py --exp_name {exper_name} --retrain 1"
+    command = f"python run_train.py --exp_name {exper_name} --retrain 1"
     commands.append(command)
 
     commands = [add_parameter(command, best_hyper) for command in commands]
@@ -49,14 +50,15 @@ def run_and_get_metric(cmd_str, config, chosen_hyper, debug=False):
     """
     print(cmd_str)
     config.__dict__.update(chosen_hyper)
-    log_filename = get_experiment_name(config)
+    log_filename = get_experiment_name(config)[0]
 
     if debug:
         print(log_filename, chosen_hyper)
     else:
         subprocess.run(cmd_str, shell=True)
+        pass
 
-    metric_file_address = f'./results/metrics/' + get_experiment_name(config)
+    metric_file_address = f'./results/metrics/' + get_experiment_name(config)[0]
     this_expr_metrics = pickle.load(open(metric_file_address + '.pkl', 'rb'))
 
     # 选择最优 metric
@@ -131,20 +133,20 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, debug):
     best_hyper = {}
 
     with open(log_file, 'a') as f:
-        f.write("================== Sequential Hyper Search ==================\n")
+        # f.write("================== Sequential Hyper Search ==================\n")
 
         for hyper_name, hyper_values in hyper_dict.items():
             if len(hyper_values) == 1:
                 best_hyper[hyper_name] = hyper_values[0]
                 continue
 
-            f.write(f"\nHyper: {hyper_name}, Values: {hyper_values}\n")
+            # f.write(f"\nHyper: {hyper_name}, Values: {hyper_values}\n")
             print(f"{hyper_name} => {hyper_values}")
             local_best_metric = 0 if classification_task else 1e9
             current_best_value = None
             for value in hyper_values:
                 # 根据目前已有最优超参数 + 当前超参数构建命令
-                command = f"python model_train.py --exp_name {exp_name} --hyper_search 1 --retrain {retrain} "
+                command = f"python run_train.py --exp_name {exp_name} --hyper_search 1 --retrain {retrain} "
 
                 # 先写入之前已经确定的 best_hyper
                 for best_param_key, best_param_value in best_hyper.items():
@@ -165,7 +167,7 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, debug):
                 chosen_dict = best_hyper.copy()
                 chosen_dict[hyper_name] = value
 
-                f.write(f"COMMAND: {command}\n")
+                # f.write(f"COMMAND: {command}\n")
                 current_metric = run_and_get_metric(command, config, chosen_dict, debug)
 
                 # 比较更新最优
@@ -178,15 +180,16 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, debug):
                         local_best_metric = current_metric
                         current_best_value = value
 
-                f.write(f"Value: {value}, Metric: {current_metric}\n")
+                f.write(f"Value: {value}, Metric: {current_metric:5.4f}\n")
+                print(f"Value: {value}, Metric: {current_metric:5.4f}")
 
             # 结束后，更新最优
             best_hyper[hyper_name] = current_best_value
-            print(f"==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric}\n")
-            f.write(f"==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric}\n")
+            print(f"\n\n==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric:5.4f}")
+            f.write(f"==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric:5.4f}\n")
 
-                # 全部结束后，打印并写日志
-            f.write(f"The Best Hyperparameters: {best_hyper}\n")
+        # 全部结束后，打印并写日志
+        # f.write(f"The Best Hyperparameters: {best_hyper}\n")
         print("The Best Hyperparameters:", best_hyper)
     return best_hyper
 
@@ -219,3 +222,12 @@ def run_command(command, log_file, retry_count=0):
                 f.write(f"Command failed, retrying in 3 seconds: {command}\n")
             retry_count += 1
             time.sleep(3)  # 等待一段时间后重试
+
+def log_message(message):
+    log_file = "run.log"
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(log_file, 'a') as f:
+        if message[0] == '\n':
+            message = message[1:]
+            f.write('\n')
+        f.write(f"[{timestamp}] {message}\n")

@@ -4,6 +4,11 @@
 
 import sys
 import os
+
+from data_provider.data_loader import DataModule
+from exp.exp_model import Model
+import run_train
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(project_root)
@@ -32,18 +37,25 @@ def calculate_inference_time(model, sample_input, config):
     return inference_time * 1000
 
 
+def get_efficiency(datamodule, model, config):
+    sample_inputs = next(iter(datamodule.train_loader))
+    flops, params = calculate_flops_params(model, sample_inputs, config)
+    inference_time = calculate_inference_time(model, sample_inputs, config)
+    return flops, params, inference_time
+
+
 def only_run():
-    from model_train import Model
     from utils.exp_config import get_config
     from utils.exp_logger import Logger
     from utils.exp_metrics_plotter import MetricsPlotter
     from utils.utils import set_settings
-    from data_center import DataModule
     config = get_config()
     set_settings(config)
     log_filename = f'Model_{config.model}_{config.dataset}_S{config.train_size}_R{config.rank}_Ablation{config.Ablation}'
     plotter = MetricsPlotter(log_filename, config)
-    log = Logger(log_filename, plotter, config)
+    # filename, exper_detail, plotter, config,
+    log_filename, exper_detail = run_train.get_experiment_name(config)
+    log = Logger(log_filename, exper_detail, plotter, config, show_params=False)
 
     datamodule = DataModule(config)
     model = Model(datamodule, config).to(config.device)
@@ -54,17 +66,6 @@ def only_run():
     print(f"Flops: {flops:.0f}")
     print(f"Params: {params:.0f}")
     print(f"Inference time: {inference_time:.2f} ms")
-    return flops, params, inference_time
-
-
-def get_efficiency(config):
-    from model_train import Model
-    from data_center import DataModule
-    datamodule = DataModule(config)
-    model = Model(datamodule, config)
-    sample_inputs = next(iter(datamodule.train_loader))
-    flops, params = calculate_flops_params(model, sample_inputs, config)
-    inference_time = calculate_inference_time(model, sample_inputs, config)
     return flops, params, inference_time
 
 
