@@ -2,15 +2,14 @@
 # Author : yuxiang Zeng
 # 根据需要来改变这里的内容
 
-from data_provider.get_latency import get_latency
+from data_provider.get_latency import *
 from data_provider.data_getitem import GraphDataset
 
 def load_data(config):
 
-    x, y, x_scaler, y_scaler = get_latency(config)
     if config.dataset == 'nasbench201':
-        x, y, x_scaler, y_scaler = get_latency(config)
-    elif config.dataset == 'nnmeter':
+        x, y, x_scaler, y_scaler = get_latency_transfer(config)
+    elif config.dataset == 'nnmeter': 
         x, y, x_scaler, y_scaler = get_latency(config)
     return x, y, x_scaler, y_scaler
 

@@ -43,7 +43,8 @@ class DataModule:
         if config.classification:
             return get_train_valid_test_classification_dataset(x, y, train_size, valid_size, config)
         else:
-            return get_train_valid_test_dataset(x, y, train_size, valid_size, config)
+            
+            return get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config)
         
 
     def get_dataloaders(self, train_set, valid_set, test_set, config):
@@ -106,6 +107,48 @@ def get_train_valid_test_dataset(x, y, train_size, valid_size, config):
     valid_y = y[train_size:train_size + valid_size]
     test_x = x[train_size + valid_size:]
     test_y = y[train_size + valid_size:]
+    return train_x, train_y, valid_x, valid_y, test_x, test_y
+
+def get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config):
+    if not config.transfer:
+        indices = np.arange(len(x))
+        shuffle_indices = np.random.shuffle(indices)
+        train_idx = shuffle_indices[:train_size]
+        valid_idx = shuffle_indices[train_size:train_size + valid_size]
+        test_idx = shuffle_indices[train_size + valid_size:]
+        with open()
+            pickle.dump(train_idx) 
+        with open()
+            pickle.dump(valid_idx) 
+        with open()
+            pickle.dump(test_idx) 
+    else:
+        with open()
+            train_idx = 
+        with open()
+            valid_idx = 
+        with open()
+            test_idx = 
+
+    matrix = np.concatenate((x, y), asix=1)
+    # 要找到全0行，为了下面剔除掉
+    null_indices = ~np.all(matrix == 0, axis=1)
+
+    # 意译代码
+    train_idx = train_idx - null_indices
+    valid_idx = valid_idx - null_indices
+    test_idx = test_idx - null_indices
+
+    train_x = x[train_idx]
+    train_y = y[train_idx]
+    valid_x = x[valid_idx]
+    valid_y = y[valid_idx]
+    test_x = x[test_idx]
+    test_y = y[test_idx]
+
+    data = matrix[~np.all(matrix == 0, axis=1)]
+
+
     return train_x, train_y, valid_x, valid_y, test_x, test_y
 
 

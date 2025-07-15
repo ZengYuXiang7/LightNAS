@@ -1,17 +1,12 @@
 #!/bin/bash
 clear
-# 预测长度列表
-pred_lens=(96 192 336 720)
 
-# 模型配置列表
-exp_names=(TransformerConfig)
 
-# 双重循环
-for exp in "${exp_names[@]}"
-do
-  for len in "${pred_lens[@]}"
-  do
-    echo "Running with exp_name=$exp, pred_len=$len"
-    python run_train.py --exp_name "$exp" --retrain 1 --pred_len "$len" --revin True --logger zyx
-  done
-done
+python run_train.py --exp_name GNNModelConfig --retrain 1 --logger zyx --transfer False \
+  --src_dataset datasets/pickle/embedded-gpu-jetson-nono-fp16_data.pkl \
+  --dst_dataset datasets/pickle/embedded-gpu-jetson-nono-fp16_data.pkl
+
+
+python run_train.py --exp_name GNNModelConfig --retrain 1 --logger zyx --transfer True \
+  --src_dataset datasets/pickle/embedded-gpu-jetson-nono-fp16_data.pkl \
+  --dst_dataset datasets/pickle/desktop-gpu-gtx-1080ti-fp32_data.pkl
