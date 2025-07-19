@@ -97,6 +97,7 @@ def parse_split_ratio(ratio_str):
     total = sum(parts)
     return [p / total for p in parts]
 
+
 def get_train_valid_test_dataset(x, y, train_size, valid_size, config):
     if config.shuffle:
         indices = np.random.permutation(len(x))
@@ -108,6 +109,27 @@ def get_train_valid_test_dataset(x, y, train_size, valid_size, config):
     test_x = x[train_size + valid_size:]
     test_y = y[train_size + valid_size:]
     return train_x, train_y, valid_x, valid_y, test_x, test_y
+
+
+def get_train_valid_test_classification_dataset(x, y, train_size, valid_size, config):
+    from collections import defaultdict
+    import random
+    class_data = defaultdict(list)
+    for now_x, now_label in zip(x, y):
+        class_data[now_label].append(now_x)
+    train_x, train_y = [], []
+    valid_x, valid_y = [], []
+    test_x, test_y = [], []
+    for label, now_x in class_data.items():
+        random.shuffle(now_x)
+        train_x.extend(now_x[:train_size])
+        train_y.extend([label] * len(now_x[:train_size]))
+        valid_x.extend(now_x[train_size:train_size + valid_size])
+        valid_y.extend([label] * len(now_x[train_size:train_size + valid_size]))
+        test_x.extend(now_x[train_size + valid_size:])
+        test_y.extend([label] * len(now_x[train_size + valid_size:]))
+    return train_x, train_y, valid_x, valid_y, test_x, test_y
+
 
 def get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config):
     if not config.transfer:
@@ -180,26 +202,3 @@ def get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config):
     test_y = y_scaler.transform(test_y).astype(np.float32)
 
     return train_x, train_y, valid_x, valid_y, test_x, test_y, x_scaler, y_scaler
-
-
-def get_train_valid_test_classification_dataset(x, y, train_size, valid_size, config):
-    from collections import defaultdict
-    import random
-    class_data = defaultdict(list)
-    for now_x, now_label in zip(x, y):
-        class_data[now_label].append(now_x)
-    train_x, train_y = [], []
-    valid_x, valid_y = [], []
-    test_x, test_y = [], []
-    for label, now_x in class_data.items():
-        random.shuffle(now_x)
-        train_x.extend(now_x[:train_size])
-        train_y.extend([label] * len(now_x[:train_size]))
-        valid_x.extend(now_x[train_size:train_size + valid_size])
-        valid_y.extend([label] * len(now_x[train_size:train_size + valid_size]))
-        test_x.extend(now_x[train_size + valid_size:])
-        test_y.extend([label] * len(now_x[train_size + valid_size:]))
-    return train_x, train_y, valid_x, valid_y, test_x, test_y
-
-
-

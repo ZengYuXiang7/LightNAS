@@ -87,7 +87,7 @@ class BasicModel(torch.nn.Module):
 
         reals = torch.cat(reals, dim=0)
         preds = torch.cat(preds, dim=0)
-
+        
         if self.config.dataset != 'weather':
             reals, preds = dataModule.y_scaler.inverse_transform(reals), dataModule.y_scaler.inverse_transform(preds)
 

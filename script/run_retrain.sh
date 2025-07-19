@@ -1,7 +1,5 @@
 #!/bin/bash
 
-conda activate wangyang
-
 # 定义数据集数组
 datasets=(
     "desktop-cpu-core-i7-7820x-fp32_data.pkl"
@@ -27,8 +25,8 @@ do
     
     # 调用训练脚本
     python run_train.py --exp_name GNNModelConfig --retrain 1 --logger zyx --transfer False \
-    --src_dataset "datasets/pickle/$dataset" \
-    --dst_dataset "datasets/pickle/$dataset"
+    --src_dataset "datasets/nasbench201/pkl/$dataset" \
+    --dst_dataset "datasets/nasbench201/pkl/$dataset"
     
     # 输出当前任务完成
     echo "$dataset 的训练完成！"

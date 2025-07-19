@@ -24,8 +24,6 @@ def get_latency(config):
     x_scaler = get_scaler(x, config, 'None')
     y_scaler = get_scaler(y, config, 'minmax')
     y = y_scaler.transform(y).astype(np.float32)
-
-
     # x = scaler.transform(x).astype(np.float32)
     return x, y, x_scaler, y_scaler
 

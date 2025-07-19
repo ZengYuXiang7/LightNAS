@@ -6,7 +6,6 @@ from data_provider.get_latency import *
 from data_provider.data_getitem import GraphDataset
 
 def load_data(config):
-
     if config.dataset == 'nasbench201':
         x, y = get_latency_transfer(config)
     elif config.dataset == 'nnmeter': 

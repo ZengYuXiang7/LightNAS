@@ -20,3 +20,13 @@
 |2025-07-17 21:33:55| MAE - 0.0004 MSE - 0.0000 RMSE - 0.0007 MAPE - 0.0425 NMAE - 0.0368 NRMSE - 0.0704 Acc_10 - 0.9046 train_time - 87.9260
 |2025-07-17 22:16:34| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
 |2025-07-17 22:16:34| MAE - 0.0216 MSE - 0.0012 RMSE - 0.0342 MAPE - 0.6984 NMAE - 0.5212 NRMSE - 0.5811 Acc_10 - 0.2178 train_time - 121.3961
+|2025-07-19 22:10:48| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-19 22:10:48| MAE - 0.0014 MSE - 0.0000 RMSE - 0.0018 MAPE - 0.3669 NMAE - 0.2877 NRMSE - 0.3381 Acc_10 - 0.2189 KendallTau - 0.5916 SpearmanRho - 0.7880 NDCG - 0.0000 train_time - 0.3496
+|2025-07-19 22:13:42| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-19 22:13:42| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0006 MAPE - 0.1204 NMAE - 0.0928 NRMSE - 0.1125 Acc_10 - 0.6133 KendallTau - 0.8364 SpearmanRho - 0.9600 NDCG - 0.0000 train_time - 2.5224
+|2025-07-19 22:20:50| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-19 22:20:50| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0006 MAPE - 0.1204 NMAE - 0.0928 NRMSE - 0.1125 Acc_10 - 0.6133 KendallTau - 0.8364 SpearmanRho - 0.9600 NDCG - 0.9962 train_time - 2.3883
+|2025-07-19 22:23:49| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-19 22:23:49| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0006 MAPE - 0.1204 NMAE - 0.0928 NRMSE - 0.1125 Acc_10 - 0.6133 KendallTau - 0.8364 SpearmanRho - 0.9600 NDCG - 0.9962 train_time - 2.5637
+|2025-07-19 22:25:46| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-19 22:25:46| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0006 MAPE - 0.1204 NMAE - 0.0928 NRMSE - 0.1125 Acc_10 - 0.6133 KendallTau - 0.8364 SpearmanRho - 0.9600 NDCG - 0.9966 train_time - 2.5551

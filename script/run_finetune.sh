@@ -1,7 +1,5 @@
 #!/bin/bash
 
-conda activate wangyang
-
 # 定义微调数据集数组
 finetune_datasets=(
     "desktop-cpu-core-i7-7820x-fp32_data.pkl"
@@ -32,8 +30,8 @@ do
         
         # 加载第一个训练好的模型，并在第二个数据集上进行微调
         python run_train.py --exp_name GNNModelConfig --retrain 1 --logger zyx --transfer True \
-        --src_dataset "datasets/pickle/$dataset2" \
-        --dst_dataset "datasets/pickle/$dataset2" \
+        --src_dataset "datasets/nasbench201/pickle/$dataset2" \
+        --dst_dataset "datasets/nasbench201/pickle/$dataset2" \
         --pretrained_model "models/$dataset1_model.pth"  # 使用第一个数据集训练的模型进行微调
         
         # 输出当前任务完成
