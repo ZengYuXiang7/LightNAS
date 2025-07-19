@@ -6,17 +6,19 @@ import numpy as np
 import multiprocessing
 from torch.utils.data import DataLoader
 from data_provider.data_control import get_dataset, load_data
+import pickle
 
+from data_provider.data_scaler import get_scaler
 
 # 数据集定义
 class DataModule:
     def __init__(self, config):
         self.config = config
         self.path = config.path
-        self.x, self.y, self.x_scaler, self.y_scaler = load_data(config)
+        self.x, self.y = load_data(config)
         if config.debug:
             self.x, self.y = self.x[:int(len(self.x) * 0.10)], self.y[:int(len(self.x) * 0.10)]
-        self.train_x, self.train_y, self.valid_x, self.valid_y, self.test_x, self.test_y = self.get_split_dataset(self.x, self.y, config)
+        self.train_x, self.train_y, self.valid_x, self.valid_y, self.test_x, self.test_y, self.x_scaler, self.y_scaler = self.get_split_dataset(self.x, self.y, config)
         self.train_set, self.valid_set, self.test_set = get_dataset(self.train_x, self.train_y, self.valid_x, self.valid_y, self.test_x, self.test_y, config)
         self.train_loader, self.valid_loader, self.test_loader = self.get_dataloaders(self.train_set, self.valid_set, self.test_set, config)
         config.log.only_print(f'Train_length : {len(self.train_loader.dataset)} Valid_length : {len(self.valid_loader.dataset)} Test_length : {len(self.test_loader.dataset)}')
@@ -89,13 +91,11 @@ class DataModule:
         return train_loader, valid_loader, test_loader
 
 
-
 def parse_split_ratio(ratio_str):
     """解析如 '7:1:2' 的字符串为归一化比例 [0.7, 0.1, 0.2]"""
     parts = list(map(int, ratio_str.strip().split(':')))
     total = sum(parts)
     return [p / total for p in parts]
-
 
 def get_train_valid_test_dataset(x, y, train_size, valid_size, config):
     if config.shuffle:
@@ -112,32 +112,55 @@ def get_train_valid_test_dataset(x, y, train_size, valid_size, config):
 def get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config):
     if not config.transfer:
         indices = np.arange(len(x))
-        shuffle_indices = np.random.shuffle(indices)
+        shuffle_indices = np.random.permutation(indices)
         train_idx = shuffle_indices[:train_size]
         valid_idx = shuffle_indices[train_size:train_size + valid_size]
         test_idx = shuffle_indices[train_size + valid_size:]
-        with open()
-            pickle.dump(train_idx) 
-        with open()
-            pickle.dump(valid_idx) 
-        with open()
-            pickle.dump(test_idx) 
+        with open(f'{config.path}/train_idx.pkl','wb') as f:
+            pickle.dump(train_idx, f) 
+        with open(f'{config.path}/valid_idx.pkl','wb') as f:
+            pickle.dump(valid_idx, f) 
+        with open(f'{config.path}/test_idx.pkl','wb') as f:
+            pickle.dump(test_idx, f) 
     else:
-        with open()
-            train_idx = 
-        with open()
-            valid_idx = 
-        with open()
-            test_idx = 
+        with open(f'{config.path}/train_idx.pkl','rb') as f:
+            train_idx = pickle.load(f)
+        with open(f'{config.path}/valid_idx.pkl','rb') as f:
+            valid_idx = pickle.load(f)
+        with open(f'{config.path}/test_idx.pkl','rb') as f:
+            test_idx = pickle.load(f)
 
-    matrix = np.concatenate((x, y), asix=1)
-    # 要找到全0行，为了下面剔除掉
-    null_indices = ~np.all(matrix == 0, axis=1)
+    matrix = np.concatenate((x, y), axis=1)
+    print(matrix[0, -1])
+    # 找到全0行的索引
+    null_indices = []
+    for i in range(len(matrix)):
+        if matrix[i][-1] == 0:
+            null_indices.append(i)
 
-    # 意译代码
-    train_idx = train_idx - null_indices
-    valid_idx = valid_idx - null_indices
-    test_idx = test_idx - null_indices
+    train_temp_idx = []
+    for i in range(len(train_idx)):
+        if train_idx[i] not in null_indices:
+            train_temp_idx.append(train_idx[i])
+        else:
+            continue
+    train_idx = np.array(train_temp_idx)
+
+    valid_temp_idx = []
+    for i in range(len(valid_idx)):
+        if valid_idx[i] not in null_indices:
+            valid_temp_idx.append(valid_idx[i])
+        else:
+            continue
+    valid_idx = np.array(valid_temp_idx)
+
+    test_temp_idx = []
+    for i in range(len(test_idx)):
+        if test_idx[i] not in null_indices:
+            test_temp_idx.append(test_idx[i])
+        else:
+            continue
+    test_idx = np.array(test_temp_idx)
 
     train_x = x[train_idx]
     train_y = y[train_idx]
@@ -146,10 +169,17 @@ def get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config):
     test_x = x[test_idx]
     test_y = y[test_idx]
 
-    data = matrix[~np.all(matrix == 0, axis=1)]
+    print(train_x.shape, train_y.shape, valid_x.shape, valid_y.shape)
+    x_scaler = get_scaler(train_x, config, 'None')
+    y_scaler = get_scaler(train_y, config, 'minmax')
+    train_x = x_scaler.transform(train_x)
+    train_y = y_scaler.transform(train_y).astype(np.float32)
+    valid_x = x_scaler.transform(valid_x)
+    valid_y = y_scaler.transform(valid_y).astype(np.float32)
+    test_x = x_scaler.transform(test_x)
+    test_y = y_scaler.transform(test_y).astype(np.float32)
 
-
-    return train_x, train_y, valid_x, valid_y, test_x, test_y
+    return train_x, train_y, valid_x, valid_y, test_x, test_y, x_scaler, y_scaler
 
 
 def get_train_valid_test_classification_dataset(x, y, train_size, valid_size, config):

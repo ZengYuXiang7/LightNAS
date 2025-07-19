@@ -29,3 +29,4 @@ class GNNModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     ffn_method: str = 'ffn'
     src_dataset: str = 'datasets/pickle/embedded-gpu-jetson-nono-fp16_data.pkl'
     dst_dataset: str = 'datasets/pickle/desktop-gpu-gtx-1080ti-fp32_data.pkl'
+    transfer: bool = False

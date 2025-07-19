@@ -50,7 +50,7 @@ class DataScalerMinMax:
         if y.ndim != 2:
             self.original_shape = y.shape
             y = y.reshape(-1, y.shape[-1])
-        train_data = y[:int(len(y) * self.config.density)].astype(np.float32)
+        train_data = y
         self.scaler = MinMaxScaler()
         self.scaler.fit(train_data)
 

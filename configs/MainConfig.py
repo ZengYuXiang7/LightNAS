@@ -11,7 +11,6 @@ class OtherConfig:
     ts_var: int = 1
     input_size: int = 21
     
-    multi_dataset: bool = False
 
 
 

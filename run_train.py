@@ -9,7 +9,6 @@ from exp.exp_model import Model
 import utils.model_efficiency
 import utils.utils
 torch.set_default_dtype(torch.float32)
-torch.set_float32_matmul_precision('high')
 
 def get_experiment_name(config):
     # === 构建 exper_detail 字典（基础字段）===

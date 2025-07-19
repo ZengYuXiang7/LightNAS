@@ -8,10 +8,10 @@ from data_provider.data_getitem import GraphDataset
 def load_data(config):
 
     if config.dataset == 'nasbench201':
-        x, y, x_scaler, y_scaler = get_latency_transfer(config)
+        x, y = get_latency_transfer(config)
     elif config.dataset == 'nnmeter': 
         x, y, x_scaler, y_scaler = get_latency(config)
-    return x, y, x_scaler, y_scaler
+    return x, y
 
 
 def get_dataset(train_x, train_y, valid_x, valid_y, test_x, test_y, config):

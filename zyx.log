@@ -1,2 +1,22 @@
 |2025-07-12 16:44:52| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
 |2025-07-12 16:44:52| MAE - 0.0002 MSE - 0.0000 RMSE - 0.0004 MAPE - 0.0797 NMAE - 0.0502 NRMSE - 0.0685 Acc_10 - 0.8225 train_time - 29.0734
+|2025-07-17 15:59:06| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 15:59:06| MAE - 0.0001 MSE - 0.0000 RMSE - 0.0002 MAPE - 0.0292 NMAE - 0.0288 NRMSE - 0.0408 Acc_10 - 0.9615 train_time - 136.9277
+|2025-07-17 16:38:57| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 16:38:57| MAE - 0.0002 MSE - 0.0000 RMSE - 0.0003 MAPE - 0.0643 NMAE - 0.0568 NRMSE - 0.1138 Acc_10 - 0.8836 train_time - 121.8244
+|2025-07-17 17:18:02| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 17:18:02| MAE - 0.0001 MSE - 0.0000 RMSE - 0.0002 MAPE - 0.0345 NMAE - 0.0352 NRMSE - 0.0634 Acc_10 - 0.9444 train_time - 97.2976
+|2025-07-17 18:08:29| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 18:08:29| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0007 MAPE - 0.0320 NMAE - 0.0311 NRMSE - 0.0418 Acc_10 - 0.9650 train_time - 164.9414
+|2025-07-17 18:54:58| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 18:54:58| MAE - 0.0001 MSE - 0.0000 RMSE - 0.0002 MAPE - 0.0284 NMAE - 0.0282 NRMSE - 0.0398 Acc_10 - 0.9680 train_time - 149.8345
+|2025-07-17 19:36:19| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 19:36:19| MAE - 0.0004 MSE - 0.0000 RMSE - 0.0017 MAPE - 0.0366 NMAE - 0.0330 NRMSE - 0.1184 Acc_10 - 0.9652 train_time - 129.0721
+|2025-07-17 20:17:39| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 20:17:39| MAE - 0.0003 MSE - 0.0000 RMSE - 0.0009 MAPE - 0.0610 NMAE - 0.0438 NRMSE - 0.1398 Acc_10 - 0.9417 train_time - 120.6825
+|2025-07-17 20:58:21| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 20:58:21| MAE - 0.0019 MSE - 0.0000 RMSE - 0.0042 MAPE - 0.0916 NMAE - 0.0750 NRMSE - 0.1484 Acc_10 - 0.8691 train_time - 110.5125
+|2025-07-17 21:33:55| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 21:33:55| MAE - 0.0004 MSE - 0.0000 RMSE - 0.0007 MAPE - 0.0425 NMAE - 0.0368 NRMSE - 0.0704 Acc_10 - 0.9046 train_time - 87.9260
+|2025-07-17 22:16:34| Dataset : nasbench201, Model : gnn, Density : 0.700, d_model : 64, Rank : 32
+|2025-07-17 22:16:34| MAE - 0.0216 MSE - 0.0012 RMSE - 0.0342 MAPE - 0.6984 NMAE - 0.5212 NRMSE - 0.5811 Acc_10 - 0.2178 train_time - 121.3961

@@ -4,16 +4,16 @@ from dataclasses import dataclass
 
 @dataclass
 class TrainingConfig:
-    bs: int = 32
+    bs: int = 16
     lr: float = 0.001
     decay: float = 0.0001
     loss_func: str = 'L1Loss'  # L1Loss  MSELoss
     optim: str = 'AdamW'
     epochs: int = 200
-    patience: int = 20
+    patience: int = 30
     verbose: int = 10
     device: str = 'cuda'
-    monitor_metric: str = 'MAE'
+    monitor_metric: str = 'NMAE'
     use_amp: bool = False
 
 
@@ -27,7 +27,7 @@ class BaseModelConfig:
 
 @dataclass
 class DatasetInfo:
-    path: str = './datasets/'
+    path: str = './datasets'
     dataset: str = 'weather'
     train_size: int = 500
     use_train_size: bool = False
@@ -41,7 +41,7 @@ class DatasetInfo:
 @dataclass
 class ExperimentConfig:
     seed: int = 0
-    rounds: int = 1
+    rounds: int = 5
     debug: bool = False
     record: bool = True
     hyper_search: bool = False
