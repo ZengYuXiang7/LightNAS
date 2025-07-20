@@ -51,7 +51,6 @@ def ndcg_k(true_latency, pred_latency, k=None):
 
 
 def compute_regression_metrics(realVec, estiVec):
-    print(realVec.shape, estiVec.shape)
     """计算回归任务 + 排序一致性的评估指标"""
     realVec = np.array(realVec).flatten()
     estiVec = np.array(estiVec).flatten()

@@ -4,11 +4,44 @@
 from torch.utils.data import Dataset
 import numpy as np
 
+from baselines.narformer import tokenizer
 from data_provider.create_latency import *
 from scipy.sparse import csr_matrix
-import dgl 
+import dgl
 
 
+
+class SeqDataset(Dataset):
+    def __init__(self, x, y, mode, config):
+        self.config = config
+        self.x = x
+        self.y = y
+        self.mode = mode
+
+    def __len__(self):
+        return len(self.x)
+
+    def __getitem__(self, idx):
+        x = self.x[idx]
+        y = self.y[idx]
+        tokens = self.get_token(x)
+        return tokens, y
+
+    def get_token(self, key):
+        graph, _ = get_matrix_and_ops(key)
+        arch_str = get_arch_str_from_arch_vector(key)
+        adj_mat, ops_idx = info2mat(arch_str)
+        dx = dr = dp = 32
+        tokens = tokenizer(ops_idx, adj_mat, dx, dr, dp, 'nerf')
+        return tokens
+
+    def custom_collate_fn(self, batch, config):
+        from torch.utils.data.dataloader import default_collate
+        tokens, y = zip(*batch)
+        tokens, y =  default_collate(tokens), default_collate(y)
+        return tokens, y
+    
+    
 class GraphDataset(Dataset):
     def __init__(self, x, y, mode, config):
         self.config = config

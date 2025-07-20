@@ -13,15 +13,14 @@ torch.set_default_dtype(torch.float32)
 def get_experiment_name(config):
     # === 构建 exper_detail 字典（基础字段）===
     detail_fields = {
-        'Dataset': config.dataset,
         'Model': config.model,
-        'Density': f"{config.density:.3f}",
+        'dst_dataset': config.dst_dataset.split('/')[-1].split('.')[0],
+        'spliter_ratio': config.spliter_ratio,
         'd_model': config.d_model,
-        'Rank': config.rank,
     }
 
     # === 动态添加字段（只有在 config 中存在才加入）===
-    optional_fields = ['seq_len', 'pred_len', 'noise_steps', 'noise_scale', 'lamda', 'idx']
+    optional_fields = ['idx']
     for field in optional_fields:
         if hasattr(config, field):
             key = field.replace('_', ' ').title().replace(' ', '_')  # e.g. seq_len -> Seq_Len
@@ -87,5 +86,7 @@ def run(config):
 if __name__ == '__main__':
     # Experiment Settings, logger, plotter
     from utils.exp_config import get_config
-    config = get_config('GNNModelConfig')
+    # config = get_config('GNNModelConfig')
+    # config = get_config('TransModelConfig')
+    config = get_config('NarFormerConfig')
     run(config)

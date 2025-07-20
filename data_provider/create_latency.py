@@ -5,16 +5,44 @@ import copy
 import torch
 import numpy as np
 
+def info2mat(arch_str):
+    ops = {'input':0, 'nor_conv_1x1':1, 'nor_conv_3x3':2, 'avg_pool_3x3':3, 'skip_connect':4, 'none':5, 'output':6}
+    adj_mat = np.array([[0, 1, 1, 0, 1, 0, 0, 0],
+                        [0, 0, 0, 1, 0, 1 ,0 ,0],
+                        [0, 0, 0, 0, 0, 0, 1, 0],
+                        [0, 0, 0, 0, 0, 0, 1, 0],
+                        [0, 0, 0, 0, 0, 0, 0, 1],
+                        [0, 0, 0, 0, 0, 0, 0, 1],
+                        [0, 0, 0, 0, 0, 0, 0, 1],
+                        [0, 0, 0, 0, 0, 0, 0, 0]])
+
+    nodes = ['input']
+    steps = arch_str.split('+')
+    steps_coding = ['0', '0', '1', '0', '1', '2']
+    cont = 0
+    for step in steps:
+        step = step.strip('|').split('|')
+        for node in step:
+            n, idx = node.split('~') #n: operation, idx: previous node
+            assert idx == steps_coding[cont]
+            cont += 1
+            nodes.append(n)
+    nodes.append('output')
+
+    node_mat =np.zeros([8, len(ops)]).astype(int)
+    ops_idx = [ops[k] for k in nodes]
+    node_mat[[0,1,2,3,4,5,6,7], ops_idx] = 1
+    return adj_mat, ops_idx
 
 def get_arch_vector_from_arch_str(arch_str):
     """
         Args:
             arch_str : a string representation of a cell architecture,
-                for example '|nor_conv_3x3~0|+|nor_conv_3x3~0|avg_pool_3x3~1|+|skip_cotorch.nnect~0|nor_conv_3x3~1|skip_cotorch.nnect~2|'
+                for example '|nor_conv_3x3~0|+|nor_conv_3x3~0|avg_pool_3x3~1|+|skip_connect~0|nor_conv_3x3~1|skip_connect~2|'
     """
     _opname_to_index = {
         'none': 0,
-        'skip_cotorch.nnect': 1,
+        'skip_connect': 1,
         'nor_conv_1x1': 2,
         'nor_conv_3x3': 3,
         'avg_pool_3x3': 4,
@@ -36,7 +64,7 @@ def get_arch_vector_from_arch_str(arch_str):
 def get_arch_str_from_arch_vector(arch_vector):
     _opname_to_index = {
         'none': 0,
-        'skip_cotorch.nnect': 1,
+        'skip_connect': 1,
         'nor_conv_1x1': 2,
         'nor_conv_3x3': 3,
         'avg_pool_3x3': 4,
@@ -61,14 +89,25 @@ def get_matrix_and_ops(g, prune=True, keep_dims=True):
     labels = [None for _ in range(8)]
     labels[0] = 'input'
     labels[-1] = 'output'
-    matrix[0][1] = matrix[0][2] = matrix[0][4] = 1
-    matrix[1][3] = matrix[1][5] = 1
-    matrix[2][6] = 1
-    matrix[3][6] = 1
-    matrix[4][7] = 1
-    matrix[5][7] = 1
-    matrix[6][7] = 1
-
+    # matrix[0][1] = matrix[0][2] = matrix[0][4] = 1
+    # matrix[1][3] = matrix[1][5] = 1
+    # matrix[2][6] = 1
+    # matrix[3][6] = 1
+    # matrix[4][7] = 1
+    # matrix[5][7] = 1
+    # matrix[6][7] = 1
+    matrix = np.array([
+        # 0 1 2 3 4 5 6 7
+        [0,1,1,0,1,0,0,0],  # 0
+        [0,0,0,1,0,1,0,0],  # 1
+        [0,0,0,0,0,0,1,0],  # 2
+        [0,0,0,0,0,0,1,0],  # 3
+        [0,0,0,0,0,0,0,1],  # 4
+        [0,0,0,0,0,0,0,1],  # 5
+        [0,0,0,0,0,0,0,1],  # 6
+        [0,0,0,0,0,0,0,0],  # 7
+    ], dtype=int)
+    
     for idx, op in enumerate(g):
         if op == 0:  # zero
             matrix[:, idx + 1] = 0

@@ -14,7 +14,6 @@ class GNNModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     model: str = 'gnn'
     dataset: str = 'nasbench201'
     bs: int = 32
-    rank: int = 32
     spliter_ratio: str = '1:4:95'
     epochs: int = 200
     patience: int = 50
@@ -27,6 +26,6 @@ class GNNModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     gcn_method: str = 'gat'
     norm_method: str = 'batch'
     ffn_method: str = 'ffn'
-    src_dataset: str = 'datasets/nasbench201/pkl/embedded-gpu-jetson-nono-fp16_data.pkl'
-    dst_dataset: str = 'datasets/nasbench201/pkl/desktop-gpu-gtx-1080ti-fp32_data.pkl'
+    src_dataset: str = 'datasets/nasbench201/pkl/embedded-gpu-jetson-nono-fp16.pkl'
+    dst_dataset: str = 'datasets/nasbench201/pkl/desktop-gpu-gtx-1080ti-fp32.pkl'
     transfer: bool = False

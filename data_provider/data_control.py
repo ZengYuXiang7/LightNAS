@@ -3,7 +3,7 @@
 # 根据需要来改变这里的内容
 
 from data_provider.get_latency import *
-from data_provider.data_getitem import GraphDataset
+from data_provider.data_getitem import GraphDataset, SeqDataset
 
 def load_data(config):
     if config.dataset == 'nasbench201':
@@ -14,9 +14,30 @@ def load_data(config):
 
 
 def get_dataset(train_x, train_y, valid_x, valid_y, test_x, test_y, config):
-    return (
-        GraphDataset(train_x, train_y, 'train', config),
-        GraphDataset(valid_x, valid_y, 'valid', config),
-        GraphDataset(test_x, test_y, 'test', config)
-    )
+    if config.model == 'narformer':
+        return (
+            SeqDataset(train_x, train_y, 'train', config),
+            SeqDataset(valid_x, valid_y, 'valid', config),
+            SeqDataset(test_x, test_y, 'test', config)
+        )
+    
+    elif config.model == 'gnn':
+        return (
+            GraphDataset(train_x, train_y, 'train', config),
+            GraphDataset(valid_x, valid_y, 'valid', config),
+            GraphDataset(test_x, test_y, 'test', config)
+        )
+    elif config.model in ['lstm', 'gru']:
+        return (
+            GraphDataset(train_x, train_y, 'train', config),
+            GraphDataset(valid_x, valid_y, 'valid', config),
+            GraphDataset(test_x, test_y, 'test', config)
+        )
+    elif config.model in ['flops', 'parameters']:
+        return (
+            GraphDataset(train_x, train_y, 'train', config),
+            GraphDataset(valid_x, valid_y, 'valid', config),
+            GraphDataset(test_x, test_y, 'test', config)
+        )
+    
     
