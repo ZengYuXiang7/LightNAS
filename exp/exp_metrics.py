@@ -18,6 +18,8 @@ def ErrorMetrics(realVec, estiVec, config):
         estiVec = estiVec.astype(float)
     elif isinstance(estiVec, t.Tensor):
         estiVec = estiVec.cpu().detach().numpy().astype(float)
+        
+    estiVec = estiVec.reshape(realVec.shape)
 
     if config.classification:
         return compute_classification_metrics(realVec, estiVec)

@@ -9,7 +9,7 @@ class OtherConfig:
     try_exp: int = -1
 
     ts_var: int = 1
-    input_size: int = 21
+    input_size: int = 1
     
 
 

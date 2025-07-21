@@ -40,3 +40,33 @@
 |2025-07-20 16:27:27| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0017 MAPE - 0.0450 NMAE - 0.0397 NRMSE - 0.1208 Acc_10 - 0.9366 KendallTau - 0.9121 SpearmanRho - 0.9617 NDCG - 0.9685 train_time - 31.6871
 |2025-07-20 17:05:15| Model : trans, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 192
 |2025-07-20 17:05:15| MAE - 0.0003 MSE - 0.0000 RMSE - 0.0004 MAPE - 0.0741 NMAE - 0.0556 NRMSE - 0.0729 Acc_10 - 0.8207 KendallTau - 0.8662 SpearmanRho - 0.9747 NDCG - 0.9719 train_time - 171.8373
+|2025-07-20 17:48:46| Model : narformer, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-20 17:48:46| MAE - 0.0003 MSE - 0.0000 RMSE - 0.0004 MAPE - 0.0741 NMAE - 0.0556 NRMSE - 0.0729 Acc_10 - 0.8207 KendallTau - 0.8662 SpearmanRho - 0.9747 NDCG - 0.9719 train_time - 71.3602
+|2025-07-20 21:16:08| Model : transnas, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-20 21:16:08| MAE - 0.0014 MSE - 0.0000 RMSE - 0.0021 MAPE - 0.1407 NMAE - 0.0952 NRMSE - 0.1300 Acc_10 - 0.6786 KendallTau - 0.8058 SpearmanRho - 0.9403 NDCG - 0.9834 train_time - 20.4879
+|2025-07-20 21:30:08| Model : transnas, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-20 21:30:08| MAE - 0.0008 MSE - 0.0000 RMSE - 0.0011 MAPE - 0.0648 NMAE - 0.0573 NRMSE - 0.0681 Acc_10 - 0.8095 KendallTau - 0.9098 SpearmanRho - 0.9888 NDCG - 0.9940 train_time - 20.8323
+|2025-07-21 10:33:20| Model : transnas, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-21 10:33:20| MAE - 0.0042 MSE - 0.0000 RMSE - 0.0052 MAPE - 0.3949 NMAE - 0.3165 NRMSE - 0.3623 Acc_10 - 0.1608 KendallTau - 0.4268 SpearmanRho - 0.5894 NDCG - 0.9523 train_time - 0.2365
+|2025-07-21 10:33:30| Model : narformer, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-21 10:33:30| MAE - 0.0042 MSE - 0.0000 RMSE - 0.0052 MAPE - 0.3817 NMAE - 0.3175 NRMSE - 0.3648 Acc_10 - 0.1657 KendallTau - 0.5478 SpearmanRho - 0.7418 NDCG - 0.9656 train_time - 0.4890
+|2025-07-21 10:33:36| Model : gnn, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 10:33:36| MAE - 0.0048 MSE - 0.0000 RMSE - 0.0058 MAPE - 0.4573 NMAE - 0.3221 NRMSE - 0.3577 Acc_10 - 0.1708 KendallTau - 0.4732 SpearmanRho - 0.6536 NDCG - 0.6293 train_time - 0.4028
+|2025-07-21 10:58:26| Model : lstm, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 10:58:26| MAE - 0.0072 MSE - 0.0001 RMSE - 0.0087 MAPE - 0.4373 NMAE - 0.4792 NRMSE - 0.5402 Acc_10 - 0.0544 KendallTau - 0.1279 SpearmanRho - 0.1931 NDCG - 0.6558 train_time - 0.1372
+|2025-07-21 10:59:22| Model : gru, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 10:59:22| MAE - 0.0070 MSE - 0.0001 RMSE - 0.0084 MAPE - 0.4259 NMAE - 0.4644 NRMSE - 0.5246 Acc_10 - 0.0675 KendallTau - 0.2089 SpearmanRho - 0.3011 NDCG - 0.7985 train_time - 0.1371
+|2025-07-21 11:05:36| Model : brp-nas, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 11:05:36| MAE - 0.0884 MSE - 0.0079 RMSE - 0.0886 MAPE - 7.2245 NMAE - 5.9028 NRMSE - 5.5120 Acc_10 - 0.0000 KendallTau - 0.5315 SpearmanRho - 0.7145 NDCG - 0.9034 train_time - 0.1448
+|2025-07-21 11:19:07| Model : gat, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 11:19:07| MAE - 0.0062 MSE - 0.0001 RMSE - 0.0076 MAPE - 0.4349 NMAE - 0.4110 NRMSE - 0.4748 Acc_10 - 0.1591 KendallTau - -0.1241 SpearmanRho - -0.1841 NDCG - 0.2979 train_time - 0.2919
+|2025-07-21 12:12:10| Model : gru, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 12:12:10| MAE - 0.0015 MSE - 0.0000 RMSE - 0.0021 MAPE - 0.1502 NMAE - 0.1041 NRMSE - 0.1354 Acc_10 - 0.6120 KendallTau - 0.7823 SpearmanRho - 0.9309 NDCG - 0.9741 train_time - 2.7414
+|2025-07-21 12:14:16| Model : lstm, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 12:14:16| MAE - 0.0014 MSE - 0.0000 RMSE - 0.0020 MAPE - 0.1342 NMAE - 0.0954 NRMSE - 0.1236 Acc_10 - 0.6352 KendallTau - 0.7962 SpearmanRho - 0.9389 NDCG - 0.9769 train_time - 6.6186
+|2025-07-21 12:23:28| Model : brp-nas, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 12:23:28| MAE - 0.0008 MSE - 0.0000 RMSE - 0.0012 MAPE - 0.0571 NMAE - 0.0559 NRMSE - 0.0764 Acc_10 - 0.8509 KendallTau - 0.8818 SpearmanRho - 0.9775 NDCG - 0.9935 train_time - 18.5838
+|2025-07-21 12:28:47| Model : gat, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 12:28:47| MAE - 0.0006 MSE - 0.0000 RMSE - 0.0008 MAPE - 0.0444 NMAE - 0.0420 NRMSE - 0.0533 Acc_10 - 0.9059 KendallTau - 0.9139 SpearmanRho - 0.9898 NDCG - 0.9945 train_time - 21.2087
+|2025-07-21 12:37:36| Model : narformer, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-21 12:37:36| MAE - 0.0016 MSE - 0.0000 RMSE - 0.0020 MAPE - 0.1320 NMAE - 0.1059 NRMSE - 0.1265 Acc_10 - 0.6983 KendallTau - 0.8003 SpearmanRho - 0.9141 NDCG - 0.9593 train_time - 46.9871

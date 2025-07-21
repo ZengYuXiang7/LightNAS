@@ -8,7 +8,7 @@ import pickle
 from utils.model_monitor import EarlyStopping
 
 
-def RunOnce(config, runId, model, datamodule, log):
+def RunOnce(config, runid, model, datamodule, log):
     try:
         # 一些模型（如Keras兼容模型）可能需要compile，跳过非必要的compile
         model.compile()
@@ -20,7 +20,7 @@ def RunOnce(config, runId, model, datamodule, log):
 
     # 创建保存模型的目录
     os.makedirs(f'./checkpoints/{config.model}', exist_ok=True)
-    model_path = f'./checkpoints/{config.model}/{log.filename}_round_{runId}.pt'
+    model_path = f'./checkpoints/{config.model}/{log.filename}_round_{runid}.pt'
 
     # 判断是否需要重新训练：
     # 若 config.retrain==1 表示强制重训；
@@ -31,7 +31,7 @@ def RunOnce(config, runId, model, datamodule, log):
     if not retrain_required:
         try:
             # 加载之前记录的训练时间
-            sum_time = pickle.load(open(f'./results/metrics/' + log.filename + '.pkl', 'rb'))['train_time'][runId]
+            sum_time = pickle.load(open(f'./results/metrics/' + log.filename + '.pkl', 'rb'))['train_time'][runid]
             # 加载模型权重（weights_only=True 可忽略 optimizer 等无关信息）
             model.load_state_dict(torch.load(model_path, weights_only=True, map_location='cpu'))
             model.setup_optimizer(config)  # 重新设置优化器
@@ -66,7 +66,7 @@ def RunOnce(config, runId, model, datamodule, log):
             monitor.track_one_epoch(epoch, model, valid_error, config.monitor_metric)
 
             # 输出当前epoch的训练误差和验证误差，并记录训练时间
-            log.show_epoch_error(runId, epoch, monitor, train_loss, valid_error, train_time)
+            log.show_epoch_error(runid, epoch, monitor, train_loss, valid_error, train_time)
 
             # 更新日志可视化（如绘图）
             log.plotter.append_epochs(train_loss, valid_error)
@@ -83,7 +83,7 @@ def RunOnce(config, runId, model, datamodule, log):
         # 使用最优模型在测试集评估
         results = model.evaluate_one_epoch(datamodule, 'test')
         # results = {f'Valid{config.monitor_metric}': abs(monitor.best_score), **results}
-        log.show_test_error(runId, monitor, results, sum_time)
+        log.show_test_error(runid, monitor, results, sum_time)
 
         # 保存最优模型参数
         torch.save(monitor.best_model, model_path)

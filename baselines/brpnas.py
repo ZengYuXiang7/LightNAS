@@ -3,13 +3,12 @@
 
 import math
 import torch
-from utils.config import get_config
 
-class BRP_NAS(torch.nn.Module):
-    def __init__(self, args):
-        super(BRP_NAS, self).__init__()
+class BRPNAS(torch.nn.Module):
+    def __init__(self, input_size, args):
+        super(BRPNAS, self).__init__()
         self.args = args
-        self.GCN = GCN(6, 600, 6, 0.10, args)
+        self.GCN = GCN(6, 600, 4, 0.10, args)
 
     def forward(self, adjacency, features):
         output = self.GCN(adjacency, features)
@@ -66,7 +65,6 @@ class GraphConvolution(torch.torch.nn.Module):
             torch.nn.init.orthogonal_(tensor, gain=torch.nn.init.calculate_gain(nonlinearity))
         else:
             raise ValueError(f'Unknown initialization type: {init_type}')
-
 
 class GCN(torch.nn.Module):
     def __init__(self, input_dim, hidden_dim, num_layers, dropout, args):

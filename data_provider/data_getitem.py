@@ -3,37 +3,52 @@
 # 根据场景需要来改这里的input形状
 from torch.utils.data import Dataset
 import numpy as np
-
+import os
 from baselines.narformer import tokenizer
 from data_provider.create_latency import *
 from scipy.sparse import csr_matrix
 import dgl
+from tqdm import *
+import pickle 
 
 
 
 class SeqDataset(Dataset):
     def __init__(self, x, y, mode, config):
         self.config = config
-        self.x = x
-        self.y = y
         self.mode = mode
+        self.x = x
+        temp = []
+        dx = dr = dp = 32
+        os.makedirs('./datasets/nasbench201/split_dataset', exist_ok=True)
+        filedir = f'./datasets/nasbench201/split_dataset/D{config.dataset}_S{config.spliter_ratio}_M{mode}_round_{config.runid}.pkl'
+        try:
+            with open(filedir, 'rb') as f:
+                data = pickle.load(f)
+                self.x = data['x']
+                self.y = data['y']
+        except:
+            temp = []
+            for i in trange(len(x)):
+                key = x[i]
+                arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
+                adj_mat, ops_idx = info2mat(arch_str)                     # 得到邻接矩阵与操作
+                tokens = tokenizer(ops_idx, adj_mat, dx, dr, dp, 'nerf')  # 得到token表示
+                temp.append(tokens)
+
+            self.x = np.stack(temp)
+            self.y = y
+
+            with open(filedir, 'wb') as f:
+                pickle.dump({'x': self.x, 'y': self.y}, f)
 
     def __len__(self):
         return len(self.x)
 
     def __getitem__(self, idx):
-        x = self.x[idx]
+        tokens = self.x[idx]
         y = self.y[idx]
-        tokens = self.get_token(x)
         return tokens, y
-
-    def get_token(self, key):
-        graph, _ = get_matrix_and_ops(key)
-        arch_str = get_arch_str_from_arch_vector(key)
-        adj_mat, ops_idx = info2mat(arch_str)
-        dx = dr = dp = 32
-        tokens = tokenizer(ops_idx, adj_mat, dx, dr, dp, 'nerf')
-        return tokens
 
     def custom_collate_fn(self, batch, config):
         from torch.utils.data.dataloader import default_collate
@@ -41,8 +56,62 @@ class SeqDataset(Dataset):
         tokens, y =  default_collate(tokens), default_collate(y)
         return tokens, y
     
+
+class RNNDataset(Dataset):
+    def __init__(self, x, y, mode, config):
+        self.config = config
+        self.mode = mode
+        self.x = x
+        self.y = y
+
+    def __len__(self):
+        return len(self.x)
+
+
+    def __getitem__(self, idx):
+        x = torch.as_tensor(self.x[idx], dtype=torch.long)
+        y = self.y[idx]
+        return x, y
+
+    def custom_collate_fn(self, batch, config):
+        from torch.utils.data.dataloader import default_collate
+        x, y = zip(*batch)
+        x, y =  default_collate(x), default_collate(y)
+        return x, y
     
-class GraphDataset(Dataset):
+    
+class ProxyDataset(Dataset):
+    def __init__(self, x, y, mode, config):
+        self.config = config
+        self.x = x
+        self.y = y
+        self.mode = mode
+        with open('./datasets/all_flops_parameter.pkl', 'rb') as f:
+            self.proxy = pickle.load(f)
+            
+    def __len__(self):
+        return len(self.x)
+
+    def __getitem__(self, idx):
+        x = self.x[idx].astype(np.int32)
+        proxy = torch.tensor(self.proxy[tuple(x)], dtype=torch.float32) # [1, 2]
+        if self.config.model == 'flops-mac':
+            proxy = proxy[:]
+        elif self.config.model == 'flops':
+            proxy = proxy[0]
+        y = self.y[idx]
+        return proxy, y
+
+
+    def custom_collate_fn(self, batch, config):
+        from torch.utils.data.dataloader import default_collate
+        features, y = zip(*batch)
+        # x, y = default_collate(x), default_collate(y)
+        features, y = default_collate(features), default_collate(y)
+        return features, y
+
+
+class BRPNASDataset(Dataset):
     def __init__(self, x, y, mode, config):
         self.config = config
         self.x = x
@@ -53,29 +122,21 @@ class GraphDataset(Dataset):
         return len(self.x)
 
     def __getitem__(self, idx):
-        x = self.x[idx]
-        y = self.y[idx]
-        graph, op_idx = self.get_graph(x)
-        return graph, op_idx, y
-
-    def get_graph(self, key):
-        graph, one_hot_idx = get_matrix_and_ops(key)
-        graph, op_idx = get_adjacency_and_features(graph, one_hot_idx)
-        graph = dgl.from_scipy(csr_matrix(graph))
-        graph = dgl.to_bidirected(graph)
-        features = torch.tensor(op_idx).long()
-        op_idx = torch.argmax(features, dim=1)
-        return graph, op_idx
+        key, value = self.x[idx], self.y[idx]
+        value = torch.tensor(value).float()
+        graph, label = get_matrix_and_ops(key)
+        graph, features = get_adjacency_and_features(graph, label)
+        graph = torch.tensor(graph).float()
+        features = torch.tensor(features).float()
+        return graph, features, value
 
     def custom_collate_fn(self, batch, config):
         from torch.utils.data.dataloader import default_collate
-        graph, op_idx, y = zip(*batch)
+        graph, features, y = zip(*batch)
         # x, y = default_collate(x), default_collate(y)
-        graph, op_idx, y = dgl.batch(graph), default_collate(op_idx), default_collate(y)
-        return graph, op_idx, y
-
-
-
+        graph, features, y = default_collate(graph), default_collate(features), default_collate(y)
+        return graph, features, y
+    
 class TensorDataset(Dataset):
     def __init__(self, x, y, mode, config):
         self.config = config

@@ -37,12 +37,13 @@ def RunExperiments(log, config):
     log('*' * 20 + 'Experiment Start' + '*' * 20)
     metrics = collections.defaultdict(list)
 
-    for runId in range(config.rounds):
-        utils.utils.set_seed(config.seed + runId)
+    for runid in range(config.rounds):
+        config.runid = runid
+        utils.utils.set_seed(config.seed + runid)
         datamodule = DataModule(config)
         model = Model(config)
         log.plotter.reset_round()
-        results = RunOnce(config, runId, model, datamodule, log)
+        results = RunOnce(config, runid, model, datamodule, log)
         for key in results:
             metrics[key].append(results[key])
         log.plotter.append_round()
