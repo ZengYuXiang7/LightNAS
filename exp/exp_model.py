@@ -35,10 +35,13 @@ class Model(BasicModel):
             self.model = LSTM(self.input_size, config)  
         elif config.model == 'gru':
             self.model = GRU(self.input_size, config)  
+            
+            
         elif config.model == 'brp-nas':
             self.model = BRPNAS(self.input_size, config)  
         elif config.model == 'gat':
             self.model = GAT(self.input_size, config)  
+            
             
         elif config.model == 'narformer':
             self.model = NarFormer(self.input_size, config)

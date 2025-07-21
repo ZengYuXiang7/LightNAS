@@ -70,3 +70,43 @@
 |2025-07-21 12:28:47| MAE - 0.0006 MSE - 0.0000 RMSE - 0.0008 MAPE - 0.0444 NMAE - 0.0420 NRMSE - 0.0533 Acc_10 - 0.9059 KendallTau - 0.9139 SpearmanRho - 0.9898 NDCG - 0.9945 train_time - 21.2087
 |2025-07-21 12:37:36| Model : narformer, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 5:4:91, d_model : 192
 |2025-07-21 12:37:36| MAE - 0.0016 MSE - 0.0000 RMSE - 0.0020 MAPE - 0.1320 NMAE - 0.1059 NRMSE - 0.1265 Acc_10 - 0.6983 KendallTau - 0.8003 SpearmanRho - 0.9141 NDCG - 0.9593 train_time - 46.9871
+|2025-07-21 14:45:48| Model : flops, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-21 14:45:48| MAE - 0.0025 MSE - 0.0000 RMSE - 0.0036 MAPE - 0.2546 NMAE - 0.1692 NRMSE - 0.2280 Acc_10 - 0.5022 KendallTau - 0.6219 SpearmanRho - 0.7745 NDCG - 0.9356 train_time - 12.3796
+|2025-07-21 14:49:12| Model : flops-mac, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-21 14:49:12| MAE - 0.0025 MSE - 0.0000 RMSE - 0.0036 MAPE - 0.2581 NMAE - 0.1707 NRMSE - 0.2294 Acc_10 - 0.5018 KendallTau - 0.6217 SpearmanRho - 0.7741 NDCG - 0.9356 train_time - 15.6471
+|2025-07-21 15:22:19| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-21 15:22:19| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3776 NMAE - 0.2473 NRMSE - 0.2999 Acc_10 - 0.3133 KendallTau - 0.3284 SpearmanRho - 0.4550 NDCG - 0.7180 train_time - 2.7030
+|2025-07-21 15:23:50| Model : flops-mac, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-21 15:23:50| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3716 NMAE - 0.2475 NRMSE - 0.2997 Acc_10 - 0.3046 KendallTau - 0.3228 SpearmanRho - 0.4480 NDCG - 0.7180 train_time - 2.6367
+|2025-07-21 15:27:15| Model : gru, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 15:27:15| MAE - 0.0006 MSE - 0.0000 RMSE - 0.0008 MAPE - 0.1765 NMAE - 0.1162 NRMSE - 0.1479 Acc_10 - 0.5584 KendallTau - 0.7488 SpearmanRho - 0.9133 NDCG - 0.9610 train_time - 13.2109
+|2025-07-21 15:31:24| Model : lstm, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 15:31:24| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0007 MAPE - 0.1687 NMAE - 0.1122 NRMSE - 0.1417 Acc_10 - 0.5654 KendallTau - 0.7557 SpearmanRho - 0.9177 NDCG - 0.9686 train_time - 18.7186
+|2025-07-21 15:35:14| Model : brp-nas, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-21 15:35:14| MAE - 0.0003 MSE - 0.0000 RMSE - 0.0004 MAPE - 0.0596 NMAE - 0.0611 NRMSE - 0.0834 Acc_10 - 0.8052 KendallTau - 0.8571 SpearmanRho - 0.9693 NDCG - 0.9965 train_time - 19.6266
+|2025-07-21 15:49:46| Model : narformer, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 192
+|2025-07-21 15:49:46| MAE - 0.0009 MSE - 0.0000 RMSE - 0.0011 MAPE - 0.2607 NMAE - 0.1794 NRMSE - 0.2178 Acc_10 - 0.4352 KendallTau - 0.6712 SpearmanRho - 0.8438 NDCG - 0.9343 train_time - 14.1428
+|2025-07-21 15:51:11| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 5:4:91, d_model : 32
+|2025-07-21 15:51:11| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3883 NMAE - 0.2520 NRMSE - 0.3018 Acc_10 - 0.2668 KendallTau - 0.3162 SpearmanRho - 0.4415 NDCG - 0.6877 train_time - 2.0688
+|2025-07-21 15:52:43| Model : flops-mac, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 5:4:91, d_model : 32
+|2025-07-21 15:52:43| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3894 NMAE - 0.2523 NRMSE - 0.3021 Acc_10 - 0.2656 KendallTau - 0.3172 SpearmanRho - 0.4425 NDCG - 0.6230 train_time - 3.1456
+|2025-07-21 15:56:22| Model : gru, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 5:4:91, d_model : 64
+|2025-07-21 15:56:22| MAE - 0.0002 MSE - 0.0000 RMSE - 0.0003 MAPE - 0.0691 NMAE - 0.0491 NRMSE - 0.0618 Acc_10 - 0.8359 KendallTau - 0.8874 SpearmanRho - 0.9825 NDCG - 0.9903 train_time - 17.6850
+|2025-07-21 16:00:03| Model : lstm, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 5:4:91, d_model : 64
+|2025-07-21 16:00:03| MAE - 0.0002 MSE - 0.0000 RMSE - 0.0003 MAPE - 0.0701 NMAE - 0.0499 NRMSE - 0.0643 Acc_10 - 0.8342 KendallTau - 0.8863 SpearmanRho - 0.9820 NDCG - 0.9898 train_time - 17.1863
+|2025-07-21 16:04:14| Model : brp-nas, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 5:4:91, d_model : 64
+|2025-07-21 16:04:14| MAE - 0.0001 MSE - 0.0000 RMSE - 0.0002 MAPE - 0.0313 NMAE - 0.0306 NRMSE - 0.0437 Acc_10 - 0.9571 KendallTau - 0.9259 SpearmanRho - 0.9906 NDCG - 0.9966 train_time - 24.3264
+|2025-07-21 16:12:57| Model : narformer, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-21 16:12:57| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0007 MAPE - 0.1484 NMAE - 0.1126 NRMSE - 0.1333 Acc_10 - 0.6803 KendallTau - 0.8003 SpearmanRho - 0.9141 NDCG - 0.9595 train_time - 46.4335
+|2025-07-21 16:14:30| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 10:4:86, d_model : 32
+|2025-07-21 16:14:30| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3776 NMAE - 0.2473 NRMSE - 0.2999 Acc_10 - 0.3133 KendallTau - 0.3284 SpearmanRho - 0.4550 NDCG - 0.7180 train_time - 2.6981
+|2025-07-21 16:16:00| Model : flops-mac, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 10:4:86, d_model : 32
+|2025-07-21 16:16:00| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3716 NMAE - 0.2475 NRMSE - 0.2997 Acc_10 - 0.3046 KendallTau - 0.3228 SpearmanRho - 0.4480 NDCG - 0.7180 train_time - 2.7294
+|2025-07-21 16:20:09| Model : gru, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 10:4:86, d_model : 64
+|2025-07-21 16:20:09| MAE - 0.0002 MSE - 0.0000 RMSE - 0.0002 MAPE - 0.0487 NMAE - 0.0367 NRMSE - 0.0467 Acc_10 - 0.9030 KendallTau - 0.9112 SpearmanRho - 0.9889 NDCG - 0.9924 train_time - 25.4354
+|2025-07-21 16:24:20| Model : lstm, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 10:4:86, d_model : 64
+|2025-07-21 16:24:20| MAE - 0.0002 MSE - 0.0000 RMSE - 0.0003 MAPE - 0.0500 NMAE - 0.0372 NRMSE - 0.0484 Acc_10 - 0.9027 KendallTau - 0.9102 SpearmanRho - 0.9886 NDCG - 0.9843 train_time - 24.7806
+|2025-07-21 16:28:45| Model : brp-nas, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 10:4:86, d_model : 64
+|2025-07-21 16:28:45| MAE - 0.0001 MSE - 0.0000 RMSE - 0.0002 MAPE - 0.0248 NMAE - 0.0241 NRMSE - 0.0354 Acc_10 - 0.9722 KendallTau - 0.9392 SpearmanRho - 0.9937 NDCG - 0.9965 train_time - 26.8623
+|2025-07-21 16:51:08| Model : narformer, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 10:4:86, d_model : 192
+|2025-07-21 16:51:08| MAE - 0.0009 MSE - 0.0000 RMSE - 0.0012 MAPE - 0.2844 NMAE - 0.1938 NRMSE - 0.2300 Acc_10 - 0.4524 KendallTau - 0.4094 SpearmanRho - 0.4817 NDCG - 0.8218 train_time - 75.6630

@@ -9,7 +9,7 @@ def load_data(config):
     if config.dataset == 'nasbench201':
         x, y = get_latency_transfer(config)
     elif config.dataset == 'nnmeter': 
-        x, y, x_scaler, y_scaler = get_latency(config)
+        x, y = get_latency(config)
     return x, y
 
 

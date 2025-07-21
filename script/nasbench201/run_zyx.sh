@@ -2,12 +2,14 @@
 clear
 
 CONFIGS=(
-  "GRUConfig"
-  "LSTMConfig"
-  "BRPNASConfig"
-  "GATConfig"
-  "NarFormerConfig"
-  "nnMeterConfig"
+  # "FlopsConfig"
+  # "MacConfig"
+  # "GRUConfig"
+  # "LSTMConfig"
+  # "BRPNASConfig"
+  # "GATConfig"
+  # "NarFormerConfig"
+  # "nnMeterConfig"
 )
 
 for CONFIG in "${CONFIGS[@]}"
