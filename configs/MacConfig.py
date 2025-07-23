@@ -6,7 +6,8 @@ from configs.MainConfig import OtherConfig
 @dataclass
 class MacConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, TrainingConfig, OtherConfig):
     model: str = 'flops-mac'
-    dataset: str = 'nasbench201'
+    # dataset: str = 'nasbench201'
+    dataset: str = 'nnlqp'
     bs: int = 32
     spliter_ratio: str = '1:4:95'
     epochs: int = 200
@@ -16,3 +17,4 @@ class MacConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, Tr
     ffn_method: str = 'ffn'
     src_dataset: str = 'datasets/nasbench201/pkl/embedded-gpu-jetson-nono-fp16.pkl'
     dst_dataset: str = 'datasets/nasbench201/pkl/desktop-gpu-gtx-1080ti-fp32.pkl'
+    transfer: bool = False

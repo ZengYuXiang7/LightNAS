@@ -1,3 +1,4 @@
+
 # coding : utf-8
 # Author : Yuxiang Zeng
 import torch
@@ -39,7 +40,7 @@ class TransNAS(nn.Module):
         # 输出层（cls token → 预测值）
         self.fc = nn.Linear(self.d_model, 1)
 
-        self.dropout = nn.Dropout(config.dropout)
+        self.dropout = nn.Dropout(0.10)
 
         # 初始化
         nn.init.trunc_normal_(self.pos_embedding, std=0.02)
@@ -62,3 +63,8 @@ class TransNAS(nn.Module):
         y = self.fc(cls_out)                           # 回归或分类
 
         return y
+    
+    
+    # def transfer(self, x)
+# 
+        # return y

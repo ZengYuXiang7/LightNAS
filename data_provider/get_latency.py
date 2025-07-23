@@ -4,31 +4,9 @@ import numpy as np
 import pickle
 import os
 from data_provider.data_scaler import get_scaler
-# HElp
-def get_latency(config):
-    file_names = os.listdir(os.path.join(config.path, config.dataset, 'cpu'))
-    pickle_files = [file for file in file_names if file.endswith('.pickle')]
-    data = []
-    for i in range(len(pickle_files)):
-        pickle_file = os.path.join(config.path, config.dataset, pickle_files[i])
-        with open(pickle_file, 'rb') as f:
-            now = pickle.load(f)
-        data.append(now)
-
-    x, y = [], []
-    for key, value in data[0].items():
-        x.append(key)
-        y.append(value)
-    x = np.array(x).astype(np.int32)
-    y = np.array(y).reshape(-1, 1).astype(np.float32)
-    x_scaler = get_scaler(x, config, 'None')
-    y_scaler = get_scaler(y, config, 'minmax')
-    y = y_scaler.transform(y).astype(np.float32)
-    # x = scaler.transform(x).astype(np.float32)
-    return x, y, x_scaler, y_scaler
 
 
-def get_latency_transfer(config):
+def get_nasbench201(config):
     # 只读取一个文件，指定文件config.dst_dataset
     with open(config.dst_dataset, 'rb') as file:
         data = pickle.load(file)
@@ -42,3 +20,42 @@ def get_latency_transfer(config):
     # print(y)
     # print(y.min(), y.max())
     return x, y
+
+
+def get_nnlqp(config):
+    if not config.transfer:
+        root_dir = './datasets/nnlqp/unseen_structure'
+        with open('./datasets/nnlqp/unseen_structure/gt.txt', 'r') as f:
+            dataset = f.readlines()
+        x, y = [], []
+        for line in dataset: #gt.txt
+            # model_types.add(line.split()[4])
+            line = line.rstrip()
+            items = line.split(" ")
+            speed_id = str(items[0])
+            graph_id = str(items[1])
+            batch_size = int(items[2])
+            cost_time = float(items[3])
+            plt_id = int(items[5])
+            x.append(speed_id)
+            y.append(cost_time)
+        x, y = np.array(x), np.array(y)
+    else:
+        root_dir = '.datasets/nnlqp/multi_platform/gt.txt'
+        with open('./datasets/nnlqp/multi_platform/gt.txt', 'r') as f:
+            dataset = f.readlines()
+        x, y = [], []
+        for line in dataset: #gt.txt
+            # model_types.add(line.split()[4])
+            line = line.rstrip()
+            items = line.split(" ")
+            speed_id = str(items[0])
+            graph_id = str(items[1])
+            batch_size = int(items[2])
+            cost_time = float(items[3])
+            plt_id = int(items[5])
+            x.append(speed_id)
+            y.append(cost_time)
+        x, y = np.array(x), np.array(y)
+    return x, y 
+    

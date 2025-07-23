@@ -89,5 +89,7 @@ if __name__ == '__main__':
     from utils.exp_config import get_config
     # config = get_config('GNNModelConfig')
     # config = get_config('TransModelConfig')
-    config = get_config('NarFormerConfig')
+    # config = get_config('NarFormerConfig')
+    # config = get_config('MacConfig')
+    config = get_config('FlopsConfig')
     run(config)

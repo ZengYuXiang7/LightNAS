@@ -3,7 +3,7 @@
 # 每次开展新实验都改一下这里
 from baselines.brpnas import BRPNAS
 from baselines.flops import Flops
-from baselines.gnn import GAT
+from baselines.gat import GAT
 from baselines.gru import GRU
 from baselines.lstm import LSTM
 from baselines.narformer import NarFormer
@@ -29,6 +29,8 @@ class Model(BasicModel):
             
         elif config.model == 'nn_meter':
             self.model = nn_Meter(self.input_size, config)
+        elif config.model == 'nnlqp':
+            self.model = NNLQP(self.input_size, config)
             
             
         elif config.model == 'lstm':
@@ -45,6 +47,8 @@ class Model(BasicModel):
             
         elif config.model == 'narformer':
             self.model = NarFormer(self.input_size, config)
+            
+            
         elif config.model == 'ours':
             self.model = TransNAS(self.input_size, config)  
         else:

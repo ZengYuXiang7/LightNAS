@@ -86,15 +86,24 @@ class ProxyDataset(Dataset):
         self.x = x
         self.y = y
         self.mode = mode
-        with open('./datasets/all_flops_parameter.pkl', 'rb') as f:
-            self.proxy = pickle.load(f)
+        if config.dataset == 'nasbench201':
+            with open('./datasets/nasbench201_all_flops_parameter.pkl', 'rb') as f:
+                self.proxy = pickle.load(f)
+        elif config.dataset == 'nnlqp':
+            with open('./datasets/nnlqp_all_flops_parameter.pkl', 'rb') as f:
+                self.proxy = pickle.load(f)
             
     def __len__(self):
         return len(self.x)
 
     def __getitem__(self, idx):
         x = self.x[idx].astype(np.int32)
-        proxy = torch.tensor(self.proxy[tuple(x)], dtype=torch.float32) # [1, 2]
+
+        if self.config.dataset == 'nasbench201':
+            proxy = torch.tensor(self.proxy[tuple(x)], dtype=torch.float32) # [1, 2]
+        elif self.config.dataset == 'nnlqp':
+            proxy = torch.tensor(self.proxy[x], dtype=torch.float32) # [1, 2]
+            
         if self.config.model == 'flops-mac':
             proxy = proxy[:]
         elif self.config.model == 'flops':
@@ -136,8 +145,10 @@ class BRPNASDataset(Dataset):
         # x, y = default_collate(x), default_collate(y)
         graph, features, y = default_collate(graph), default_collate(features), default_collate(y)
         return graph, features, y
-    
-class TensorDataset(Dataset):
+
+
+
+class GraphDataset(Dataset):
     def __init__(self, x, y, mode, config):
         self.config = config
         self.x = x
@@ -145,37 +156,25 @@ class TensorDataset(Dataset):
         self.mode = mode
 
     def __len__(self):
-        # return len(self.x)
-        return len(self.x) - self.config.seq_len - self.config.pred_len + 1
+        return len(self.x)
 
     def __getitem__(self, idx):
-        s_begin = idx
-        s_end = s_begin + self.config.seq_len
-        r_begin = s_end
-        r_end = r_begin + self.config.pred_len
-
-        if not self.config.multi_dataset:
-            x = self.x[s_begin:s_end][:, -3:]
-            x_fund = self.x[s_begin:s_end][:, 0]
-            x_mark = self.x[s_begin:s_end][:, :-1] if not self.config.dataset == 'financial' else self.x[s_begin:s_end][:, 1:-1]
-            y = self.y[r_begin:r_end]
-        else:
-            x = self.x[s_begin:s_end][:, :, -3:]
-            x_fund = self.x[s_begin:s_end][:, :, 0]
-            x_mark = self.x[s_begin:s_end][:, :, -1] if not self.config.dataset == 'financial' else self.x[s_begin:s_end][:, :, 1:-1]
-            y = self.y[r_begin:r_end]
-
-        # print(x.shape, y.shape)
-        return x, x_mark, x_fund, y
+        key, value = self.x[idx], self.y[idx]
+        value = torch.tensor(value).float()
+        graph, label = get_matrix_and_ops(key)
+        graph, features = get_adjacency_and_features(graph, label)
+        graph = dgl.from_scipy(csr_matrix(graph))
+        graph = dgl.to_bidirected(graph)
+        features = torch.tensor(features).long()
+        # features = torch.argmax(features, dim=1)
+        return graph, features, value
 
     def custom_collate_fn(self, batch, config):
         from torch.utils.data.dataloader import default_collate
-        x, x_mark, x_fund, y = zip(*batch)
-        x, y = default_collate(x), default_collate(y)
-        x_mark = default_collate(x_mark)
-        x_fund = default_collate(x_fund).long()
-        return x, x_mark, x_fund, y
-
+        graph, features, y = zip(*batch)
+        # x, y = default_collate(x), default_collate(y)
+        graph, features, y = dgl.batch(graph), default_collate(features), default_collate(y)
+        return graph, features, y
 
 class TimeSeriesDataset(Dataset):
     def __init__(self, x, y, mode, config):

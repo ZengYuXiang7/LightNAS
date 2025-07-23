@@ -16,3 +16,5 @@ class FlopsConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, 
     ffn_method: str = 'ffn'
     src_dataset: str = 'datasets/nasbench201/pkl/embedded-gpu-jetson-nono-fp16.pkl'
     dst_dataset: str = 'datasets/nasbench201/pkl/desktop-gpu-gtx-1080ti-fp32.pkl'
+    transfer: bool = False
+    

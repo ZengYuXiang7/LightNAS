@@ -110,3 +110,95 @@
 |2025-07-21 16:28:45| MAE - 0.0001 MSE - 0.0000 RMSE - 0.0002 MAPE - 0.0248 NMAE - 0.0241 NRMSE - 0.0354 Acc_10 - 0.9722 KendallTau - 0.9392 SpearmanRho - 0.9937 NDCG - 0.9965 train_time - 26.8623
 |2025-07-21 16:51:08| Model : narformer, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 10:4:86, d_model : 192
 |2025-07-21 16:51:08| MAE - 0.0009 MSE - 0.0000 RMSE - 0.0012 MAPE - 0.2844 NMAE - 0.1938 NRMSE - 0.2300 Acc_10 - 0.4524 KendallTau - 0.4094 SpearmanRho - 0.4817 NDCG - 0.8218 train_time - 75.6630
+|2025-07-22 16:37:34| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:37:34| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 1.6250
+|2025-07-22 16:39:24| Model : flops, dst_dataset : mobile-dsp-snapdragon-675-hexagon-685-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:39:24| MAE - 0.0011 MSE - 0.0000 RMSE - 0.0014 MAPE - 0.3438 NMAE - 0.2408 NRMSE - 0.2949 Acc_10 - 0.3244 KendallTau - 0.3665 SpearmanRho - 0.4998 NDCG - 0.7300 train_time - 6.0408
+|2025-07-22 16:40:36| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:40:36| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 1.8485
+|2025-07-22 16:42:28| Model : flops, dst_dataset : mobile-dsp-snapdragon-855-hexagon-690-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:42:28| MAE - 0.0010 MSE - 0.0000 RMSE - 0.0013 MAPE - 0.3193 NMAE - 0.2255 NRMSE - 0.2761 Acc_10 - 0.3460 KendallTau - 0.3618 SpearmanRho - 0.4952 NDCG - 0.7221 train_time - 6.0105
+|2025-07-22 16:43:42| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:43:42| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 1.8327
+|2025-07-22 16:45:38| Model : flops, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:45:38| MAE - 0.0015 MSE - 0.0000 RMSE - 0.0020 MAPE - 0.3369 NMAE - 0.2313 NRMSE - 0.2851 Acc_10 - 0.3468 KendallTau - 0.3929 SpearmanRho - 0.5265 NDCG - 0.7401 train_time - 6.6115
+|2025-07-22 16:46:53| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:46:53| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 1.8122
+|2025-07-22 16:48:23| Model : flops, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:48:23| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3607 NMAE - 0.2464 NRMSE - 0.2998 Acc_10 - 0.3136 KendallTau - 0.3341 SpearmanRho - 0.4637 NDCG - 0.6821 train_time - 3.5028
+|2025-07-22 16:49:38| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:49:38| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 1.8678
+|2025-07-22 16:51:19| Model : flops, dst_dataset : mobile-gpu-snapdragon-450-adreno-506-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:51:19| MAE - 0.0014 MSE - 0.0000 RMSE - 0.0020 MAPE - 0.3397 NMAE - 0.2290 NRMSE - 0.2913 Acc_10 - 0.3701 KendallTau - 0.4005 SpearmanRho - 0.5298 NDCG - 0.7458 train_time - 4.5567
+|2025-07-22 16:52:32| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:52:32| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 1.9009
+|2025-07-22 16:54:17| Model : flops, dst_dataset : mobile-gpu-snapdragon-675-adren0-612-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:54:17| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3403 NMAE - 0.2297 NRMSE - 0.2932 Acc_10 - 0.3746 KendallTau - 0.3987 SpearmanRho - 0.5277 NDCG - 0.7478 train_time - 5.0962
+|2025-07-22 16:55:32| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:55:32| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 1.9511
+|2025-07-22 16:57:32| Model : flops, dst_dataset : mobile-cpu-snapdragon-675-kryo-460-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:57:32| MAE - 0.0021 MSE - 0.0000 RMSE - 0.0029 MAPE - 0.3565 NMAE - 0.2409 NRMSE - 0.2974 Acc_10 - 0.3285 KendallTau - 0.3889 SpearmanRho - 0.5212 NDCG - 0.7415 train_time - 7.0639
+|2025-07-22 16:58:47| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 16:58:47| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 1.8339
+|2025-07-22 17:00:47| Model : flops, dst_dataset : mobile-cpu-snapdragon-855-kryo-485-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:00:47| MAE - 0.0013 MSE - 0.0000 RMSE - 0.0017 MAPE - 0.3320 NMAE - 0.2343 NRMSE - 0.2863 Acc_10 - 0.3246 KendallTau - 0.3701 SpearmanRho - 0.5046 NDCG - 0.7419 train_time - 7.4309
+|2025-07-22 17:02:04| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:02:04| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 1.9904
+|2025-07-22 17:03:54| Model : flops, dst_dataset : embedded-tpu-edgetpu-large, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:03:54| MAE - 0.0073 MSE - 0.0004 RMSE - 0.0104 MAPE - 0.5491 NMAE - 0.3492 NRMSE - 0.3951 Acc_10 - 0.2552 KendallTau - 0.3067 SpearmanRho - 0.4247 NDCG - 0.7180 train_time - 4.6757
+|2025-07-22 17:05:24| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:05:24| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 2.2268
+|2025-07-22 17:07:48| Model : flops, dst_dataset : mobile-cpu-snapdragon-450-contex-a53-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:07:48| MAE - 0.0018 MSE - 0.0000 RMSE - 0.0026 MAPE - 0.3497 NMAE - 0.2354 NRMSE - 0.2949 Acc_10 - 0.3443 KendallTau - 0.3965 SpearmanRho - 0.5264 NDCG - 0.7545 train_time - 7.6468
+|2025-07-22 17:09:20| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:09:20| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 2.3116
+|2025-07-22 17:11:21| Model : flops, dst_dataset : embeeded-tpu-edgetpu-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:11:21| MAE - 0.0010 MSE - 0.0000 RMSE - 0.0013 MAPE - 0.3396 NMAE - 0.2454 NRMSE - 0.2973 Acc_10 - 0.3008 KendallTau - 0.2941 SpearmanRho - 0.4077 NDCG - 0.7107 train_time - 5.4080
+|2025-07-22 17:12:55| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:12:55| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 2.3551
+|2025-07-22 17:15:22| Model : flops, dst_dataset : desktop-gpu-gtx-1080ti-large, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:15:22| MAE - 0.0011 MSE - 0.0000 RMSE - 0.0015 MAPE - 0.3286 NMAE - 0.2283 NRMSE - 0.2811 Acc_10 - 0.3522 KendallTau - 0.3919 SpearmanRho - 0.5257 NDCG - 0.7342 train_time - 9.1692
+|2025-07-22 17:16:55| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:16:55| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3655 NMAE - 0.2481 NRMSE - 0.3010 Acc_10 - 0.3035 KendallTau - 0.3323 SpearmanRho - 0.4622 NDCG - 0.6853 train_time - 2.4262
+|2025-07-22 17:18:56| Model : flops, dst_dataset : mobile-gpu-snapdragon-855-adren0-640-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:18:56| MAE - 0.0011 MSE - 0.0000 RMSE - 0.0014 MAPE - 0.3186 NMAE - 0.2219 NRMSE - 0.2767 Acc_10 - 0.3733 KendallTau - 0.3885 SpearmanRho - 0.5211 NDCG - 0.7324 train_time - 5.3013
+|2025-07-22 17:21:06| Model : flops, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:21:06| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3613 NMAE - 0.2466 NRMSE - 0.2997 Acc_10 - 0.3139 KendallTau - 0.3346 SpearmanRho - 0.4642 NDCG - 0.7113 train_time - 6.2014
+|2025-07-22 17:22:44| Model : flops, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:22:44| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3664 NMAE - 0.2478 NRMSE - 0.3010 Acc_10 - 0.3098 KendallTau - 0.3361 SpearmanRho - 0.4649 NDCG - 0.6957 train_time - 2.9485
+|2025-07-22 17:24:54| Model : flops, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:24:54| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3613 NMAE - 0.2466 NRMSE - 0.2997 Acc_10 - 0.3139 KendallTau - 0.3346 SpearmanRho - 0.4642 NDCG - 0.7113 train_time - 6.3178
+|2025-07-22 17:27:07| Model : flops, dst_dataset : mobile-dsp-snapdragon-675-hexagon-685-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:27:07| MAE - 0.0011 MSE - 0.0000 RMSE - 0.0014 MAPE - 0.3519 NMAE - 0.2420 NRMSE - 0.2957 Acc_10 - 0.3191 KendallTau - 0.3667 SpearmanRho - 0.5003 NDCG - 0.7250 train_time - 6.7780
+|2025-07-22 17:29:05| Model : flops, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:29:05| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3613 NMAE - 0.2466 NRMSE - 0.2997 Acc_10 - 0.3139 KendallTau - 0.3346 SpearmanRho - 0.4642 NDCG - 0.7113 train_time - 5.6675
+|2025-07-22 17:31:09| Model : flops, dst_dataset : mobile-dsp-snapdragon-855-hexagon-690-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:31:09| MAE - 0.0010 MSE - 0.0000 RMSE - 0.0014 MAPE - 0.3277 NMAE - 0.2266 NRMSE - 0.2773 Acc_10 - 0.3431 KendallTau - 0.3623 SpearmanRho - 0.4962 NDCG - 0.7203 train_time - 6.4296
+|2025-07-22 17:33:12| Model : flops, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:33:12| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3613 NMAE - 0.2466 NRMSE - 0.2997 Acc_10 - 0.3139 KendallTau - 0.3346 SpearmanRho - 0.4642 NDCG - 0.7113 train_time - 5.8883
+|2025-07-22 17:35:18| Model : flops, dst_dataset : embedded-gpu-jetson-nono-fp16, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:35:18| MAE - 0.0015 MSE - 0.0000 RMSE - 0.0020 MAPE - 0.3454 NMAE - 0.2325 NRMSE - 0.2864 Acc_10 - 0.3443 KendallTau - 0.3935 SpearmanRho - 0.5275 NDCG - 0.7352 train_time - 7.0241
+|2025-07-22 17:37:21| Model : flops, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:37:21| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3613 NMAE - 0.2466 NRMSE - 0.2997 Acc_10 - 0.3139 KendallTau - 0.3346 SpearmanRho - 0.4642 NDCG - 0.7113 train_time - 5.8797
+|2025-07-22 17:39:07| Model : flops, dst_dataset : mobile-gpu-snapdragon-450-adreno-506-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:39:07| MAE - 0.0014 MSE - 0.0000 RMSE - 0.0020 MAPE - 0.3482 NMAE - 0.2301 NRMSE - 0.2927 Acc_10 - 0.3678 KendallTau - 0.4010 SpearmanRho - 0.5307 NDCG - 0.7409 train_time - 4.0023
+|2025-07-22 17:41:11| Model : flops, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:41:11| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3613 NMAE - 0.2466 NRMSE - 0.2997 Acc_10 - 0.3139 KendallTau - 0.3346 SpearmanRho - 0.4642 NDCG - 0.7113 train_time - 5.9557
+|2025-07-22 17:42:59| Model : flops, dst_dataset : mobile-gpu-snapdragon-675-adren0-612-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:42:59| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3492 NMAE - 0.2307 NRMSE - 0.2950 Acc_10 - 0.3729 KendallTau - 0.3993 SpearmanRho - 0.5287 NDCG - 0.7428 train_time - 4.3289
+|2025-07-22 17:45:04| Model : flops, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:45:04| MAE - 0.0012 MSE - 0.0000 RMSE - 0.0016 MAPE - 0.3613 NMAE - 0.2466 NRMSE - 0.2997 Acc_10 - 0.3139 KendallTau - 0.3346 SpearmanRho - 0.4642 NDCG - 0.7113 train_time - 6.0091
+|2025-07-22 17:47:10| Model : flops, dst_dataset : mobile-cpu-snapdragon-675-kryo-460-int8, spliter_ratio : 1:4:95, d_model : 32
+|2025-07-22 17:47:10| MAE - 0.0021 MSE - 0.0000 RMSE - 0.0029 MAPE - 0.3654 NMAE - 0.2420 NRMSE - 0.2988 Acc_10 - 0.3254 KendallTau - 0.3894 SpearmanRho - 0.5220 NDCG - 0.7365 train_time - 5.9965
+|2025-07-22 21:04:56| Model : gat, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-22 21:04:56| MAE - 0.0004 MSE - 0.0000 RMSE - 0.0006 MAPE - 0.0872 NMAE - 0.0885 NRMSE - 0.1161 Acc_10 - 0.6589 KendallTau - 0.7988 SpearmanRho - 0.9395 NDCG - 0.9967 train_time - 17.9321
+|2025-07-22 21:08:32| Model : gat, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-22 21:08:32| MAE - 0.0004 MSE - 0.0000 RMSE - 0.0006 MAPE - 0.0840 NMAE - 0.0853 NRMSE - 0.1116 Acc_10 - 0.6630 KendallTau - 0.8053 SpearmanRho - 0.9446 NDCG - 0.9964 train_time - 21.4379
+|2025-07-22 21:13:30| Model : gat, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 1:4:95, d_model : 64
+|2025-07-22 21:13:30| MAE - 0.0004 MSE - 0.0000 RMSE - 0.0005 MAPE - 0.0701 NMAE - 0.0718 NRMSE - 0.0968 Acc_10 - 0.7595 KendallTau - 0.8333 SpearmanRho - 0.9583 NDCG - 0.9963 train_time - 19.0291
+|2025-07-22 21:39:07| Model : ours, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-22 21:39:07| MAE - 0.0003 MSE - 0.0000 RMSE - 0.0003 MAPE - 0.0687 NMAE - 0.0614 NRMSE - 0.0722 Acc_10 - 0.7871 KendallTau - 0.9100 SpearmanRho - 0.9888 NDCG - 0.9931 train_time - 24.3316
+|2025-07-22 21:51:35| Model : narformer, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-22 21:51:35| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0007 MAPE - 0.1466 NMAE - 0.1120 NRMSE - 0.1327 Acc_10 - 0.6806 KendallTau - 0.8003 SpearmanRho - 0.9141 NDCG - 0.9595 train_time - 44.8507
+|2025-07-22 22:00:17| Model : narformer, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 5:4:91, d_model : 192
+|2025-07-22 22:00:17| MAE - 0.0005 MSE - 0.0000 RMSE - 0.0006 MAPE - 0.1376 NMAE - 0.1057 NRMSE - 0.1249 Acc_10 - 0.7226 KendallTau - 0.7994 SpearmanRho - 0.9020 NDCG - 0.9757 train_time - 48.0557

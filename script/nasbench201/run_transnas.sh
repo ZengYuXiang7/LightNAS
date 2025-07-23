@@ -3,8 +3,8 @@ clear
 
 
 python run_train.py --exp_name TransModelConfig --retrain 1 --logger zyx --transfer False \
-  --src_dataset datasets/nasbench201/pkl/embedded-gpu-jetson-nono-fp16.pkl \
-  --dst_dataset datasets/nasbench201/pkl/embedded-gpu-jetson-nono-fp16.pkl
+  --src_dataset datasets/nasbench201/pkl/desktop-cpu-core-i7-7820x-fp32.pkl \
+  --dst_dataset datasets/nasbench201/pkl/desktop-cpu-core-i7-7820x-fp32.pkl
 
 
 # python run_train.py --exp_name TransModelConfig --retrain 1 --logger zyx --transfer True \

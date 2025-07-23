@@ -138,21 +138,24 @@ def get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config):
         train_idx = shuffle_indices[:train_size]
         valid_idx = shuffle_indices[train_size:train_size + valid_size]
         test_idx = shuffle_indices[train_size + valid_size:]
-        with open(f'{config.path}/train_idx.pkl','wb') as f:
+        with open(f'{config.path}/{config.dataset}_train_idx.pkl','wb') as f:
             pickle.dump(train_idx, f) 
-        with open(f'{config.path}/valid_idx.pkl','wb') as f:
+        with open(f'{config.path}/{config.dataset}_valid_idx.pkl','wb') as f:
             pickle.dump(valid_idx, f) 
-        with open(f'{config.path}/test_idx.pkl','wb') as f:
+        with open(f'{config.path}/{config.dataset}_test_idx.pkl','wb') as f:
             pickle.dump(test_idx, f) 
     else:
-        with open(f'{config.path}/train_idx.pkl','rb') as f:
+        with open(f'{config.path}/{config.dataset}_train_idx.pkl','rb') as f:
             train_idx = pickle.load(f)
-        with open(f'{config.path}/valid_idx.pkl','rb') as f:
+        with open(f'{config.path}/{config.dataset}_valid_idx.pkl','rb') as f:
             valid_idx = pickle.load(f)
-        with open(f'{config.path}/test_idx.pkl','rb') as f:
+        with open(f'{config.path}/{config.dataset}_test_idx.pkl','rb') as f:
             test_idx = pickle.load(f)
 
-    matrix = np.concatenate((x, y), axis=1)
+    if config.dataset == 'nnlqp':
+        matrix = np.concatenate((x.reshape(-1, 1), y.reshape(-1, 1)), axis=1)
+    elif config.dataset == 'nasbench201':
+        matrix = np.concatenate((x, y), axis=1)
     print(matrix[0, -1])
     # 找到全0行的索引
     null_indices = []
@@ -195,10 +198,11 @@ def get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config):
     x_scaler = get_scaler(train_x, config, 'None')
     y_scaler = get_scaler(train_y, config, 'minmax')
     train_x = x_scaler.transform(train_x)
-    train_y = y_scaler.transform(train_y).astype(np.float32)
     valid_x = x_scaler.transform(valid_x)
-    valid_y = y_scaler.transform(valid_y).astype(np.float32)
     test_x = x_scaler.transform(test_x)
+    
+    train_y = y_scaler.transform(train_y).astype(np.float32)
+    valid_y = y_scaler.transform(valid_y).astype(np.float32)
     test_y = y_scaler.transform(test_y).astype(np.float32)
 
     return train_x, train_y, valid_x, valid_y, test_x, test_y, x_scaler, y_scaler

@@ -7,14 +7,14 @@ from data_provider.data_getitem import *
 
 def load_data(config):
     if config.dataset == 'nasbench201':
-        x, y = get_latency_transfer(config)
-    elif config.dataset == 'nnmeter': 
-        x, y = get_latency(config)
+        x, y = get_nasbench201(config)
+    elif config.dataset == 'nnlqp': 
+        x, y = get_nnlqp(config)
     return x, y
 
 
 def get_dataset(train_x, train_y, valid_x, valid_y, test_x, test_y, config):
-    if config.model in ['narformer', 'transnas']:
+    if config.model in ['narformer', 'ours']:
         return (
             SeqDataset(train_x, train_y, 'train', config),
             SeqDataset(valid_x, valid_y, 'valid', config),
