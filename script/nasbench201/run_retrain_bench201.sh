@@ -32,8 +32,9 @@ datasets=(
 # 定义splitter_ratio数组
 spliter_ratios=(
     "1:4:95"
-    # "5:4:91"
-    # "10:4:86"
+    "3:4:93"
+    "5:4:91"
+    "10:4:86"
 )
 
 # 遍历每个splitter_ratio值

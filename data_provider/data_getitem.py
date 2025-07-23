@@ -10,9 +10,195 @@ from scipy.sparse import csr_matrix
 import dgl
 from tqdm import *
 import pickle 
+from dgl import from_scipy
+
+
+    
+class ProxyDataset(Dataset):
+    def __init__(self, x, y, mode, config):
+        self.config = config
+        self.x = x
+        self.y = y
+        self.mode = mode
+        if config.dataset == 'nasbench201':
+            with open('./datasets/nasbench201_all_flops_parameter.pkl', 'rb') as f:
+                self.proxy = pickle.load(f)
+        elif config.dataset == 'nnlqp':
+            with open('./datasets/nnlqp_all_flops_parameter.pkl', 'rb') as f:
+                self.proxy = pickle.load(f)
+            
+    def __len__(self):
+        return len(self.x)
+
+    def __getitem__(self, idx):
+        x = self.x[idx].astype(np.int32)
+
+        if self.config.dataset == 'nasbench201':
+            proxy = torch.tensor(self.proxy[tuple(x)], dtype=torch.float32) # [1, 2]
+        elif self.config.dataset == 'nnlqp':
+            proxy = torch.tensor(self.proxy[x], dtype=torch.float32) # [1, 2]
+            
+        if self.config.model == 'flops-mac':
+            proxy = proxy[:]
+        elif self.config.model == 'flops':
+            proxy = proxy[0]
+        y = self.y[idx]
+        return proxy, y
+
+
+    def custom_collate_fn(self, batch, config):
+        from torch.utils.data.dataloader import default_collate
+        features, y = zip(*batch)
+        # x, y = default_collate(x), default_collate(y)
+        features, y = default_collate(features), default_collate(y)
+        return features, y
 
 
 
+
+class RNNDataset(Dataset):
+    def __init__(self, x, y, mode, config):
+        self.config = config
+        self.mode = mode
+        self.x = x
+        self.y = y
+        if config.dataset == 'nnlqp':
+            with open('./datasets/nnlqp/unseen_structure/graph/all_features.pkl', 'rb') as f:
+                self.all_features = pickle.load(f)
+                
+    def __len__(self):
+        return len(self.x)
+
+    def get_bench_201(self, features):
+        features = features.astype(np.int32)
+        return features
+    
+    def get_nnlqp(self, key):
+        key = key.astype(np.int32) - 1
+        features = self.all_features[key]            # np.array or list
+        # features = np.argmax(features)
+        # print(features)
+        return features
+    
+    def __getitem__(self, idx):
+        key, value = self.x[idx], self.y[idx]
+        value = torch.tensor(value).float()
+        if self.config.dataset == 'nasbench201':
+            features = self.get_bench_201(key)
+        elif self.config.dataset == 'nnlqp':
+            features = self.get_nnlqp(key)
+        return features, value
+
+    def custom_collate_fn(self, batch, config):
+        from torch.utils.data.dataloader import default_collate
+        x, y = zip(*batch)
+        x, y =  default_collate(x), default_collate(y)
+        return x, y
+    
+
+
+class BRPNASDataset(Dataset):
+    def __init__(self, x, y, mode, config):
+        self.config = config
+        self.x = x
+        self.y = y
+        self.mode = mode
+        
+        if config.dataset == 'nnlqp':
+            # 读取全部图和特征
+            with open('./datasets/nnlqp/unseen_structure/graph/all_graphs.pkl', 'rb') as f:
+                self.all_graphs = pickle.load(f)
+            with open('./datasets/nnlqp/unseen_structure/graph/all_features.pkl', 'rb') as f:
+                self.all_features = pickle.load(f)
+
+    def __len__(self):
+        return len(self.x)
+    
+    def get_bench_201(self, key):
+        graph, label = get_matrix_and_ops(key)
+        graph, features = get_adjacency_and_features(graph, label)
+        graph = torch.tensor(graph).float()
+        features = torch.tensor(features).float()
+        return graph, features
+    
+    def get_nnlqp(self, key):
+        key = key.astype(np.int32) - 1
+        graph = self.all_graphs[key]             # scipy sparse matrix
+        features = self.all_features[key]            # np.array or list
+        return graph, features
+    
+    def __getitem__(self, idx):
+        key, value = self.x[idx], self.y[idx]
+        value = torch.tensor(value).float()
+        if self.config.dataset == 'nasbench201':
+            graph, features = self.get_bench_201(key)
+        elif self.config.dataset == 'nnlqp':
+            graph, features = self.get_nnlqp(key)
+        return graph, features, value
+
+
+    def custom_collate_fn(self, batch, config):
+        from torch.utils.data.dataloader import default_collate
+        graph, features, y = zip(*batch)
+        graph, features, y = default_collate(graph), default_collate(features), default_collate(y)
+        return graph, features, y
+
+
+
+class GraphDataset(Dataset):
+    def __init__(self, x, y, mode, config):
+        self.config = config
+        self.x = x
+        self.y = y
+        self.mode = mode
+        
+        if config.dataset == 'nnlqp':
+            # 读取全部图和特征
+            with open('./datasets/nnlqp/unseen_structure/graph/all_graphs.pkl', 'rb') as f:
+                self.all_graphs = pickle.load(f)
+            with open('./datasets/nnlqp/unseen_structure/graph/all_features.pkl', 'rb') as f:
+                self.all_features = pickle.load(f)
+
+
+    def __len__(self):
+        return len(self.x)
+
+    def get_nnlqp(self, key):
+        key = key.astype(np.int32) - 1
+        graph_adj = self.all_graphs[key]       # scipy csr matrix, shape (n, n)
+        features = self.all_features[key]      # shape (n, d)
+        graph_adj = csr_matrix(graph_adj)  # 显式转换为 scipy csr matrix
+        graph = from_scipy(graph_adj)
+        graph = dgl.to_bidirected(graph)       # 如需无向图建模
+        return graph, features
+    
+    def get_bench_201(self, key):
+        graph, label = get_matrix_and_ops(key)
+        graph, features = get_adjacency_and_features(graph, label)
+        graph = dgl.from_scipy(csr_matrix(graph))
+        graph = dgl.to_bidirected(graph)
+        features = torch.tensor(features).long()
+        return graph, features
+    
+    def __getitem__(self, idx):
+        key, value = self.x[idx], self.y[idx]
+        value = torch.tensor(value).float()
+
+        if self.config.dataset == 'nasbench201':
+            graph, features = self.get_bench_201(key)
+        elif self.config.dataset == 'nnlqp':
+            graph, features = self.get_nnlqp(key)
+            features = torch.tensor(features, dtype=torch.float32)  # ✅ 添加这句！
+
+        return graph, features, value
+
+    def custom_collate_fn(self, batch, config):
+        from torch.utils.data.dataloader import default_collate
+        graph, features, y = zip(*batch)
+        graph, features, y = dgl.batch(graph), default_collate(features), default_collate(y)
+        return graph, features, y
+    
+    
 class SeqDataset(Dataset):
     def __init__(self, x, y, mode, config):
         self.config = config
@@ -57,124 +243,6 @@ class SeqDataset(Dataset):
         return tokens, y
     
 
-class RNNDataset(Dataset):
-    def __init__(self, x, y, mode, config):
-        self.config = config
-        self.mode = mode
-        self.x = x
-        self.y = y
-
-    def __len__(self):
-        return len(self.x)
-
-
-    def __getitem__(self, idx):
-        x = torch.as_tensor(self.x[idx], dtype=torch.long)
-        y = self.y[idx]
-        return x, y
-
-    def custom_collate_fn(self, batch, config):
-        from torch.utils.data.dataloader import default_collate
-        x, y = zip(*batch)
-        x, y =  default_collate(x), default_collate(y)
-        return x, y
-    
-    
-class ProxyDataset(Dataset):
-    def __init__(self, x, y, mode, config):
-        self.config = config
-        self.x = x
-        self.y = y
-        self.mode = mode
-        if config.dataset == 'nasbench201':
-            with open('./datasets/nasbench201_all_flops_parameter.pkl', 'rb') as f:
-                self.proxy = pickle.load(f)
-        elif config.dataset == 'nnlqp':
-            with open('./datasets/nnlqp_all_flops_parameter.pkl', 'rb') as f:
-                self.proxy = pickle.load(f)
-            
-    def __len__(self):
-        return len(self.x)
-
-    def __getitem__(self, idx):
-        x = self.x[idx].astype(np.int32)
-
-        if self.config.dataset == 'nasbench201':
-            proxy = torch.tensor(self.proxy[tuple(x)], dtype=torch.float32) # [1, 2]
-        elif self.config.dataset == 'nnlqp':
-            proxy = torch.tensor(self.proxy[x], dtype=torch.float32) # [1, 2]
-            
-        if self.config.model == 'flops-mac':
-            proxy = proxy[:]
-        elif self.config.model == 'flops':
-            proxy = proxy[0]
-        y = self.y[idx]
-        return proxy, y
-
-
-    def custom_collate_fn(self, batch, config):
-        from torch.utils.data.dataloader import default_collate
-        features, y = zip(*batch)
-        # x, y = default_collate(x), default_collate(y)
-        features, y = default_collate(features), default_collate(y)
-        return features, y
-
-
-class BRPNASDataset(Dataset):
-    def __init__(self, x, y, mode, config):
-        self.config = config
-        self.x = x
-        self.y = y
-        self.mode = mode
-
-    def __len__(self):
-        return len(self.x)
-
-    def __getitem__(self, idx):
-        key, value = self.x[idx], self.y[idx]
-        value = torch.tensor(value).float()
-        graph, label = get_matrix_and_ops(key)
-        graph, features = get_adjacency_and_features(graph, label)
-        graph = torch.tensor(graph).float()
-        features = torch.tensor(features).float()
-        return graph, features, value
-
-    def custom_collate_fn(self, batch, config):
-        from torch.utils.data.dataloader import default_collate
-        graph, features, y = zip(*batch)
-        # x, y = default_collate(x), default_collate(y)
-        graph, features, y = default_collate(graph), default_collate(features), default_collate(y)
-        return graph, features, y
-
-
-
-class GraphDataset(Dataset):
-    def __init__(self, x, y, mode, config):
-        self.config = config
-        self.x = x
-        self.y = y
-        self.mode = mode
-
-    def __len__(self):
-        return len(self.x)
-
-    def __getitem__(self, idx):
-        key, value = self.x[idx], self.y[idx]
-        value = torch.tensor(value).float()
-        graph, label = get_matrix_and_ops(key)
-        graph, features = get_adjacency_and_features(graph, label)
-        graph = dgl.from_scipy(csr_matrix(graph))
-        graph = dgl.to_bidirected(graph)
-        features = torch.tensor(features).long()
-        # features = torch.argmax(features, dim=1)
-        return graph, features, value
-
-    def custom_collate_fn(self, batch, config):
-        from torch.utils.data.dataloader import default_collate
-        graph, features, y = zip(*batch)
-        # x, y = default_collate(x), default_collate(y)
-        graph, features, y = dgl.batch(graph), default_collate(features), default_collate(y)
-        return graph, features, y
 
 class TimeSeriesDataset(Dataset):
     def __init__(self, x, y, mode, config):

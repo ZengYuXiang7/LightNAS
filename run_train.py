@@ -92,4 +92,8 @@ if __name__ == '__main__':
     # config = get_config('NarFormerConfig')
     # config = get_config('MacConfig')
     config = get_config('FlopsConfig')
+    if config.dataset == 'nnlqp':
+        config.input_size = 29
+    elif config.dataset == 'nasbench201':
+        config.input_size = 6
     run(config)

@@ -118,6 +118,37 @@ class GlobalStandardScaler:
         elif isinstance(y, np.ndarray):
             y = y.astype(float)
         return y
+    
+    
+
+class GlobalMinMaxScaler:
+    def __init__(self, y, config):
+        self.config = config
+        train_data = y
+        train_data = self.__check_input__(train_data)
+
+        self.min = train_data.min()
+        self.max = train_data.max()
+
+        # 防止除以0
+        if self.max - self.min == 0:
+            self.max += 1e-6
+
+    def transform(self, x):
+        x = self.__check_input__(x)
+        return (x - self.min) / (self.max - self.min)
+
+    def inverse_transform(self, x):
+        x = self.__check_input__(x)
+        return x * (self.max - self.min) + self.min
+
+    def __check_input__(self, y):
+        if isinstance(y, torch.Tensor):
+            y = y.cpu().detach().numpy().astype(float)
+        elif isinstance(y, np.ndarray):
+            y = y.astype(float)
+        return y
+
 
 class NoneScaler:
     def __init__(self, y, config):
@@ -136,8 +167,10 @@ def get_scaler(y, config, selected_method=None):
         return DataScalerStander(y, config)
     elif method == 'minmax':
         return DataScalerMinMax(y, config)
-    elif method == 'global':
+    elif method == 'globalstander':
         return GlobalStandardScaler(y, config)
+    elif method == 'globalminmax':
+        return GlobalMinMaxScaler(y, config)
     elif method == 'None':
         return NoneScaler(y, config)
     else:

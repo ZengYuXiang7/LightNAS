@@ -8,7 +8,7 @@ class BRPNAS(torch.nn.Module):
     def __init__(self, input_size, args):
         super(BRPNAS, self).__init__()
         self.args = args
-        self.GCN = GCN(6, 600, 4, 0.10, args)
+        self.GCN = GCN(input_size, 600, 4, 0.10, args)
 
     def forward(self, adjacency, features):
         output = self.GCN(adjacency, features)
