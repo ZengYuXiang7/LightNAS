@@ -350,7 +350,7 @@ class NarFormer(torch.nn.Module):
         self.transformer = Encoder(config)
         self.mlp = RegHead(config)
         
-    def forward(self, x):
+    def forward(self, x, static_feats=None):
         x_enc = self.transformer(x) #multi_stage:aev(b, 1, d)
-        y = self.mlp(x_enc, None)
+        y = self.mlp(x_enc, static_feats)
         return y

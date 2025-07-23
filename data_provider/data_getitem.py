@@ -204,29 +204,36 @@ class SeqDataset(Dataset):
         self.config = config
         self.mode = mode
         self.x = x
-        temp = []
-        dx = dr = dp = 32
-        os.makedirs('./datasets/nasbench201/split_dataset', exist_ok=True)
-        filedir = f'./datasets/nasbench201/split_dataset/D{config.dataset}_S{config.spliter_ratio}_M{mode}_round_{config.runid}.pkl'
-        try:
-            with open(filedir, 'rb') as f:
-                data = pickle.load(f)
-                self.x = data['x']
-                self.y = data['y']
-        except:
+        if config.dataset == 'nasbench201':
             temp = []
-            for i in trange(len(x)):
-                key = x[i]
-                arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
-                adj_mat, ops_idx = info2mat(arch_str)                     # 得到邻接矩阵与操作
-                tokens = tokenizer(ops_idx, adj_mat, dx, dr, dp, 'nerf')  # 得到token表示
-                temp.append(tokens)
+            dx = dr = dp = 32
+            os.makedirs('./datasets/nasbench201/split_dataset', exist_ok=True)
+            filedir = f'./datasets/nasbench201/split_dataset/D{config.dataset}_S{config.spliter_ratio}_M{mode}_round_{config.runid}.pkl'
+            try:
+                with open(filedir, 'rb') as f:
+                    data = pickle.load(f)
+                    self.x = data['x']
+                    self.y = data['y']
+            except:
+                temp = []
+                for i in trange(len(x)):
+                    key = x[i]
+                    arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
+                    adj_mat, ops_idx = info2mat(arch_str)                     # 得到邻接矩阵与操作
+                    tokens = tokenizer(ops_idx, adj_mat, dx, dr, dp, 'nerf')  # 得到token表示
+                    temp.append(tokens)
 
-            self.x = np.stack(temp)
-            self.y = y
+                self.x = np.stack(temp)
+                self.y = y
 
-            with open(filedir, 'wb') as f:
-                pickle.dump({'x': self.x, 'y': self.y}, f)
+                with open(filedir, 'wb') as f:
+                    pickle.dump({'x': self.x, 'y': self.y}, f)
+        else:
+            with open('./datasets/nnlqp/unseen_structure/graph/all_tokens.pkl', 'rb') as f:
+                self.x = pickle.load(f)
+            with open('./datasets/nnlqp/unseen_structure/graph/all_stat_features.pkl', 'rb') as f:
+                self.all_stat_features = pickle.load(f)
+            
 
     def __len__(self):
         return len(self.x)

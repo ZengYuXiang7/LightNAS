@@ -4,11 +4,11 @@ clear
 CONFIGS=(
   # "FlopsConfig"
   # "MacConfig"
-  "GRUConfig"
-  "LSTMConfig"
+  # "GRUConfig"
+  # "LSTMConfig"
   # "BRPNASConfig"
   # "GATConfig"
-  # "NarFormerConfig"
+  "NarFormerConfig"
   # "nnMeterConfig"
 )
 
