@@ -13,7 +13,7 @@ from configs.MainConfig import OtherConfig
 class NarFormerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, TrainingConfig, OtherConfig):
     # 模型基本参数
     model: str = 'narformer'
-    dataset: str = 'nasbench201'
+    dataset: str = 'nnlqp' # nasbench201 nnlqp
     bs: int = 16
     spliter_ratio: str = '5:4:91'
     epochs: int = 600

@@ -230,17 +230,21 @@ class SeqDataset(Dataset):
                     pickle.dump({'x': self.x, 'y': self.y}, f)
         else:
             with open('./datasets/nnlqp/unseen_structure/graph/all_tokens.pkl', 'rb') as f:
-                self.x = pickle.load(f)
+                self.all_tokens= pickle.load(f)
             with open('./datasets/nnlqp/unseen_structure/graph/all_stat_features.pkl', 'rb') as f:
                 self.all_stat_features = pickle.load(f)
+            self.y = y
             
 
     def __len__(self):
         return len(self.x)
 
     def __getitem__(self, idx):
-        tokens = self.x[idx]
         y = self.y[idx]
+        if self.config.dataset == 'nasbench201':
+            tokens = self.x[idx]
+        elif self.config.dataset == 'nnlqp':
+            tokens = self.all_tokens[int(self.x[idx]) - 1]
         return tokens, y
 
     def custom_collate_fn(self, batch, config):

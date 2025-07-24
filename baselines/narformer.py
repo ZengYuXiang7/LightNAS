@@ -335,8 +335,8 @@ class RegHead(nn.Module):
         else:
             x_ = x[:,-1,:] #(b,d)
         
-        if self.dataset == 'nnlqp':
-            x_ = torch.cat([x_, sf], dim=-1)
+        # if self.dataset == 'nnlqp':
+            # x_ = torch.cat([x_, sf], dim=-1)
         
         res = self.mlp(x_) if self.dataset == 'nnlqp' else F.sigmoid(self.layer(x_))
         return res

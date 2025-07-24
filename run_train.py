@@ -72,28 +72,32 @@ def RunExperiments(log, config):
     return metrics
 
 
-def run(config):
+
+if __name__ == '__main__':
+    # Experiment Settings, logger, plotter
     from utils.exp_logger import Logger
     from utils.exp_metrics_plotter import MetricsPlotter
     from utils.utils import set_settings
+    from utils.exp_config import get_config
+    # config = get_config('GNNModelConfig')
+    # config = get_config('TransModelConfig')
+    config = get_config('NarFormerConfig')
+    # config = get_config('MacConfig')
+    # config = get_config('FlopsConfig')
     set_settings(config)
+    
+    
+    if config.dataset == 'nnlqp':
+        config.input_size = 29
+        if config.model == 'narformer':
+            config.input_size = 960
+            config.graph_d_model = 960
+            config.d_model = 960
+    elif config.dataset == 'nasbench201':
+        config.input_size = 6
+    
+    
     log_filename, exper_detail = get_experiment_name(config)
     plotter = MetricsPlotter(log_filename, config)
     log = Logger(log_filename, exper_detail, plotter, config)
     metrics = RunExperiments(log, config)
-    return metrics
-
-
-if __name__ == '__main__':
-    # Experiment Settings, logger, plotter
-    from utils.exp_config import get_config
-    # config = get_config('GNNModelConfig')
-    # config = get_config('TransModelConfig')
-    # config = get_config('NarFormerConfig')
-    # config = get_config('MacConfig')
-    config = get_config('FlopsConfig')
-    if config.dataset == 'nnlqp':
-        config.input_size = 29
-    elif config.dataset == 'nasbench201':
-        config.input_size = 6
-    run(config)
