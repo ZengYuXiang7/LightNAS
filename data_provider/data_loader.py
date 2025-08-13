@@ -23,22 +23,19 @@ class DataModule:
             self.x, self.y = self.x[:int(len(self.x) * 0.10)], self.y[:int(len(self.x) * 0.10)]
         self.train_x, self.train_y, self.valid_x, self.valid_y, self.test_x, self.test_y, self.x_scaler, self.y_scaler = self.get_split_dataset(self.x, self.y, config)
         self.train_set, self.valid_set, self.test_set = get_dataset(self.train_x, self.train_y, self.valid_x, self.valid_y, self.test_x, self.test_y, config)
-        self.train_loader, self.valid_loader, self.test_loader = self.get_dataloaders(self.train_set, self.valid_set, self.test_set, config)
+        self.train_loader = self.build_loader(self.train_set, is_train=True)
+        self.valid_loader = self.build_loader(self.valid_set, is_train=False)
+        self.test_loader  = self.build_loader(self.test_set,  is_train=False)
         config.log.only_print(f'Train_length : {len(self.train_loader.dataset)} Valid_length : {len(self.valid_loader.dataset)} Test_length : {len(self.test_loader.dataset)}')
     
-    def preprocess_data(self, x, y, config):
-        x = np.array(x).astype(np.float32)
-        y = np.array(y).astype(np.float32)
-        return x, y
     
     def get_split_dataset(self, x, y, config):
-        x, y = self.preprocess_data(x, y, config)
+        x = np.array(x).astype(np.float32)
+        y = np.array(y).astype(np.float32)
+        
         train_ratio, valid_ratio, _ = parse_split_ratio(config.spliter_ratio)
 
-        if config.use_train_size:
-            train_size = int(config.train_size)
-        else:
-            train_size = int(len(x) * train_ratio)
+        train_size = int(len(x) * train_ratio)
 
         if config.eval_set:
             valid_size = int(len(x) * valid_ratio)
@@ -52,48 +49,42 @@ class DataModule:
             return get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config)
         
 
-    def get_dataloaders(self, train_set, valid_set, test_set, config):
+    def build_loader(self, dataset, is_train):
         import platform, multiprocessing
+        from torch.utils.data import DataLoader
 
-        # 自动设置 DataLoader 线程数与预取
         if platform.system() == 'Linux' and 'ubuntu' in platform.version().lower():
-            max_workers = multiprocessing.cpu_count() // 4
-            prefetch_factor = 4
+            max_workers = min(multiprocessing.cpu_count() // 3, 12)
+            prefetch_factor = 4  # 可调至 6，建议不要超过 8
         else:
             max_workers = 0
             prefetch_factor = None
 
-        def make_loader(dataset, is_train):
-            if config.dataset == 'nnlqp':
-                sampler = FixedLengthBatchSampler(
-                    data_source=dataset,
-                    dataset='nnlqp',   # 你也可以不传这个字段
-                    batch_size=config.bs,
-                    include_partial=True,
-                )
-                return DataLoader(
-                    dataset,
-                    batch_sampler=sampler,
-                    pin_memory=True,
-                    num_workers=max_workers,
-                    prefetch_factor=prefetch_factor
-                )
-            else:
-                return DataLoader(
-                    dataset,
-                    batch_size=config.bs,
-                    shuffle=is_train,
-                    drop_last=False,
-                    pin_memory=True,
-                    collate_fn=lambda batch: dataset.custom_collate_fn(batch, config),
-                    num_workers=max_workers,
-                    prefetch_factor=prefetch_factor
-                )
-
-        train_loader = make_loader(train_set, is_train=True)
-        valid_loader = make_loader(valid_set, is_train=False)
-        test_loader  = make_loader(test_set,  is_train=False)
-        return train_loader, valid_loader, test_loader
+        if self.config.dataset == 'nnlqp' and self.config.model != 'flops':
+            sampler = FixedLengthBatchSampler(
+                data_source=dataset,
+                dataset='nnlqp',
+                batch_size=self.config.bs,
+                include_partial=True,
+            )
+            return DataLoader(
+                dataset,
+                batch_sampler=sampler,
+                pin_memory=True,
+                num_workers=max_workers,
+                prefetch_factor=prefetch_factor
+            )
+        else:
+            return DataLoader(
+                dataset,
+                batch_size=self.config.bs,
+                shuffle=is_train,
+                drop_last=False,
+                pin_memory=True,
+                collate_fn=lambda batch: dataset.custom_collate_fn(batch, self.config),
+                num_workers=max_workers,
+                prefetch_factor=prefetch_factor
+            )
 
 
 def parse_split_ratio(ratio_str):
@@ -163,7 +154,6 @@ def get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config):
         matrix = np.concatenate((x, y), axis=1)
         
         
-    print(matrix[0, -1])
     # 找到全0行的索引
     null_indices = []
     for i in range(len(matrix)):
@@ -201,7 +191,7 @@ def get_train_valid_test_dataset_transfer(x, y, train_size, valid_size, config):
     test_x = x[test_idx]
     test_y = y[test_idx]
 
-    print(train_x.shape, train_y.shape, valid_x.shape, valid_y.shape)
+    print(train_x.shape, train_y.shape, valid_x.shape, valid_y.shape, test_x.shape, test_y.shape)
     x_scaler = get_scaler(train_x, config, 'None')
     y_scaler = get_scaler(train_y, config, 'globalminmax')
     train_x = x_scaler.transform(train_x)

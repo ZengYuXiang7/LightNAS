@@ -12,7 +12,7 @@ class GAT(torch.nn.Module):
         self.config = config
         self.d_model = config.d_model
         self.order = config.order
-        self.layers = torch.nn.ModuleList([dgl.nn.pytorch.GraphConv(self.d_model if i != 0 else input_dim * 6, self.d_model) for i in range(self.order)])
+        self.layers = torch.nn.ModuleList([dgl.nn.pytorch.GraphConv(self.d_model if i != 0 else input_dim, self.d_model) for i in range(self.order)])
         self.norms = torch.nn.ModuleList([torch.nn.LayerNorm(self.d_model) for _ in range(self.order)])
         self.acts = torch.nn.ModuleList([torch.nn.ReLU() for _ in range(self.order)])
         self.dropout = torch.nn.Dropout(0.10)

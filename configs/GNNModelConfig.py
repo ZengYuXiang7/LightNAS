@@ -6,7 +6,7 @@
 from configs.default_config import *
 from dataclasses import dataclass
 
-from configs.MainConfig import OtherConfig
+
 
 
 @dataclass

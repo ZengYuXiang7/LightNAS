@@ -22,10 +22,11 @@ def get_pretrained_model(model, runid, config):
     log_filename, _ = get_experiment_name(config)
     model_path = f'./checkpoints/{config.model}/{log_filename}_round_{runid}.pt'
     
+    print(model_path)
     # 这里的缩进使用4个空格
     model.load_state_dict(torch.load(model_path, weights_only=True, map_location='cpu'))
-    
     config.dst_dataset, config.src_dataset = config.src_dataset, config.src_dataset
+
     return model
 
 
@@ -43,11 +44,8 @@ def run_transfer(config, runid, model, datamodule, log):
     os.makedirs(f'./checkpoints/{config.model}', exist_ok=True)
     model_path = f'./checkpoints/{config.model}/{log.filename}_round_{runid}.pt'
 
-
-    
     model = get_pretrained_model(model, runid, config)
     model.setup_optimizer(config)
-    
     
     train_time = []
     for epoch in trange(config.epochs):
@@ -151,4 +149,15 @@ if __name__ == '__main__':
     # config = get_config('GNNModelConfig')
     # config = get_config('TransModelConfig')
     config = get_config('NarFormerConfig')
+
+    if config.dataset == 'nnlqp':
+        config.input_size = 29
+        if config.model == 'narformer':
+            config.input_size = 1216
+            config.graph_d_model = 960
+            config.d_model = 1216
+    elif config.dataset == 'nasbench201':
+        if config.model not in ['ours', 'narformer']:
+            config.input_size = 6
+
     run(config)

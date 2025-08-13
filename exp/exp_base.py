@@ -9,13 +9,15 @@ from exp.exp_loss import compute_loss
 from exp.exp_metrics import ErrorMetrics
 from utils.model_trainer import get_loss_function, get_optimizer
 from torch.cuda.amp import autocast
+from tqdm import *
+
 
 class BasicModel(torch.nn.Module):
     def __init__(self, config):
         super(BasicModel, self).__init__()
         self.config = config
         self.scaler = torch.amp.GradScaler(config.device)  # ✅ 初始化 GradScaler
-
+        
     def forward(self, *x):
         y = self.model(*x)
         return y
@@ -33,7 +35,7 @@ class BasicModel(torch.nn.Module):
         torch.set_grad_enabled(True)
         t1 = time()
 
-        for train_batch in dataModule.train_loader:
+        for train_batch in (dataModule.train_loader):
             all_item = [item.to(self.config.device) for item in train_batch]
             inputs, label = all_item[:-1], all_item[-1]
 

@@ -17,8 +17,6 @@ def get_nasbench201(config):
         y.append(matrix[6])
     x = np.array(x).astype(np.int32)
     y = np.array(y).reshape(-1, 1).astype(np.float32)
-    # print(y)
-    # print(y.min(), y.max())
     return x, y
 
 

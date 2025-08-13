@@ -13,6 +13,74 @@ import pickle
 from dgl import from_scipy
 
 
+
+class NASDataset(Dataset):
+    def __init__(self, x, y, mode, config):
+        self.config = config
+        self.mode = mode
+        self.x = x
+        if config.dataset == 'nasbench201':
+            temp = []
+            dx = dr = dp = 32
+            os.makedirs('./datasets/nasbench201/split_dataset', exist_ok=True)
+            filedir = f'./datasets/nasbench201/split_dataset/D{config.dataset}_S{config.spliter_ratio}_M{mode}_round_{config.runid}.pkl'
+            try:
+                with open(filedir, 'rb') as f:
+                    data = pickle.load(f)
+                    self.x = data['x']
+                    self.y = data['y']
+            except:
+                temp = []
+                for i in trange(len(x)):
+                    key = x[i]
+                    arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
+                    adj_mat, ops_idx = info2mat(arch_str)                     # 得到邻接矩阵与操作
+                    tokens = tokenizer(ops_idx, adj_mat, dx, dr, dp, 'nerf')  # 得到token表示
+                    temp.append(tokens)
+
+                self.x = np.stack(temp)
+                self.y = y
+
+                with open(filedir, 'wb') as f:
+                    pickle.dump({'x': self.x, 'y': self.y}, f)
+        else:
+            with open('./datasets/nnlqp/unseen_structure/graph/all_tokens.pkl', 'rb') as f:
+                self.all_tokens= pickle.load(f)
+            with open('./datasets/nnlqp/unseen_structure/graph/all_stat_features.pkl', 'rb') as f:
+                self.all_stat_features = pickle.load(f)
+            self.y = y
+            
+
+    def __len__(self):
+        return len(self.x)
+
+    def __getitem__(self, idx):
+        y = self.y[idx]
+        if self.config.dataset == 'nasbench201':
+            tokens = self.x[idx]
+            return tokens, y
+            
+        elif self.config.dataset == 'nnlqp':
+            tokens = self.all_tokens[int(self.x[idx]) - 1]
+            stat_features = self.all_stat_features[int(self.x[idx]) - 1]
+            return tokens, stat_features, y
+
+    def custom_collate_fn(self, batch, config):
+        from torch.utils.data.dataloader import default_collate
+
+        if config.dataset == 'nasbench201':
+            tokens, y = zip(*batch)
+            return default_collate(tokens), default_collate(y)
+
+        elif config.dataset == 'nnlqp':
+            tokens, stat_features, y = zip(*batch)
+            return default_collate(tokens), default_collate(stat_features), default_collate(y)
+
+        else:
+            raise ValueError(f"Unsupported dataset type: {config.dataset}")
+        
+
+
     
 class ProxyDataset(Dataset):
     def __init__(self, x, y, mode, config):
@@ -243,16 +311,27 @@ class SeqDataset(Dataset):
         y = self.y[idx]
         if self.config.dataset == 'nasbench201':
             tokens = self.x[idx]
+            return tokens, y
+            
         elif self.config.dataset == 'nnlqp':
             tokens = self.all_tokens[int(self.x[idx]) - 1]
-        return tokens, y
+            stat_features = self.all_stat_features[int(self.x[idx]) - 1]
+            return tokens, stat_features, y
 
     def custom_collate_fn(self, batch, config):
         from torch.utils.data.dataloader import default_collate
-        tokens, y = zip(*batch)
-        tokens, y =  default_collate(tokens), default_collate(y)
-        return tokens, y
-    
+
+        if config.dataset == 'nasbench201':
+            tokens, y = zip(*batch)
+            return default_collate(tokens), default_collate(y)
+
+        elif config.dataset == 'nnlqp':
+            tokens, stat_features, y = zip(*batch)
+            return default_collate(tokens), default_collate(stat_features), default_collate(y)
+
+        else:
+            raise ValueError(f"Unsupported dataset type: {config.dataset}")
+        
 
 
 class TimeSeriesDataset(Dataset):

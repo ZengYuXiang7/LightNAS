@@ -6,7 +6,7 @@
 from configs.default_config import *
 from dataclasses import dataclass, field
 
-from configs.MainConfig import OtherConfig
+
 
 
 @dataclass
@@ -18,12 +18,12 @@ class TransModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetI
     spliter_ratio: str = '5:4:91'
     epochs: int = 600
     patience: int = 50
-    num_layers: int = 2
-    num_heads: int = 2
+    num_layers: int = 3
+    num_heads: int = 4
     
     input_size: int = 192
 
-    d_model: int = 192
+    d_model: int = 64 
 
     # Transformer 结构
     att_method: str = 'rms'
@@ -40,3 +40,8 @@ class TransModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetI
     multires_x: int = 32
     multires_r: int = 32
     multires_p: int = 32
+    
+    optim: str = 'Adam'
+    rank_loss: bool = True  # 
+    ac_loss: bool = True  # 
+    

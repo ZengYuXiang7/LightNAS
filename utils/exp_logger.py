@@ -11,7 +11,7 @@ import numpy as np
 import torch
 import yagmail
 
-from utils.model_efficiency import get_efficiency
+from utils.model_efficiency import *
 
 
 class Logger:
@@ -76,7 +76,6 @@ class Logger:
             'config': config_copy,
             'dataset': self.config.model,
             'model': self.config.model,
-            'train_size': self.config.train_size,
             **{k: metrics[k] for k in metrics},
             **{f"{k}_mean": np.mean(metrics[k]) for k in metrics},
             **{f"{k}_std": np.std(metrics[k]) for k in metrics},

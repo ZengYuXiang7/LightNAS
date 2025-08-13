@@ -14,7 +14,14 @@ def load_data(config):
 
 
 def get_dataset(train_x, train_y, valid_x, valid_y, test_x, test_y, config):
-    if config.model in ['narformer', 'ours']:
+    if config.model in ['ours']:
+        return (
+            NASDataset(train_x, train_y, 'train', config),
+            NASDataset(valid_x, valid_y, 'valid', config),
+            NASDataset(test_x, test_y, 'test', config)
+        )
+        
+    elif config.model == 'narformer':
         return (
             SeqDataset(train_x, train_y, 'train', config),
             SeqDataset(valid_x, valid_y, 'valid', config),

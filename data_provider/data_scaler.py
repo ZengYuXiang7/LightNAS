@@ -11,11 +11,11 @@ class DataScalerStander:
         self.config = config
         y = self.__check_input__(y)
         self.original_shape = None
-        if y.ndim > 2:
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+        elif y.ndim > 2:
             self.original_shape = y.shape
             y = y.reshape(-1, y.shape[-1])
-        elif y.ndim == 1:
-            y = y.reshape(-1, 1)
         train_data = y[:int(len(y) * self.config.density)].astype(np.float32)
         self.scaler = StandardScaler()
         self.scaler.fit(train_data)
@@ -23,25 +23,25 @@ class DataScalerStander:
     def transform(self, y):
         y = self.__check_input__(y)
         orig_shape = y.shape
-        if y.ndim > 2:
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+            return self.scaler.transform(y)
+        elif y.ndim > 2:
             y = y.reshape(-1, y.shape[-1])
             y = self.scaler.transform(y)
             return y.reshape(orig_shape)
-        elif y.ndim == 1:
-            y = y.reshape(-1, 1)
-            return self.scaler.transform(y)
         return self.scaler.transform(y)
 
     def inverse_transform(self, y):
         y = self.__check_input__(y)
         orig_shape = y.shape
-        if y.ndim > 2:
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+            return self.scaler.inverse_transform(y)
+        elif y.ndim > 2:
             y = y.reshape(-1, y.shape[-1])
             y = self.scaler.inverse_transform(y)
             return y.reshape(orig_shape)
-        elif y.ndim == 1:
-            y = y.reshape(-1, 1)
-            return self.scaler.transform(y)
         return self.scaler.inverse_transform(y)
 
     def __check_input__(self, y):
@@ -55,11 +55,11 @@ class DataScalerMinMax:
         self.config = config
         y = self.__check_input__(y)
         self.original_shape = None
-        if y.ndim > 2:
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+        elif y.ndim > 2:
             self.original_shape = y.shape
             y = y.reshape(-1, y.shape[-1])
-        elif y.ndim == 1:
-            y = y.reshape(-1, 1)
         train_data = y
         self.scaler = MinMaxScaler()
         self.scaler.fit(train_data)
@@ -67,26 +67,28 @@ class DataScalerMinMax:
     def transform(self, y):
         y = self.__check_input__(y)
         orig_shape = y.shape
-        if y.ndim > 2:
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+            return self.scaler.transform(y)
+        elif y.ndim > 2:
             y = y.reshape(-1, y.shape[-1])
             y = self.scaler.transform(y)
             return y.reshape(orig_shape)
-        elif y.ndim == 1:
-            y = y.reshape(-1, 1)
+        else:
             return self.scaler.transform(y)
-        return self.scaler.transform(y)
 
     def inverse_transform(self, y):
         y = self.__check_input__(y)
         orig_shape = y.shape
-        if y.ndim > 2:
+        if y.ndim == 1: 
+            y = y.reshape(-1, 1)
+            return self.scaler.inverse_transform(y)
+        elif y.ndim > 2:
             y = y.reshape(-1, y.shape[-1])
             y = self.scaler.inverse_transform(y)
             return y.reshape(orig_shape)
-        elif y.ndim == 1:
-            y = y.reshape(-1, 1)
-            return self.scaler.transform(y)
-        return self.scaler.inverse_transform(y)
+        else:
+            return self.scaler.inverse_transform(y)
 
     def __check_input__(self, y):
         if isinstance(y, torch.Tensor):

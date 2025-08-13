@@ -9,7 +9,7 @@ from baselines.lstm import LSTM
 from baselines.narformer import NarFormer
 from layers.metric.distance import PairwiseLoss
 from exp.exp_base import BasicModel
-from modules.TransNAS import TransNAS
+from modules.TransNAS import ACLoss, PairwiseDiffLoss, TransNAS
 from modules.backbone import Backbone
 
 
@@ -18,7 +18,7 @@ class Model(BasicModel):
         super().__init__(config)
         self.config = config
         self.input_size = config.input_size
-        self.hidden_size = config.rank
+        self.hidden_size = config.d_model
         if config.model == 'gnn':
             self.model = Backbone(self.input_size, config)
         
@@ -51,6 +51,8 @@ class Model(BasicModel):
             
         elif config.model == 'ours':
             self.model = TransNAS(self.input_size, config)  
+            self.rank_loss = PairwiseDiffLoss('l1')
+            self.ac_loss = ACLoss('l1')
         else:
             raise ValueError(f"Unsupported model type: {config.model}")
 

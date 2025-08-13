@@ -7,8 +7,8 @@ class TrainingConfig:
     bs: int = 16
     lr: float = 0.001
     decay: float = 0.0001
-    loss_func: str = 'L1Loss'  # L1Loss  MSELoss
-    optim: str = 'AdamW'
+    loss_func: str = 'MSELoss'  # L1Loss  MSELoss
+    optim: str = 'Adam'
     epochs: int = 200
     patience: int = 30
     verbose: int = 10
@@ -20,18 +20,15 @@ class TrainingConfig:
 @dataclass
 class BaseModelConfig:
     model: str = 'ours'
-    rank: int = 40
-    retrain: bool = True
+    d_model: int = 40
     num_layers: int = 3
+    retrain: bool = True
 
 
 @dataclass
 class DatasetInfo:
     path: str = './datasets'
     dataset: str = 'weather'
-    train_size: int = 500
-    use_train_size: bool = False
-    density: float = 0.70
     eval_set: bool = True
     shuffle: bool = False
     scaler_method: str = 'minmax'
@@ -51,3 +48,14 @@ class ExperimentConfig:
 @dataclass
 class LoggerConfig:
     logger: str = 'zyx'
+    
+    
+@dataclass
+class OtherConfig:
+    classification: bool = False
+    ablation: int = 0
+    try_exp: int = -1
+
+    ts_var: int = 1
+    input_size: int = 1
+    

@@ -14,6 +14,7 @@ def get_experiment_name(config):
     # === 构建 exper_detail 字典（基础字段）===
     detail_fields = {
         'Model': config.model,
+        'dataset': config.dataset,
         'dst_dataset': config.dst_dataset.split('/')[-1].split('.')[0],
         'spliter_ratio': config.spliter_ratio,
         'd_model': config.d_model,
@@ -42,6 +43,8 @@ def RunExperiments(log, config):
         utils.utils.set_seed(config.seed + runid)
         datamodule = DataModule(config)
         model = Model(config)
+        if runid == 0:
+            utils.model_efficiency.evaluate_model_efficiency(datamodule, model, log, config)
         log.plotter.reset_round()
         results = RunOnce(config, runid, model, datamodule, log)
         for key in results:
@@ -54,14 +57,7 @@ def RunExperiments(log, config):
 
     for key in metrics:
         log(f'{key}: {np.mean(metrics[key]):.4f} ± {np.std(metrics[key]):.4f}')
-    try:
-        flops, params, inference_time = utils.model_efficiency.get_efficiency(datamodule, Model(config), config)
-        log(f"Flops: {flops:.0f}")
-        log(f"Params: {params:.0f}")
-        log(f"Inference time: {inference_time:.2f} ms")
-    except Exception as e:
-        log('Skip the efficiency calculation')
-
+        
     log.save_in_log(metrics)
 
     if config.record:
@@ -79,9 +75,9 @@ if __name__ == '__main__':
     from utils.exp_metrics_plotter import MetricsPlotter
     from utils.utils import set_settings
     from utils.exp_config import get_config
-    # config = get_config('GNNModelConfig')
+    config = get_config('GATConfig')
     # config = get_config('TransModelConfig')
-    config = get_config('NarFormerConfig')
+    # config = get_config('NarFormerConfig')
     # config = get_config('MacConfig')
     # config = get_config('FlopsConfig')
     set_settings(config)
@@ -90,11 +86,12 @@ if __name__ == '__main__':
     if config.dataset == 'nnlqp':
         config.input_size = 29
         if config.model == 'narformer':
-            config.input_size = 960
+            config.input_size = 1216
             config.graph_d_model = 960
-            config.d_model = 960
+            config.d_model = 1216
     elif config.dataset == 'nasbench201':
-        config.input_size = 6
+        if config.model not in ['ours', 'narformer']:
+            config.input_size = 6
     
     
     log_filename, exper_detail = get_experiment_name(config)
