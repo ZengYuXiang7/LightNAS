@@ -16,7 +16,6 @@ class TrainingConfig:
     monitor_metric: str = 'NMAE'
     use_amp: bool = False
 
-
 @dataclass
 class BaseModelConfig:
     model: str = 'ours'
@@ -24,21 +23,21 @@ class BaseModelConfig:
     num_layers: int = 3
     retrain: bool = True
 
-
 @dataclass
 class DatasetInfo:
-    path: str = './datasets'
+    path: str = './data'
+    task: str = 'bench201'
     dataset: str = 'weather'
     eval_set: bool = True
     shuffle: bool = False
     scaler_method: str = 'minmax'
     spliter_ratio: str = '7:1:2'
 
-
 @dataclass
 class ExperimentConfig:
     seed: int = 0
     rounds: int = 5
+    runid: int = 0
     debug: bool = False
     record: bool = True
     hyper_search: bool = False
@@ -55,7 +54,6 @@ class OtherConfig:
     classification: bool = False
     ablation: int = 0
     try_exp: int = -1
-
     ts_var: int = 1
     input_size: int = 1
     

@@ -152,7 +152,7 @@ class LayerWiseProfiler:
             return
         use_cuda = self.device.type == "cuda"
 
-        for name, mod in self.m.named_modules():
+        for name, mod in self.m.named_models():
             if not name or not self._is_leaf(mod):
                 continue
 

@@ -7,10 +7,10 @@ from baselines.gat import GAT
 from baselines.gru import GRU
 from baselines.lstm import LSTM
 from baselines.narformer import NarFormer
-from layers.metric.distance import PairwiseLoss
+from models.layers.metric.distance import PairwiseLoss
 from exp.exp_base import BasicModel
-from modules.TransNAS import ACLoss, PairwiseDiffLoss, TransNAS
-from modules.backbone import Backbone
+from models.TransNAS import ACLoss, PairwiseDiffLoss, TransNAS
+from models.backbone import Backbone
 
 
 class Model(BasicModel):
@@ -50,9 +50,11 @@ class Model(BasicModel):
             
             
         elif config.model == 'ours':
-            self.model = TransNAS(self.input_size, config)  
+            # self.model = TransNAS(self.input_size, config)  
+            self.model = Backbone(self.input_size, config)
             self.rank_loss = PairwiseDiffLoss('l1')
             self.ac_loss = ACLoss('l1')
+            
         else:
             raise ValueError(f"Unsupported model type: {config.model}")
 

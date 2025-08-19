@@ -18,8 +18,8 @@ class NNMeterConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo
     gcn_method: str = 'gat'
     norm_method: str = 'batch'
     ffn_method: str = 'ffn'
-    src_dataset: str = 'datasets/nasbench201/pkl/embedded-gpu-jetson-nono-fp16.pkl'
-    dst_dataset: str = 'datasets/nasbench201/pkl/desktop-gpu-gtx-1080ti-fp32.pkl'
+    src_dataset: str = 'data/nasbench201/pkl/embedded-gpu-jetson-nono-fp16.pkl'
+    dst_dataset: str = 'data/nasbench201/pkl/desktop-gpu-gtx-1080ti-fp32.pkl'
     transfer: bool = False
 
     

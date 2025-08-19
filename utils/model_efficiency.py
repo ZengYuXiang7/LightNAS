@@ -3,7 +3,7 @@
 # 注意，这里的代码已经几乎完善，非必要不要改动（2025年1月17日19:47:38）
 
 from thop import profile
-from data_provider.data_loader import DataModule
+from data_provider.data_center import DataModule
 from exp.exp_model import Model
 import torch
 import numpy as np

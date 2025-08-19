@@ -1,4 +1,0 @@
-Device: cuda
-Real total latency (ms): 0.078
-Layer-wise estimated total latency (ms): 0.164
-Note: layer-wise sum ignores fusion/overlap; expect bias vs. real.

@@ -4,7 +4,7 @@ import dgl
 import dgl.function as fn
 from scipy.sparse import csr_matrix
 
-from modules.latency_data import get_matrix_and_ops, get_adjacency_and_features
+from models.latency_data import get_matrix_and_ops, get_adjacency_and_features
 
 
 # ANEENodeUpdate类，用于更新节点特征

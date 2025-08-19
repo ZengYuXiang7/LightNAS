@@ -142,7 +142,7 @@ def batch_load_graphs_from_dir(root_dir: str) -> List[Tuple[str, List[dgl.DGLGra
 
 # 使用示例
 if __name__ == '__main__':
-    root = 'datasets/datasets—nnmeter'
+    root = 'data/datasets—nnmeter'
     all_graph_results = batch_load_graphs_from_dir(root)
 
     # 示例：访问第一个文件的第一个图

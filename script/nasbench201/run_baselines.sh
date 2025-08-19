@@ -31,8 +31,8 @@ do
             
             # 调用训练脚本，使用配置和数据集
             python run_train.py --exp_name $config --retrain 1 --logger zyx --transfer False \
-            --src_dataset "datasets/nasbench201/pkl/$dataset" \
-            --dst_dataset "datasets/nasbench201/pkl/$dataset" \
+            --src_dataset "data/nasbench201/pkl/$dataset" \
+            --dst_dataset "data/nasbench201/pkl/$dataset" \
             --spliter_ratio "$spliter_ratio" --dataset nasbench201
             
         done

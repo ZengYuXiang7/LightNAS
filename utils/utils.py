@@ -62,7 +62,6 @@ def conduct_statistical_data(x):
 def computer_info():
     def showinfo(tip, info):
         print("{} : {}".format(tip, info))
-
     showinfo("操作系统及版本信息", platform.platform())
     showinfo('获取系统版本号', platform.version())
     showinfo('获取系统名称', platform.system())

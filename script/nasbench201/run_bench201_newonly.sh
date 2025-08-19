@@ -24,8 +24,8 @@ do
         do
             dataset=${dst_dataset[$j]}   
             python run_train.py --exp_name "$CONFIG" --retrain 1 --logger zyx --transfer False \
-            --src_dataset "datasets/nasbench201/pkl/$dataset" \
-            --dst_dataset "datasets/nasbench201/pkl/$dataset" \
+            --src_dataset "data/nasbench201/pkl/$dataset" \
+            --dst_dataset "data/nasbench201/pkl/$dataset" \
             --spliter_ratio "$spliter_ratio" \
             --dataset nasbench201   # 使用第一个数据集训练的模型进行微调
         done

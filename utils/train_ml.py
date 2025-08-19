@@ -160,7 +160,7 @@ def RunOnce(args, runId, Runtime, log):
     datamodule = DataModule(exper, args)
     model = Model(args)
     model.set_runid(runId)
-    dataset_info = pickle.load(open(f'./datasets/flow/{args.dataset}_info_{args.flow_length_limit}.pickle', 'rb'))
+    dataset_info = pickle.load(open(f'./data/flow/{args.dataset}_info_{args.flow_length_limit}.pickle', 'rb'))
     max_packet_length = dataset_info['max_packet_length']
     train_x, train_y = np.array(datamodule.train_set.x)[:,args.flow_length_limit:], np.array(datamodule.train_set.y)
     valid_x, valid_y = np.array(datamodule.valid_set.x)[:,args.flow_length_limit:], np.array(datamodule.valid_set.y)

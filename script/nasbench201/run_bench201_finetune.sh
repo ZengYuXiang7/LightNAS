@@ -33,8 +33,8 @@ spliter_ratios=(
 
 #         # 在 src_dataset 上进行训练，保存训练后的模型
 #         python run_train.py --exp_name "$CONFIG" --retrain 1 --logger zyx --transfer False \
-#         --src_dataset "datasets/nasbench201/pkl/$dataset1" \
-#         --dst_dataset "datasets/nasbench201/pkl/$dataset1" \
+#         --src_dataset "data/nasbench201/pkl/$dataset1" \
+#         --dst_dataset "data/nasbench201/pkl/$dataset1" \
 #         --spliter_ratio "$spliter_ratio" \
 #         --pretrained_model "" --dataset nasbench201   # 第一次训练，不加载预训练模型
 
@@ -61,8 +61,8 @@ do
 
             # 加载第一个训练好的模型，并在第二个数据集上进行微调
             python run_transfer.py --exp_name "$CONFIG" --retrain 1 --logger zyx --transfer True \
-            --src_dataset "datasets/nasbench201/pkl/$dataset1" \
-            --dst_dataset "datasets/nasbench201/pkl/$dataset2" \
+            --src_dataset "data/nasbench201/pkl/$dataset1" \
+            --dst_dataset "data/nasbench201/pkl/$dataset2" \
             --spliter_ratio "$spliter_ratio" \
             --pretrained_model "$trained_model" --dataset nasbench201   # 使用 src_dataset 上训练的模型进行微调
 

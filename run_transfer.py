@@ -4,7 +4,7 @@
 import numpy as np
 import torch
 import collections
-from data_provider.data_loader import DataModule
+from data_provider.data_center import DataModule
 from exp.exp_train import RunOnce
 from exp.exp_model import Model
 from run_train import get_experiment_name

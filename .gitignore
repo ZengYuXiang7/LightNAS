@@ -42,5 +42,5 @@ venv/
 /baselines/timellm_models/
 /layers/diffusion/data/
 /layers/my_ddpm_model/
-/datasets/*
-
+/data/*
+/data_process/nas_101_api/nasbench_full.tfrecord

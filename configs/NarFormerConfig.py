@@ -34,8 +34,8 @@ class NarFormerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetIn
     depths: list = field(default_factory=lambda: [6, 1, 1, 1])  # ← 修复此处的 mutable default
 
     # 数据集路径
-    src_dataset: str = 'datasets/nasbench201/pkl/desktop-cpu-core-i7-7820x-fp32.pkl'
-    dst_dataset: str = 'datasets/nasbench201/pkl/desktop-cpu-core-i7-7820x-fp32.pkl'
+    src_dataset: str = 'data/nasbench201/pkl/desktop-cpu-core-i7-7820x-fp32.pkl'
+    dst_dataset: str = 'data/nasbench201/pkl/desktop-cpu-core-i7-7820x-fp32.pkl'
     transfer: bool = False
 
     # 位置编码相关

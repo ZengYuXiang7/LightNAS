@@ -3,7 +3,7 @@
 import numpy as np
 import torch
 import collections
-from data_provider.data_loader import DataModule
+from data_provider.data_center import DataModule
 from exp.exp_train import RunOnce
 from exp.exp_model import Model
 import utils.model_efficiency
@@ -75,13 +75,8 @@ if __name__ == '__main__':
     from utils.exp_metrics_plotter import MetricsPlotter
     from utils.utils import set_settings
     from utils.exp_config import get_config
-    config = get_config('GATConfig')
-    # config = get_config('TransModelConfig')
-    # config = get_config('NarFormerConfig')
-    # config = get_config('MacConfig')
-    # config = get_config('FlopsConfig')
+    config = get_config('OurModelConfig')
     set_settings(config)
-    
     
     if config.dataset == 'nnlqp':
         config.input_size = 29

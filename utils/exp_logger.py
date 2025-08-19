@@ -2,15 +2,12 @@
 # Author : yuxiang Zeng
 
 import os
-import glob
 import platform
 import time
 import logging
 import pickle
 import numpy as np
 import torch
-import yagmail
-
 from utils.model_efficiency import *
 
 
@@ -20,7 +17,6 @@ class Logger:
         self.exper_detail = exper_detail
         self.plotter = plotter
         self.config = config
-        self._clear_useless_logs()
         self._init_log_file()
         if config.hyper_search:
             self.exper_filename += '_hyper_search'
@@ -134,88 +130,15 @@ class Logger:
         lines = [', '.join([f"'{k}': {v}" for k, v in sorted_items[i:i + items_per_line]]) for i in range(0, len(sorted_items), items_per_line)]
         return '{\n' + '\n'.join(['     ' + line for line in lines]) + '\n}'
 
-    # 清理无效日志文件
-    def _clear_useless_logs(self):
-        for dirpath, _, _ in os.walk('./results/'):
-            if 'log' in dirpath:
-                for log_file in glob.glob(os.path.join(dirpath, '*.md')):
-                    try:
-                        with open(log_file, 'r', encoding='utf-8') as f:
-                            if 'Round=1' not in f.read():
-                                os.remove(log_file)
-                    except Exception as e:
-                        print(f"Error processing file {log_file}: {e}")
-
-    # 删除空文件夹
-    def _delete_empty_directories(self, dir_path):
-        # 检查目录是否存在
-        if os.path.exists(dir_path) and os.path.isdir(dir_path):
-            # 遍历目录中的所有文件和子目录，从最底层开始
-            for root, dirs, files in os.walk(dir_path, topdown=False):
-                # 先删除空的子目录
-                for name in dirs:
-                    dir_to_remove = os.path.join(root, name)
-                    # 如果目录是空的，则删除它
-                    try:
-                        if not os.listdir(dir_to_remove):  # 判断目录是否为空
-                            os.rmdir(dir_to_remove)
-                            print(f"Directory {dir_to_remove} has been deleted.")
-                    except FileNotFoundError:
-                        # 如果目录已经不存在，忽略此错误
-                        pass
-                # 检查当前目录是否也是空的，如果是则删除它
-                try:
-                    if not os.listdir(root):  # 判断当前根目录是否为空
-                        os.rmdir(root)
-                        print(f"Directory {root} has been deleted.")
-                except FileNotFoundError:
-                    # 如果目录已经不存在，忽略此错误
-                    pass
-        else:
-            print(f"Directory {dir_path} does not exist.")
-
-    # 实验完成后发送邮件通知
-    def send_email(self, subject, body, receiver_email="zengyuxiang@hnu.edu.cn"):
-        if self.config.debug:
-            return
-        try:
-            with open(os.path.expanduser('~') + '/qq_smtp_info.pickle', 'rb') as f:
-                info = pickle.load(f)
-        except FileNotFoundError:
-            print("Non-admin user, email sending functionality is disabled")
-            return
-
-        if isinstance(body, dict):
-            body_lines = ['*' * 10 + 'Experiment Results:' + '*' * 10]
-            for k, v in body.items():
-                body_lines.append(f"{k}: {np.mean(v):.4f} ± {np.std(v):.4f}")
-            flops, params, inf_time = get_efficiency(self.config)
-            body_lines += [f"Flops: {flops:.0f}", f"Params: {params:.0f}", f"Inference time: {inf_time:.2f} ms"]
-            body_lines.append('*' * 10 + 'Experiment Success' + '*' * 10)
-            for i in range(self.config.rounds):
-                metrics_str = f"Round {i + 1}: " + ' '.join([f"{k}: {body[k][i]:.4f}" for k in body])
-                body_lines.append(metrics_str)
-            body_lines.append(self._format_config_dict(self.config.__dict__))
-        else:
-            body_lines = [self._format_config_dict(self.config.__dict__), body]
-
-        try:
-            yag = yagmail.SMTP(user=info['email'], password=info['password'], host='smtp.qq.com')
-            attachment = self.plotter.exper_filename + '.pdf'
-            yag.send(
-                to=receiver_email,
-                subject=subject,
-                contents=body_lines,
-                attachments=attachment if os.path.isfile(attachment) else None
-            )
-            print("Email sent successfully!")
-        except Exception as e:
-            print(f"Error sending email: {e}")
-
+    
+    
     # 实验结束时执行的清理操作
     def end_the_experiment(self, model):
         self.logger.info(f'\n{str(model)}')
         self.logger.info('```')
         self._delete_empty_directories('./results/')
+        
+        
+    
 
 
