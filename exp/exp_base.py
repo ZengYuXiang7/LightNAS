@@ -26,8 +26,9 @@ class BasicModel(torch.nn.Module):
         self.to(config.device)
         self.loss_function = get_loss_function(config).to(config.device)
         self.optimizer = get_optimizer(self.parameters(), lr=config.lr, decay=config.decay, config=config)
-        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min' if config.classification else 'max', factor=0.5,
-                                                                    patience=config.patience // 1.5, threshold=0.0)
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            self.optimizer, mode='min', factor=0.5, patience=config.patience // 1.5, threshold=0.0
+        )
 
     def train_one_epoch(self, dataModule):
         loss = None
@@ -55,9 +56,9 @@ class BasicModel(torch.nn.Module):
                 loss.backward()
                 self.optimizer.step()
 
+            # for i in range(len(pred)):
+                # print(f'Pred: {pred[i].item():.4f}, Real: {label[i].item():.4f}')
         t2 = time()
-        self.eval()
-        torch.set_grad_enabled(False)
         return loss, t2 - t1
 
     def evaluate_one_epoch(self, dataModule, mode='valid'):
@@ -71,7 +72,6 @@ class BasicModel(torch.nn.Module):
             if self.config.use_amp else
             contextlib.nullcontext()
         )
-
         with context:
             for batch in dataloader:
                 all_item = [item.to(self.config.device) for item in batch]
@@ -83,16 +83,19 @@ class BasicModel(torch.nn.Module):
 
                 if self.config.classification:
                     pred = torch.max(pred, 1)[1]
-
-                reals.append(label)
+                    
                 preds.append(pred)
+                reals.append(label)
 
         reals = torch.cat(reals, dim=0)
         preds = torch.cat(preds, dim=0)
         
-        # if self.config.dataset != 'weather':
-            # reals, preds = dataModule.y_scaler.inverse_transform(reals), dataModule.y_scaler.inverse_transform(preds)
-
+        if self.config.dataset != 'weather':
+            reals, preds = dataModule.y_scaler.inverse_transform(reals), dataModule.y_scaler.inverse_transform(preds)
+            
+        # for i in range(len(preds)):
+            # print(f'Pred: {preds[i].item():.4f}, Real: {reals[i].item():.4f}')
+            
         if mode == 'valid':
             self.scheduler.step(val_loss)
 

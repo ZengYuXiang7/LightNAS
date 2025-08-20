@@ -148,7 +148,7 @@ def get_scaler(y, config, selected_method=None):
         return GlobalStandardScaler(y, config)
     elif method == 'globalminmax':
         return GlobalMinMaxScaler(y, config)
-    elif method == 'None':
+    elif method == 'none':
         return NoneScaler(y, config)
     else:
         raise NotImplementedError(f"Scaler method '{method}' is not supported.")

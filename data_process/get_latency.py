@@ -39,7 +39,9 @@ def get_bench201_acc(config):
                 is_random=False
             )
             
-            acc = float(acc_info['test-accuracy'])
+            accuracy = float(acc_info['test-accuracy']) 
+            latency = float(df[i, -1])
+            # acc /= 100.0  # 转换为百分比
 
             # 存入 dict
             data[i] = {
@@ -47,7 +49,8 @@ def get_bench201_acc(config):
                 "features": features,
                 "flops": flops,
                 "params": params,
-                "accuracy": acc
+                "accuracy": accuracy,
+                "latency": latency,
             }
 
         except Exception as e:

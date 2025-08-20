@@ -26,11 +26,14 @@ class OursDataset(Dataset):
     def __getitem__(self, idx):
         adj_matrix = self.data[idx]['adj_matrix']
         features   = self.data[idx]['features']
-        y          = self.data[idx]['accuracy']
+        
         
         adj_matrix = csr_matrix(adj_matrix)  # 显式转换为 scipy csr matrix
         graph = from_scipy(adj_matrix)
 
+        # y          = self.data[idx]['accuracy']
+        y          = self.data[idx]['latency'] 
+        
         return graph, features, y
 
     def custom_collate_fn(self, batch, config):

@@ -19,13 +19,16 @@ class DataModule:
         self.path = config.path
         self.data = load_data(config)
         
-        if getattr(config, "debug", False):
-            data = take_subset(data, ratio=getattr(config, "debug_ratio", 0.1), seed=getattr(config, "seed", 0), random_sample=False)
+        if config.debug:
+            data = take_subset(data, ratio=0.1, seed=config.seed, random_sample=False)
             
         self.train_data, self.valid_data, self.test_data = self.get_split_dataset(self.data, config)
-        # self.x_scaler, self.y_scaler = get_scaler(self.train_data, config)
-        # self.valid_data = self.x_scaler.transform(self.valid_data)
-        # self.test_data  = self.x_scaler.transform(self.test_data)
+        
+        
+        self.x_scaler, self.y_scaler = self.get_scalers(self.train_data, config)
+        self.train_data = self.normalize_data(self.train_data, self.x_scaler, self.y_scaler, config)
+        self.valid_data = self.normalize_data(self.valid_data, self.x_scaler, self.y_scaler, config)
+        self.test_data  = self.normalize_data(self.test_data,  self.x_scaler, self.y_scaler, config)
         
         self.train_set = get_dataset(self.train_data, 'train', config)
         self.valid_set = get_dataset(self.valid_data, 'valid', config)
@@ -80,6 +83,56 @@ class DataModule:
 
         return train_data, valid_data, test_data
     
+    def get_scalers(self, data: dict, config):
+        """
+        为指定的字段训练归一化器，并以 dict 形式返回。
+        
+        输入:
+            data: dict[int -> sample_dict]，例如 {0: {"flops":..., "params":..., "accuracy":...}, ...}
+            keys: 需要归一化的字段名
+        返回:
+            scalers: dict[str -> StandardScaler]
+        """
+        x_scaler = {}
+        x_keys = ("flops", "params")
+        for key in x_keys:
+            values = [sample[key] for sample in data.values()]
+            values = np.array(values, dtype=np.float32)
+            scaler = get_scaler(values, config, selected_method='minmax')
+            x_scaler[key] = scaler
+        
+        values = [sample[config.predict_target] for sample in data.values()]
+        values = np.array(values, dtype=np.float32)
+        y_scaler = get_scaler(values, config, selected_method='none')
+        return x_scaler, y_scaler
+    
+    def normalize_data(self, data, x_scaler, y_scaler, config):
+        """
+        对数据进行归一化处理。
+        
+        输入:
+            data: dict[int -> sample_dict]，例如 {0: {"flops":..., "params":..., "accuracy":...}, ...}
+            x_scaler: dict[str -> StandardScaler]，用于归一化输入特征
+            y_scaler: StandardScaler，用于归一化目标值
+        返回:
+            normalized_data: dict[int -> sample_dict]，归一化后的数据
+        """
+        normalized_data = {}
+        for idx, sample in data.items():
+            normalized_sample = {}
+            for key, value in sample.items():
+                if key in x_scaler:
+                    value = np.array(value, dtype=np.float32).reshape(1, -1)
+                    normalized_sample[key] = x_scaler[key].transform(value).reshape(-1)
+                elif key == config.predict_target and y_scaler:
+                    value = np.array(value, dtype=np.float32).reshape(1, -1)
+                    normalized_sample[key] = y_scaler.transform(value).reshape(-1)
+                else:
+                    normalized_sample[key] = value
+            normalized_data[idx] = normalized_sample
+        return normalized_data
+        
+    
 
     def build_loader(self, dataset, is_train):
 
@@ -115,7 +168,6 @@ class DataModule:
                 num_workers=max_workers,
                 prefetch_factor=prefetch_factor
             )
-
 
 
 def get_train_valid_test_dataset(x, y, train_size, valid_size, config):

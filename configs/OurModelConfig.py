@@ -21,6 +21,8 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     num_heads: int = 4
     
     input_size: int = 192
+    
+    predict_target: str = 'latency'
 
     d_model: int = 64 
 
@@ -29,7 +31,7 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     norm_method: str = 'rms'
     ffn_method: str = 'ffn'
     
-    gcn_method: str = 'gat'
+    gcn_method: str = 'gcn'
     norm_method: str = 'batch'
     ffn_method: str = 'ffn'
 

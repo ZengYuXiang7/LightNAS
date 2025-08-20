@@ -188,3 +188,18 @@ def get_adjacency_and_features(matrix, labels):
             features[idx + 1][int(float(op)) - 2] = 1
 
     return matrix, features
+
+# 2025年08月19日14:35:16 去掉全局节点
+# def get_adjacency_and_features(matrix, labels):
+#     # 去掉 global 节点逻辑，直接用原始 matrix
+#     np.fill_diagonal(matrix, 1)  # 如果需要自环就保留，不要自环就用 0
+
+#     features = np.zeros((matrix.shape[0], 5), dtype=int)  # 原来是 6，这里少了 global
+#     features[0][3] = 1  # input
+#     features[-1][4] = 1  # output
+
+#     for idx, op in enumerate(labels):
+#         if op is not None and op != 'input' and op != 'output':
+#             features[idx][int(float(op)) - 2] = 1
+
+#     return matrix, features

@@ -68,7 +68,6 @@ def RunExperiments(log, config):
     return metrics
 
 
-
 if __name__ == '__main__':
     # Experiment Settings, logger, plotter
     from utils.exp_logger import Logger
@@ -87,7 +86,6 @@ if __name__ == '__main__':
     elif config.dataset == 'nasbench201':
         if config.model not in ['ours', 'narformer']:
             config.input_size = 6
-    
     
     log_filename, exper_detail = get_experiment_name(config)
     plotter = MetricsPlotter(log_filename, config)

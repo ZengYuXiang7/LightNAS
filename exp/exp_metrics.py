@@ -48,9 +48,11 @@ def compute_regression_metrics(realVec, estiVec):
     Acc = [np.mean((absError < (realVec * t)).astype(float)) for t in thresholds]
 
     # 排序指标
+    # print(realVec)
+    # print(estiVec)
+    # print(realVec.shape, estiVec.shape)
     kendall_tau = stats.kendalltau(realVec, estiVec).correlation
     spearman_rho = stats.spearmanr(realVec, estiVec).correlation
-
     
     return {
         'MAE': MAE,

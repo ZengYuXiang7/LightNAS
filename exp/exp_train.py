@@ -5,10 +5,10 @@ import os
 import torch
 from tqdm import *
 import pickle
+from exp.exp_base import BasicModel
 from utils.model_monitor import EarlyStopping
 
-
-def RunOnce(config, runid, model, datamodule, log):
+def RunOnce(config, runid, model:BasicModel, datamodule, log):
     try:
         # 一些模型（如Keras兼容模型）可能需要compile，跳过非必要的compile
         model.compile()
