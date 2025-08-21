@@ -132,6 +132,35 @@ class Logger:
 
     
     
+    # 删除空文件夹
+    def _delete_empty_directories(self, dir_path):
+        # 检查目录是否存在
+        if os.path.exists(dir_path) and os.path.isdir(dir_path):
+            # 遍历目录中的所有文件和子目录，从最底层开始
+            for root, dirs, files in os.walk(dir_path, topdown=False):
+                # 先删除空的子目录
+                for name in dirs:
+                    dir_to_remove = os.path.join(root, name)
+                    # 如果目录是空的，则删除它
+                    try:
+                        if not os.listdir(dir_to_remove):  # 判断目录是否为空
+                            os.rmdir(dir_to_remove)
+                            print(f"Directory {dir_to_remove} has been deleted.")
+                    except FileNotFoundError:
+                        # 如果目录已经不存在，忽略此错误
+                        pass
+                # 检查当前目录是否也是空的，如果是则删除它
+                try:
+                    if not os.listdir(root):  # 判断当前根目录是否为空
+                        os.rmdir(root)
+                        print(f"Directory {root} has been deleted.")
+                except FileNotFoundError:
+                    # 如果目录已经不存在，忽略此错误
+                    pass
+        else:
+            print(f"Directory {dir_path} does not exist.")
+            
+            
     # 实验结束时执行的清理操作
     def end_the_experiment(self, model):
         self.logger.info(f'\n{str(model)}')

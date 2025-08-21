@@ -13,24 +13,29 @@ def get_bench201_acc(config):
         df = pickle.load(f)
     api = API('./data_process/nas_201_api/NAS-Bench-201-v1_0-e61699.pth', verbose=False)
     import numpy as np 
-    data = {}
+    data = {
+        "adj_matrix": [],
+        "features": [],
+        "flops": [],
+        "params": [],
+        "accuracy": [],
+        "latency": [],
+    }
+
     for i in trange(len(df)):
         try:
-            # df 若为 numpy 数组，下面索引正常；若为 list，请先转 np.array
-            key = np.asarray(df[i, :-1], dtype=np.int32)   # 长度应为 6
+            key = np.asarray(df[i, :-1], dtype=np.int32)
             arch_str = get_arch_str_from_arch_vector(key)
             index = api.query_index_by_arch(arch_str)
-            
+
             cost_info = api.get_cost_info(index, dataset='cifar10-valid')
-            
             flops  = float(cost_info['flops'])
             params = float(cost_info['params'])
-            
+
             adj_matrix, label = get_matrix_and_ops(key)
             adj_matrix, features = get_adjacency_and_features(adj_matrix, label)
-            
             features = np.argmax(features, axis=1)
-            
+
             acc_info = api.get_more_info(
                 index,
                 dataset='cifar10-valid',
@@ -38,24 +43,25 @@ def get_bench201_acc(config):
                 hp='200',
                 is_random=False
             )
-            
+
             accuracy = float(acc_info['test-accuracy']) 
             latency = float(df[i, -1])
-            # acc /= 100.0  # 转换为百分比
 
-            # 存入 dict
-            data[i] = {
-                'adj_matrix': adj_matrix,
-                "features": features,
-                "flops": flops,
-                "params": params,
-                "accuracy": accuracy,
-                "latency": latency,
-            }
+            # -------- 改成往 list 里 append --------
+            data["adj_matrix"].append(adj_matrix)
+            data["features"].append(features)
+            data["flops"].append(flops)
+            data["params"].append(params)
+            data["accuracy"].append(accuracy)
+            data["latency"].append(latency)
 
         except Exception as e:
             print(f"[Warning] Skipped item {i} due to: {e}")
             
+    for key in data:
+        data[key] = np.array(data[key])
+        print(f"{key} shape: {data[key].shape}")
+        
     return data
 
 

@@ -86,7 +86,7 @@ if __name__ == '__main__':
     elif config.dataset == 'nasbench201':
         if config.model not in ['ours', 'narformer']:
             config.input_size = 6
-    
+            
     log_filename, exper_detail = get_experiment_name(config)
     plotter = MetricsPlotter(log_filename, config)
     log = Logger(log_filename, exper_detail, plotter, config)

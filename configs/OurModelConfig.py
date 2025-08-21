@@ -22,14 +22,14 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     
     input_size: int = 192
     
-    predict_target: str = 'latency'
+    predict_target: str = 'accuracy'  #  latency accuracy 
 
-    d_model: int = 64 
+    d_model: int = 100 
 
     # Transformer 结构
-    att_method: str = 'rms'
-    norm_method: str = 'rms'
-    ffn_method: str = 'ffn'
+    # att_method: str = 'rms'
+    # norm_method: str = 'rms'
+    # ffn_method: str = 'ffn'
     
     gcn_method: str = 'gcn'
     norm_method: str = 'batch'

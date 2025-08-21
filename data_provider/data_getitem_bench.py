@@ -21,18 +21,15 @@ class OursDataset(Dataset):
         self.mode = mode
 
     def __len__(self):
-        return len(self.data)
+        return len(self.data[self.config.predict_target])
 
     def __getitem__(self, idx):
-        adj_matrix = self.data[idx]['adj_matrix']
-        features   = self.data[idx]['features']
+        adj_matrix = self.data['adj_matrix'][idx]
+        features   = self.data['features'][idx]
+        y          = self.data[self.config.predict_target][idx]
         
-        
-        adj_matrix = csr_matrix(adj_matrix)  # 显式转换为 scipy csr matrix
-        graph = from_scipy(adj_matrix)
-
-        # y          = self.data[idx]['accuracy']
-        y          = self.data[idx]['latency'] 
+        graph = dgl.from_scipy(csr_matrix(adj_matrix))
+        graph = dgl.to_bidirected(graph)
         
         return graph, features, y
 

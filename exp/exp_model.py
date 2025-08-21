@@ -52,6 +52,7 @@ class Model(BasicModel):
         elif config.model == 'ours':
             # self.model = TransNAS(self.input_size, config)  
             self.model = Backbone(self.input_size, config)
+            # self.model = BRPNAS(self.input_size, config)  
             self.rank_loss = PairwiseDiffLoss('l1')
             self.ac_loss = ACLoss('l1')
             

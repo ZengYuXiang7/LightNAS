@@ -520,3 +520,13 @@
 |2025-07-29 19:29:43| MAE - 0.0001 MSE - 0.0000 RMSE - 0.0001 MAPE - 0.0525 NMAE - 0.0510 NRMSE - 0.0657 Acc_10 - 0.8847 KendallTau - 0.8729 SpearmanRho - 0.9769 train_time - 129.9374
 |2025-07-29 21:00:05| Model : brp-nas, dataset : nasbench201, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 5:4:91, d_model : 64
 |2025-07-29 21:00:05| MAE - 0.0002 MSE - 0.0000 RMSE - 0.0003 MAPE - 0.0445 NMAE - 0.0442 NRMSE - 0.0606 Acc_10 - 0.9000 KendallTau - 0.8979 SpearmanRho - 0.9836 train_time - 216.4218
+|2025-08-21 10:45:52| Model : ours, dataset : 201_acc, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 100
+|2025-08-21 10:45:52| MAE - 19.8524 MSE - 1012.8166 RMSE - 25.1618 MAPE - 0.2405 NMAE - 0.2359 NRMSE - 0.2981 Acc_10 - 0.5439 KendallTau - 0.0113 SpearmanRho - 0.0093 train_time - 0.6781
+|2025-08-21 10:48:00| Model : ours, dataset : 201_acc, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 100
+|2025-08-21 10:48:00| MAE - 19.8524 MSE - 1012.8166 RMSE - 25.1618 MAPE - 0.2405 NMAE - 0.2359 NRMSE - 0.2981 Acc_10 - 0.5439 KendallTau - 0.0113 SpearmanRho - 0.0093 train_time - 0.6815
+|2025-08-21 11:01:17| Model : ours, dataset : 201_acc, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 100
+|2025-08-21 11:01:17| MAE - 19.8524 MSE - 1012.8166 RMSE - 25.1618 MAPE - 0.2405 NMAE - 0.2359 NRMSE - 0.2981 Acc_10 - 0.5439 KendallTau - 0.0113 SpearmanRho - 0.0093 train_time - 0.6668
+|2025-08-21 11:08:04| Model : ours, dataset : 201_acc, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 100
+|2025-08-21 11:08:04| MAE - 19.8524 MSE - 1012.8166 RMSE - 25.1618 MAPE - 0.2405 NMAE - 0.2359 NRMSE - 0.2981 Acc_10 - 0.5439 KendallTau - 0.0113 SpearmanRho - 0.0093 train_time - 0.6649
+|2025-08-21 11:14:19| Model : ours, dataset : 201_acc, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 100
+|2025-08-21 11:14:19| MAE - 3.4971 MSE - 31.3822 RMSE - 5.6000 MAPE - 0.0465 NMAE - 0.0415 NRMSE - 0.0664 Acc_10 - 0.8871 KendallTau - 0.4665 SpearmanRho - 0.6399 train_time - 0.5399

@@ -25,7 +25,7 @@ class BasicModel(torch.nn.Module):
     def setup_optimizer(self, config):
         self.to(config.device)
         self.loss_function = get_loss_function(config).to(config.device)
-        self.optimizer = get_optimizer(self.parameters(), lr=config.lr, decay=config.decay, config=config)
+        self.optimizer     = get_optimizer(self.parameters(), lr=config.lr, decay=config.decay, config=config)
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             self.optimizer, mode='min', factor=0.5, patience=config.patience // 1.5, threshold=0.0
         )
