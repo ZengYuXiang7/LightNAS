@@ -7,7 +7,6 @@ from dataclasses import dataclass
 @dataclass
 class LSTMConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, TrainingConfig, OtherConfig):
     model: str = 'lstm'
-    dataset: str = 'nasbench201'
     bs: int = 32
     spliter_ratio: str = '1:4:95'
     epochs: int = 200

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 class MacConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, TrainingConfig, OtherConfig):
     model: str = 'flops-mac'
     # dataset: str = 'nasbench201'
-    dataset: str = 'nnlqp'
+    dataset: str = '201_acc'
     bs: int = 32
     spliter_ratio: str = '1:4:95'
     epochs: int = 200

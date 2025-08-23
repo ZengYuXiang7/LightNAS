@@ -3,7 +3,6 @@
 import numpy as np
 import pickle
 import os
-from data_provider.data_scaler import get_scaler
 from data_process.create_latency import get_adjacency_and_features, get_arch_str_from_arch_vector, get_matrix_and_ops
 from data_process.nas_201_api import NASBench201API as API
 from tqdm import *
@@ -14,6 +13,7 @@ def get_bench201_acc(config):
     api = API('./data_process/nas_201_api/NAS-Bench-201-v1_0-e61699.pth', verbose=False)
     import numpy as np 
     data = {
+        "key": [],
         "adj_matrix": [],
         "features": [],
         "flops": [],
@@ -48,6 +48,7 @@ def get_bench201_acc(config):
             latency = float(df[i, -1])
 
             # -------- 改成往 list 里 append --------
+            data["key"].append(key)
             data["adj_matrix"].append(adj_matrix)
             data["features"].append(features)
             data["flops"].append(flops)
@@ -63,6 +64,15 @@ def get_bench201_acc(config):
         print(f"{key} shape: {data[key].shape}")
         
     return data
+
+
+
+
+def get_bench101_acc(config):
+    with open('.data/201_acc_data.pkl', 'rb') as f:
+        data = pickle.load(f)
+    return data
+
 
 
 def get_nnlqp(config):

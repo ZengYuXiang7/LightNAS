@@ -4,13 +4,21 @@
 
 from data_process.get_latency import *
 from data_provider.data_getitem_bench import *
-
+import pickle 
 
 def load_data(config):
-    if config.dataset == '201_acc':
-        data = get_bench201_acc(config)
-    elif config.dataset == 'nnlqp': 
-        data = get_nnlqp(config)
+    try:
+        with open(f'./data/{config.dataset}_data.pkl', 'rb') as f:
+            data = pickle.load(f)
+    except Exception as e:
+        if config.dataset == '201_acc':
+            data = get_bench201_acc(config)
+        elif config.dataset == '101_acc':
+            data = get_bench101_acc(config)
+        elif config.dataset == 'nnlqp': 
+            data = get_nnlqp(config)
+        with open(f'./data/{config.dataset}_data.pkl', 'wb') as f:
+            pickle.dump(data, f)
     return data
 
 
@@ -25,27 +33,17 @@ def get_dataset(data, split, config):
       - 'lstm', 'gru'        -> RNNDataset
       - 'flops', 'flops-mac' -> ProxyDataset
     """
-    model = str(getattr(config, "model", "")).lower()
+    dataset = config.dataset
     split = str(split).lower()
     if split not in {"train", "valid", "test"}:
         raise ValueError(f"split must be 'train'/'valid'/'test', got: {split}")
 
-    if model in {"ours"}:
-        DatasetClass = OursDataset
-    elif model == "2":
-        DatasetClass = NASDataset
-    elif model == "narformer":
-        DatasetClass = SeqDataset
-    elif model == "gat":
-        DatasetClass = GraphDataset
-    elif model == "brp-nas":
-        DatasetClass = BRPNASDataset
-    elif model in {"lstm", "gru"}:
-        DatasetClass = RNNDataset
-    elif model in {"flops", "flops-mac"}:
-        DatasetClass = ProxyDataset
-    else:
-        raise NotImplementedError(f"Unsupported model for dataset: {config.model}")
+    # if dataset == '201_acc':
+    # elif dataset == "101_acc":
+        # DatasetClass = NasBench101Dataset
+    # else:
+        # raise NotImplementedError(f"Unsupported model for dataset: {config.model}")
+    DatasetClass = NasBenchDataset
 
     return DatasetClass(data, split, config)
     

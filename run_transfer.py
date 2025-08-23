@@ -8,7 +8,7 @@ from data_provider.data_center import DataModule
 from exp.exp_train import RunOnce
 from exp.exp_model import Model
 from run_train import get_experiment_name
-import utils.model_efficiency
+import exp.exp_efficiency
 import utils.utils
 import os
 import torch

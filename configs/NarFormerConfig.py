@@ -13,10 +13,9 @@ from dataclasses import dataclass, field
 class NarFormerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, TrainingConfig, OtherConfig):
     # 模型基本参数
     model: str = 'narformer'
-    dataset: str = 'nnlqp' # nasbench201 nnlqp
     bs: int = 16
-    # spliter_ratio: str = '5:4:91'
-    spliter_ratio: str = '80:10:10'
+    spliter_ratio: str = '5:4:91'
+    # spliter_ratio: str = '80:10:10'
     epochs: int = 600
     patience: int = 50
     num_layers: int = 2
@@ -28,7 +27,6 @@ class NarFormerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetIn
     # 图结构相关
     graph_n_head: int = 6
     graph_d_ff: int = 768
-    
     
     # Transformer 结构
     depths: list = field(default_factory=lambda: [6, 1, 1, 1])  # ← 修复此处的 mutable default

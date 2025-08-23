@@ -6,7 +6,6 @@ from dataclasses import dataclass
 @dataclass
 class GRUConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, TrainingConfig, OtherConfig):
     model: str = 'gru'
-    dataset: str = 'nasbench201'
     bs: int = 32
     spliter_ratio: str = '1:4:95'
     epochs: int = 200

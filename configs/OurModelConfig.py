@@ -12,7 +12,6 @@ from dataclasses import dataclass, field
 class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, TrainingConfig, OtherConfig):
     # 模型基本参数
     model: str = 'ours'
-    dataset: str = '201_acc'
     bs: int = 16
     spliter_ratio: str = '5:4:91'
     epochs: int = 600

@@ -7,8 +7,9 @@ import time
 import random
 import nbformat
 import platform
-import torch as t
+import torch
 import numpy as np
+
 
 def set_settings(config):
     
@@ -25,7 +26,7 @@ def set_settings(config):
 
     else:
         # 如果不是 macOS，你可以选择默认设置为 CPU 或 GPU
-        config.device = "cuda" if t.cuda.is_available() else "cpu"
+        config.device = "cuda" if torch.cuda.is_available() else "cpu"
 
     return config
 
@@ -34,12 +35,12 @@ def set_settings(config):
 def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
-    t.manual_seed(seed)
-    t.cuda.manual_seed(seed)
-    t.cuda.manual_seed_all(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
-    t.backends.cudnn.deterministic = True
-    t.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 
 def conduct_statistical_data(x):

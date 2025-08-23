@@ -530,3 +530,5 @@
 |2025-08-21 11:08:04| MAE - 19.8524 MSE - 1012.8166 RMSE - 25.1618 MAPE - 0.2405 NMAE - 0.2359 NRMSE - 0.2981 Acc_10 - 0.5439 KendallTau - 0.0113 SpearmanRho - 0.0093 train_time - 0.6649
 |2025-08-21 11:14:19| Model : ours, dataset : 201_acc, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 100
 |2025-08-21 11:14:19| MAE - 3.4971 MSE - 31.3822 RMSE - 5.6000 MAPE - 0.0465 NMAE - 0.0415 NRMSE - 0.0664 Acc_10 - 0.8871 KendallTau - 0.4665 SpearmanRho - 0.6399 train_time - 0.5399
+|2025-08-22 17:08:19| Model : ours, dataset : 101_acc, dst_dataset : desktop-gpu-gtx-1080ti-fp32, spliter_ratio : 5:4:91, d_model : 100
+|2025-08-22 17:08:19| MAE - 0.0185 MSE - 0.0026 RMSE - 0.0513 MAPE - 0.0342 NMAE - 0.0206 NRMSE - 0.0571 Acc_10 - 0.9772 KendallTau - 0.5315 SpearmanRho - 0.7211 train_time - 160.2907

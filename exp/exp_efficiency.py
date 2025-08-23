@@ -11,13 +11,12 @@ import time
 import gc
     
     
-def evaluate_model_efficiency(datamodule, model, log, config):
+def evaluate_model_efficiency(loader, model, log, config):
     device = config.device
     model = model.to(device)
     model.eval()
 
     # === 获取样本输入 确保bs == 1 ===
-    loader = datamodule.build_loader(datamodule.train_set, bs=1, is_train=True)
     sample_inputs = next(iter(loader))
     inputs = tuple([item.to(device) for item in sample_inputs][:-1])
 

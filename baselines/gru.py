@@ -11,20 +11,16 @@ class GRU(nn.Module):
         self.config = config
         self.d_model = config.d_model
 
-        self.num_classes = 29 if config.dataset == 'nnlqp' else 5
+        self.num_classes = 29 if config.dataset == 'nnlqp' else 6
         self.transfer = nn.Linear(self.num_classes, self.d_model)
         self.gru = nn.GRU(self.d_model, self.d_model, num_layers=1, batch_first=True)
 
-        if config.dataset == 'nnlqp':
-            self.attn = nn.Linear(self.d_model, 1)
-            self.fc = nn.Linear(self.d_model, 1)  # attention pooled: [B, d_model]
-        else:
-            self.seq_len = 6  # 默认定长输入序列长度为6
-            self.fc = nn.Sequential(
-                nn.Linear(self.d_model * self.seq_len, self.d_model),
-                nn.ReLU(),
-                nn.Linear(self.d_model, 1)
-            )
+        self.attn = nn.Linear(self.d_model, 1)
+        self.fc = nn.Sequential(
+            nn.Linear(self.d_model, self.d_model),
+            nn.ReLU(),
+            nn.Linear(self.d_model, 1)
+        )
 
     def forward(self, features):
         # features: [B, T, input_dim]
@@ -36,12 +32,9 @@ class GRU(nn.Module):
         x = self.transfer(features)     # [B, T, d_model]
         out, _ = self.gru(x)            # [B, T, d_model]
 
-        if self.config.dataset == 'nnlqp':
-            attn_score = self.attn(out)                 # [B, T, 1]
-            attn_weights = F.softmax(attn_score, dim=1) # [B, T, 1]
-            pooled = torch.sum(attn_weights * out, dim=1)  # [B, d_model]
-        else:
-            pooled = out.reshape(out.size(0), -1)       # [B, T*d_model]
+        attn_score = self.attn(out)                 # [B, T, 1]
+        attn_weights = F.softmax(attn_score, dim=1) # [B, T, 1]
+        pooled = torch.sum(attn_weights * out, dim=1)  # [B, d_model]
 
         y = self.fc(pooled)                             # [B, 1]
         return y

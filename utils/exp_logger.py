@@ -8,7 +8,7 @@ import logging
 import pickle
 import numpy as np
 import torch
-from utils.model_efficiency import *
+from exp.exp_efficiency import *
 
 
 class Logger:

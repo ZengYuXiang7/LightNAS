@@ -6,7 +6,7 @@ import collections
 from data_provider.data_center import DataModule
 from exp.exp_train import RunOnce
 from exp.exp_model import Model
-import utils.model_efficiency
+import exp.exp_efficiency
 import utils.utils
 torch.set_default_dtype(torch.float32)
 
@@ -44,7 +44,7 @@ def RunExperiments(log, config):
         datamodule = DataModule(config)
         model = Model(config)
         if runid == 0:
-            utils.model_efficiency.evaluate_model_efficiency(datamodule, model, log, config)
+            exp.exp_efficiency.evaluate_model_efficiency(datamodule.valid_loader, model, log, config)
         log.plotter.reset_round()
         results = RunOnce(config, runid, model, datamodule, log)
         for key in results:
@@ -74,7 +74,14 @@ if __name__ == '__main__':
     from utils.exp_metrics_plotter import MetricsPlotter
     from utils.utils import set_settings
     from utils.exp_config import get_config
-    config = get_config('OurModelConfig')
+    # config = get_config('OurModelConfig')
+    # config = get_config('FlopsConfig')
+    config = get_config('MacConfig')
+    # config = get_config('LSTMConfig')
+    # config = get_config('GRUConfig')
+    # config = get_config('BRPNASConfig')
+    # config = get_config('GATConfig')
+    # config = get_config('NarFormerConfig')
     set_settings(config)
     
     if config.dataset == 'nnlqp':
@@ -83,9 +90,8 @@ if __name__ == '__main__':
             config.input_size = 1216
             config.graph_d_model = 960
             config.d_model = 1216
-    elif config.dataset == 'nasbench201':
-        if config.model not in ['ours', 'narformer']:
-            config.input_size = 6
+    elif config.dataset == '101_acc':
+        config.bs = 1024
             
     log_filename, exper_detail = get_experiment_name(config)
     plotter = MetricsPlotter(log_filename, config)
