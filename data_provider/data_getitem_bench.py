@@ -4,7 +4,9 @@
 from torch.utils.data import Dataset
 import numpy as np
 import os
-from baselines.narformer import tokenizer
+from baselines.narformer import padding_for_batch1, tokenizer
+from baselines.narformer2 import padding_for_batch2, tokenizer2
+from baselines.nnformer import tokenizer3
 from data_process.create_latency import *
 from scipy.sparse import csr_matrix
 import dgl
@@ -80,11 +82,54 @@ class NasBenchDataset(Dataset):
         
         elif self.config.model == 'narformer':
             key = self.data['key'][idx]
-            arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
-            adj_mat, ops_idx = info2mat(arch_str)                     # 得到邻接矩阵与操作
-            tokens = tokenizer(ops_idx, adj_mat, 32, 32, 32, 'nerf')  # 得到token表示
+            if self.config.dataset == '201_acc':
+                arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
+                adj_mat, ops_idx = info2mat(arch_str)                     # 得到邻接矩阵与操作
+                tokens = tokenizer(ops_idx, adj_mat, 32, 32, 32, 'nerf')  # 得到token表示
+            elif self.config.dataset == '101_acc':
+                adj_mat = self.data['adj_matrix'][idx]             # 直接取邻接矩阵
+                ops_idx = self.data['features'][idx]             # 直接取操作序列
+                tokens = tokenizer(ops_idx, adj_mat, 32, 32, 32, 'nerf')  # 得到token表示
+                tokens, adj_mat = padding_for_batch1(tokens, adj_mat)
+            
+            # print(type(tokens), tokens.shape)
             y      = self.data[self.config.predict_target][idx]
             return tokens, y
+        
+        elif self.config.model == 'narformer2':
+            if self.config.dataset == '201_acc':
+                key = self.data['key'][idx]
+                arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
+                adj_mat, ops_idx = info2mat(arch_str)                     # 得到邻接矩阵与操作
+                tokens = tokenizer2(ops_idx, adj_mat, 32, 32, 'nerf', 'pe')  # 得到token表示
+            elif self.config.dataset == '101_acc':
+                adj_mat = self.data['adj_matrix'][idx]             # 直接取邻接矩阵
+                ops_idx = self.data['features'][idx]             # 直接取操作序列
+                tokens = tokenizer2(ops_idx, adj_mat, 32, 32, 'nerf', 'pe')  # 得到token表示
+                tokens, adj_mat = padding_for_batch2(tokens, adj_mat)
+            
+            adj_mat = torch.tensor(adj_mat, dtype=torch.float32)
+            adj_mat = adj_mat + torch.t(adj_mat)
+            
+            num_vertices = torch.tensor([len(ops_idx)])
+            
+            y      = self.data[self.config.predict_target][idx]
+            return tokens, adj_mat, num_vertices, y
+        
+        elif self.config.model == 'nnformer':
+            if self.config.dataset == '201_acc':
+                key = self.data['key'][idx]
+                arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
+                adj_mat, ops_idx = info2mat(arch_str)                     # 得到邻接矩阵与操作
+            elif self.config.dataset == '101_acc':
+                adj_mat = self.data['adj_matrix'][idx]             # 直接取邻接矩阵
+                ops_idx = self.data['features'][idx]             # 直接取操作序列
+                
+            num_vertices = torch.tensor([len(ops_idx)])
+            code, rel_pos, code_depth = tokenizer3(ops_idx, adj_mat, num_vertices, 96, 'nape')
+            y      = self.data[self.config.predict_target][idx]
+            return code, rel_pos, code_depth, adj_mat, y
+        
         else: 
             raise ValueError(f"Unsupported model type: {self.config.model}")
         
@@ -108,7 +153,11 @@ class NasBenchDataset(Dataset):
         elif self.config.model == 'narformer':
             tokens, y = zip(*batch)
             return default_collate(tokens).to(torch.float32), default_collate(y).to(torch.float32)
-
-
+        elif self.config.model == 'narformer2':
+            tokens, adj_mat, num_vertices, y = zip(*batch)
+            return default_collate(tokens).to(torch.float32), default_collate(adj_mat).to(torch.float32), default_collate(num_vertices).to(torch.long), default_collate(y).to(torch.float32)
+        elif self.config.model == 'nnformer':
+            code, rel_pos, code_depth, adj_mat, y = zip(*batch)
+            return default_collate(code).to(torch.float32), default_collate(rel_pos).to(torch.long), default_collate(code_depth).to(torch.long), default_collate(adj_mat).to(torch.float32), default_collate(y).to(torch.float32)
         
 

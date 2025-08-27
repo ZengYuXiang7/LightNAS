@@ -15,7 +15,7 @@ def get_experiment_name(config):
     detail_fields = {
         'Model': config.model,
         'dataset': config.dataset,
-        'dst_dataset': config.dst_dataset.split('/')[-1].split('.')[0],
+        # 'dst_dataset': config.dst_dataset.split('/')[-1].split('.')[0],
         'spliter_ratio': config.spliter_ratio,
         'd_model': config.d_model,
     }
@@ -44,7 +44,7 @@ def RunExperiments(log, config):
         datamodule = DataModule(config)
         model = Model(config)
         if runid == 0:
-            exp.exp_efficiency.evaluate_model_efficiency(datamodule.valid_loader, model, log, config)
+            exp.exp_efficiency.evaluate_model_efficiency(datamodule, model, log, config)
         log.plotter.reset_round()
         results = RunOnce(config, runid, model, datamodule, log)
         for key in results:
@@ -76,12 +76,14 @@ if __name__ == '__main__':
     from utils.exp_config import get_config
     # config = get_config('OurModelConfig')
     # config = get_config('FlopsConfig')
-    config = get_config('MacConfig')
+    # config = get_config('MacConfig')
     # config = get_config('LSTMConfig')
     # config = get_config('GRUConfig')
     # config = get_config('BRPNASConfig')
     # config = get_config('GATConfig')
     # config = get_config('NarFormerConfig')
+    # config = get_config('NarFormer2Config')
+    config = get_config('NNformerConfig')
     set_settings(config)
     
     if config.dataset == 'nnlqp':

@@ -18,14 +18,8 @@ class Backbone(torch.nn.Module):
         # self.fc = torch.nn.Linear(config.d_model * 9, 1)
 
     def forward(self, graph, op_idx):
-        # op_embeds = self.op_embedding(op_idx).reshape(op_idx.shape[0] * 9, -1) + self.device_embedding
-        op_embeds = self.op_embedding(op_idx).reshape(op_idx.shape[0] * op_idx.shape[1], -1) 
+        op_embeds = self.op_embedding(op_idx).reshape(op_idx.shape[0] * 9, -1) + self.device_embedding
+        # op_embeds = self.op_embedding(op_idx).reshape(op_idx.shape[0] * op_idx.shape[1], -1) 
         graph_embeds = self.gcn(graph, op_embeds)
         y = self.fc(graph_embeds)
-        # if self.training:
-            # print('train', y)
-        # else:
-            # print('pred:', y)
-        # op_embeds = self.op_embedding(op_idx).reshape(op_idx.shape[0], -1)
-        # y = self.fc(op_embeds)
         return y

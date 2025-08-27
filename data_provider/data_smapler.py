@@ -7,7 +7,7 @@ import torch
 
 
 class FixedLengthBatchSampler(Sampler):
-    def __init__(self, data_source, dataset, batch_size, include_partial=True, rng=None, maxlen=None, length_to_size=None, config=None):
+    def __init__(self, data_source, dataset, batch_size, include_partial=True, seed=2024, maxlen=None, length_to_size=None, config=None):
         """
         :param data_source: 数据集对象 (要求能通过索引访问样本，且 __len__ 返回长度)
         :param dataset: 数据集名称 (这里没实际用到，只是历史代码遗留)
@@ -21,9 +21,7 @@ class FixedLengthBatchSampler(Sampler):
         self.data_source = data_source
         self.dataset = dataset
         self.active = False
-        if rng is None:
-            rng = np.random.RandomState(seed=11)
-        self.rng = rng
+        self.rng = np.random.RandomState(seed=seed)
         self.batch_size = batch_size
         self.maxlen = maxlen
         self.include_partial = include_partial
@@ -52,7 +50,6 @@ class FixedLengthBatchSampler(Sampler):
                 data = self.data_source[i][1]
             else:
                 data = self.data_source[i][0]
-            
             length = len(data)
 
             # 丢弃超过 maxlen 的样本

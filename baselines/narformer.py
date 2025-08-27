@@ -354,3 +354,19 @@ class NarFormer(torch.nn.Module):
         x_enc = self.transformer(x) #multi_stage:aev(b, 1, d)
         y = self.mlp(x_enc, static_feats)
         return y
+
+
+
+def padding_for_batch1(code, adj):
+    MAX_LEN = 8
+    if len(adj) < MAX_LEN:
+        for i in range(MAX_LEN - len(adj)):
+            for l in adj:
+                l.append(0)
+        adj.extend([[0]*MAX_LEN for _ in range(MAX_LEN - len(adj))])
+
+        code_ = torch.zeros((MAX_LEN, code.shape[1]))
+        code_[:code.shape[0], :] = code
+        return code_, adj
+    else:
+        return code, adj

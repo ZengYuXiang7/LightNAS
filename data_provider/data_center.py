@@ -153,35 +153,35 @@ class DataModule:
             max_workers = 0
             prefetch_factor = None
 
-        # if self.config.dataset == '101_acc':
-        sampler = FixedLengthBatchSampler(
-            data_source=dataset,
-            dataset='nnlqp',
-            batch_size=bs,
-            include_partial=True,
-            config=self.config,
-            
-        )
-        return DataLoader(
-            dataset,
-            batch_sampler=sampler,
-            pin_memory=True,
-            num_workers=max_workers,
-            prefetch_factor=prefetch_factor,
-            collate_fn=lambda batch: dataset.custom_collate_fn(batch, self.config),
-        )
-        # else:
-            # return DataLoader(
-                # dataset,
-                # batch_size=bs,
-                # shuffle=is_train,
-                # drop_last=False,
-                # pin_memory=True,
-                # collate_fn=lambda batch: dataset.custom_collate_fn(batch, self.config),
-                # num_workers=max_workers,
-                # prefetch_factor=prefetch_factor
-            # )
-
+        if self.config.dataset in ['101_acc', '201_acc']:
+            # 不需要 sampler，直接用 batch_size
+            return DataLoader(
+                dataset,
+                batch_size=bs,
+                shuffle=is_train,   # 是否需要打乱，视你实验需求决定
+                pin_memory=True,
+                num_workers=max_workers,
+                prefetch_factor=prefetch_factor,
+                collate_fn=lambda batch: dataset.custom_collate_fn(batch, self.config),
+            )
+        else:
+            # 其他数据集需要 sampler
+            sampler = FixedLengthBatchSampler(
+                data_source=dataset,
+                dataset='',
+                batch_size=bs,
+                include_partial=True,
+                config=self.config,
+                seed=self.config.seed,
+            )
+            return DataLoader(
+                dataset,
+                batch_sampler=sampler,
+                pin_memory=True,
+                num_workers=max_workers,
+                prefetch_factor=prefetch_factor,
+                collate_fn=lambda batch: dataset.custom_collate_fn(batch, self.config),
+            )
 
 
 def take_subset(obj, ratio=0.1, seed=0, random_sample=False):

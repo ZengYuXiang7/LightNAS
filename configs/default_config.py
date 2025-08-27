@@ -27,7 +27,7 @@ class BaseModelConfig:
 class DatasetInfo:
     path: str = './data'
     task: str = 'bench201'
-    dataset: str = '101_acc'          #  101_acc 201_acc
+    dataset: str = '201_acc'          #  101_acc 201_acc
     predict_target: str = 'accuracy'  #  latency accuracy 
     
     eval_set: bool = True
