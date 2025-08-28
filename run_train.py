@@ -74,7 +74,7 @@ if __name__ == '__main__':
     from utils.exp_metrics_plotter import MetricsPlotter
     from utils.utils import set_settings
     from utils.exp_config import get_config
-    # config = get_config('OurModelConfig')
+    config = get_config('OurModelConfig')
     # config = get_config('FlopsConfig')
     # config = get_config('MacConfig')
     # config = get_config('LSTMConfig')
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     # config = get_config('GATConfig')
     # config = get_config('NarFormerConfig')
     # config = get_config('NarFormer2Config')
-    config = get_config('NNformerConfig')
+    # config = get_config('NNformerConfig')
     set_settings(config)
     
     if config.dataset == 'nnlqp':

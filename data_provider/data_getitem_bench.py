@@ -33,10 +33,11 @@ class NasBenchDataset(Dataset):
             y          = self.data[self.config.predict_target][idx]
             
             adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
-            features = torch.tensor(features, dtype=torch.long)
+            features = torch.tensor(features, dtype=torch.long).unsqueeze(-1)
             
-            graph = dgl.from_scipy(csr_matrix(adj_matrix))
-            graph = dgl.to_bidirected(graph)
+            # graph = dgl.from_scipy(csr_matrix(adj_matrix))
+            # graph = dgl.to_bidirected(graph)
+            graph = adj_matrix
             
             return graph, features, y
         
@@ -132,9 +133,9 @@ class NasBenchDataset(Dataset):
             y      = self.data[self.config.predict_target][idx]
             
             # code = code.clone().detach()
+            rel_pos = torch.tensor(rel_pos, dtype=torch.long)
             num_vertices = torch.tensor([len(ops_idx)])
             adj_mat = torch.tensor(adj_mat, dtype=torch.float32)
-            rel_pos = torch.tensor(rel_pos, dtype=torch.long)
             y = torch.tensor(y, dtype=torch.float32)
             
             return code, rel_pos, code_depth, adj_mat, y
@@ -146,7 +147,7 @@ class NasBenchDataset(Dataset):
     def custom_collate_fn(self, batch, config):
         if self.config.model == 'ours':
             graph, features, y = zip(*batch)
-            return dgl.batch(graph), default_collate(features).to(torch.long), default_collate(y).to(torch.float32)
+            return default_collate(graph).to(torch.float32), default_collate(features).to(torch.long), default_collate(y).to(torch.float32)
         elif self.config.model in {"flops", "flops-mac"}:
             features, y = zip(*batch)
             return default_collate(features).to(torch.float32), default_collate(y).to(torch.float32)

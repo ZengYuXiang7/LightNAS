@@ -46,6 +46,8 @@ class Model(BasicModel):
             
         elif config.model == 'narformer':
             self.model = NarFormer(self.input_size, config)
+            self.rank_loss = PairwiseDiffLoss('l1')
+            self.ac_loss = ACLoss('l1')
         
         elif config.model == 'narformer2':
             self.model = NarFormer2(
@@ -78,13 +80,12 @@ class Model(BasicModel):
                 dataset=config.dataset,
             )
         
-            
         elif config.model == 'nnlqp':
             self.model = NNLQP(self.input_size, config)
             
         elif config.model == 'ours':
-            # self.model = TransNAS(self.input_size, config)  
-            self.model = Backbone(self.input_size, config)
+            self.model = TransNAS(self.input_size, config)  
+            # self.model = Backbone(self.input_size, config)
             # self.model = BRPNAS(self.input_size, config)  
             self.rank_loss = PairwiseDiffLoss('l1')
             self.ac_loss = ACLoss('l1')

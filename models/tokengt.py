@@ -1,13 +1,6 @@
-
-# coding : utf-8
-# Author : Yuxiang Zeng
-import random
-import torch
-from baselines.narformer import *
-from models.layers.transformer import Transformer
-# self.encoder = Transformer(config.d_model, config.num_heads, config.num_layers, 'rms', 'ffn', 'self')
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int) -> torch.Tensor:
@@ -26,23 +19,9 @@ def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int) -> torch.Tensor:
     return torch.stack(outs, dim=0)  # [B,n,dp]
 
 
-class TransNAS(nn.Module):
-    def __init__(self, enc_in, config):
-        super(TransNAS, self).__init__()
-        self.config = config
-        self.d_model = config.d_model
-        self.tokenGT = TokenGT(c_node=1, d_model=config.d_model, nhead=config.num_heads, num_layers=config.num_layers, lap_dim=8, use_edge=False)
-        self.fc = nn.Linear(config.d_model, 1)  # 回归或分类
-
-    def forward(self, graphs, features):
-        cls_out, _ = self.tokenGT(graphs, features)  # [B, d_model]
-        y = self.fc(cls_out)                           # 回归或分类
-        return y
-    
-    
-
 class TokenGT(nn.Module):
-    def __init__(self, c_node: int, d_model: int = 128, nhead: int = 8, num_layers: int = 4, lap_dim: int = 8, use_edge: bool = False):
+    def __init__(self, c_node: int, d_model: int = 128, nhead: int = 8, num_layers: int = 4,
+                 lap_dim: int = 8, use_edge: bool = False):
         super().__init__()
         self.use_edge = use_edge
         self.lap_dim = lap_dim
@@ -119,84 +98,25 @@ class TokenGT(nn.Module):
         graph_repr = x_enc[:, 0, :]  # [graph] token 表示
         return graph_repr, x_enc
 
-        
 
+# ----------------------
+# Demo
+# ----------------------
+if __name__ == "__main__":
+    B, n, dim = 32, 6, 8  # 先用 B=1 测试
+    adj = torch.randint(0, 2, (B, n, n))
+    adj = torch.triu(adj, 1)
+    adj = adj + adj.transpose(-1, -2)
 
-class PairwiseDiffLoss(nn.Module):
-    def __init__(self, loss_type='l1'):
-        """
-        :param loss_type: 'l1', 'l2', or 'kldiv'
-        """
-        super(PairwiseDiffLoss, self).__init__()
-        loss_type = loss_type.lower()
-        if loss_type == 'l1':
-            self.base_loss = nn.L1Loss()
-        elif loss_type == 'l2':
-            self.base_loss = nn.MSELoss()
-        elif loss_type == 'kldiv':
-            self.base_loss = nn.KLDivLoss()
-        else:
-            raise ValueError(f"Unsupported loss type: {loss_type}")
+    node_feats = torch.randn(B, n, dim)
 
-    def forward(self, predicts, targets):
-        """
-        :param predicts: Tensor of shape (B,) or (B, 1)
-        :param targets: Tensor of shape (B,) or (B, 1)
-        :return: Pairwise difference loss
-        """
-        # 自动 squeeze 支持 [B, 1] 输入
-        if predicts.ndim == 2 and predicts.shape[1] == 1:
-            predicts = predicts.squeeze(1)
-        if targets.ndim == 2 and targets.shape[1] == 1:
-            targets = targets.squeeze(1)
-
-        if predicts.ndim != 1 or targets.ndim != 1:
-            raise ValueError("Both predicts and targets must be 1D tensors.")
-
-        B = predicts.size(0)
-        idx = list(range(B))
-        random.shuffle(idx)
-        shuffled_preds = predicts[idx]
-        shuffled_targs = targets[idx]
-
-        diff_preds = predicts - shuffled_preds
-        diff_targs = targets - shuffled_targs
-
-        return self.base_loss(diff_preds, diff_targs)
+    model = TokenGT(c_node=dim, d_model=128, nhead=8, num_layers=2, lap_dim=8, use_edge=False)  # use_edge=True 可生成边 token
+    graph_repr, x_enc = model(adj, node_feats)
+    print("graph_repr:", graph_repr.shape)  # [B,128]
+    print("x_enc:", x_enc.shape)            # [B,L,128]
     
     
-    
-class ACLoss(nn.Module):
-    def __init__(self, loss_type='l1', reduction='mean'):
-        """
-        Architecture Consistency Loss
-        :param loss_type: 'l1' or 'l2'
-        :param reduction: 'mean' or 'sum'
-        """
-        super(ACLoss, self).__init__()
-        if loss_type == 'l1':
-            self.criterion = nn.L1Loss(reduction=reduction)
-        elif loss_type == 'l2':
-            self.criterion = nn.MSELoss(reduction=reduction)
-        else:
-            raise ValueError(f"Unsupported loss_type: {loss_type}")
-
-    def forward(self, predictions):
-        """
-        :param predictions: Tensor of shape [2B, 1] or [2B]
-                            where front B are source, back B are augmented
-        :return: scalar loss
-        """
-        N = predictions.shape[0]
-        B = N // 2  # 自动 floor 向下取整
-
-        # 仅使用前 B 和后 B，丢弃中间多出的一个（若存在）
-        source = predictions[:B]
-        augmented = predictions[-B:]
-        
-        
-        # Ensure shape is [B]
-        source = source.squeeze(-1) if source.ndim == 2 and source.shape[1] == 1 else source
-        augmented = augmented.squeeze(-1) if augmented.ndim == 2 and augmented.shape[1] == 1 else augmented
-
-        return self.criterion(source, augmented)
+    model = TokenGT(c_node=dim, d_model=128, nhead=8, num_layers=2, lap_dim=8, use_edge=True)  # use_edge=True 可生成边 token
+    graph_repr, x_enc = model(adj, node_feats)
+    print("graph_repr:", graph_repr.shape)  # [B,128]
+    print("x_enc:", x_enc.shape)            # [B,L,128]
