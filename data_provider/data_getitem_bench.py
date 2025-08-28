@@ -6,7 +6,7 @@ import numpy as np
 import os
 from baselines.narformer import padding_for_batch1, tokenizer
 from baselines.narformer2 import padding_for_batch2, tokenizer2
-from baselines.nnformer import tokenizer3
+from baselines.nnformer import padding_for_batch3, tokenizer3
 from data_process.create_latency import *
 from scipy.sparse import csr_matrix
 import dgl
@@ -125,9 +125,18 @@ class NasBenchDataset(Dataset):
                 adj_mat = self.data['adj_matrix'][idx]             # 直接取邻接矩阵
                 ops_idx = self.data['features'][idx]             # 直接取操作序列
                 
-            num_vertices = torch.tensor([len(ops_idx)])
+                
+            num_vertices = len(ops_idx)
             code, rel_pos, code_depth = tokenizer3(ops_idx, adj_mat, num_vertices, 96, 'nape')
+            code, rel_pos = padding_for_batch3(code, rel_pos)
             y      = self.data[self.config.predict_target][idx]
+            
+            # code = code.clone().detach()
+            num_vertices = torch.tensor([len(ops_idx)])
+            adj_mat = torch.tensor(adj_mat, dtype=torch.float32)
+            rel_pos = torch.tensor(rel_pos, dtype=torch.long)
+            y = torch.tensor(y, dtype=torch.float32)
+            
             return code, rel_pos, code_depth, adj_mat, y
         
         else: 
@@ -158,6 +167,6 @@ class NasBenchDataset(Dataset):
             return default_collate(tokens).to(torch.float32), default_collate(adj_mat).to(torch.float32), default_collate(num_vertices).to(torch.long), default_collate(y).to(torch.float32)
         elif self.config.model == 'nnformer':
             code, rel_pos, code_depth, adj_mat, y = zip(*batch)
-            return default_collate(code).to(torch.float32), default_collate(rel_pos).to(torch.long), default_collate(code_depth).to(torch.long), default_collate(adj_mat).to(torch.float32), default_collate(y).to(torch.float32)
+            return default_collate(code).to(torch.float32), default_collate(rel_pos).to(torch.long), default_collate(code_depth).to(torch.float32), default_collate(adj_mat).to(torch.float32), default_collate(y).to(torch.float32)
         
 

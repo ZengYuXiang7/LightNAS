@@ -2,6 +2,22 @@
 # Author : yuxiang Zeng
 from dataclasses import dataclass
 
+
+
+@dataclass
+class DatasetInfo:
+    path: str = './data'
+    task: str = 'bench201'
+    dataset: str = '201_acc'          #  101_acc 201_acc
+    predict_target: str = 'accuracy'  #  latency accuracy 
+    
+    eval_set: bool = True
+    shuffle: bool = False
+    scaler_method: str = 'minmax'
+    # spliter_ratio: str = '7:1:2'
+    spliter_ratio: str = '5:1:94'
+    
+    
 @dataclass
 class TrainingConfig:
     bs: int = 16
@@ -16,6 +32,7 @@ class TrainingConfig:
     monitor_metric: str = 'NMAE'
     use_amp: bool = False
 
+
 @dataclass
 class BaseModelConfig:
     model: str = 'ours'
@@ -23,17 +40,6 @@ class BaseModelConfig:
     num_layers: int = 3
     retrain: bool = True
 
-@dataclass
-class DatasetInfo:
-    path: str = './data'
-    task: str = 'bench201'
-    dataset: str = '201_acc'          #  101_acc 201_acc
-    predict_target: str = 'accuracy'  #  latency accuracy 
-    
-    eval_set: bool = True
-    shuffle: bool = False
-    scaler_method: str = 'minmax'
-    spliter_ratio: str = '7:1:2'
 
 @dataclass
 class ExperimentConfig:

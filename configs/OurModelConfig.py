@@ -35,8 +35,6 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     ffn_method: str = 'ffn'
 
     # 数据集路径
-    src_dataset: str = 'data/nasbench201/pkl/embedded-gpu-jetson-nono-fp16.pkl'
-    dst_dataset: str = 'data/nasbench201/pkl/desktop-gpu-gtx-1080ti-fp32.pkl'
     transfer: bool = False
 
     # 位置编码相关

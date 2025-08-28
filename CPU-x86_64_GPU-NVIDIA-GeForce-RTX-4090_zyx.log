@@ -578,3 +578,5 @@
 |2025-08-24 00:24:30| MAE - 3.2133 MSE - 39.9818 RMSE - 6.3196 MAPE - 0.0455 NMAE - 0.0378 NRMSE - 0.0741 Acc_10 - 0.8953 KendallTau - 0.4250 SpearmanRho - 0.5326 train_time - 210.1255
 |2025-08-24 01:21:38| Model : narformer, dataset : 201_acc, dst_dataset : desktop-cpu-core-i7-7820x-fp32, spliter_ratio : 10:4:86, d_model : 192
 |2025-08-24 01:21:38| MAE - 3.5497 MSE - 40.8706 RMSE - 6.3887 MAPE - 0.0492 NMAE - 0.0418 NRMSE - 0.0749 Acc_10 - 0.8978 KendallTau - nan SpearmanRho - nan train_time - 274.1138
+|2025-08-28 11:05:49| Model : nnformer, dataset : 201_acc, spliter_ratio : 5:1:94, d_model : 192
+|2025-08-28 11:05:49| MAE - 0.7583 MSE - 2.0551 RMSE - 1.4313 MAPE - 0.0098 NMAE - 0.0089 NRMSE - 0.0168 Acc_10 - 0.9924 KendallTau - 0.8581 SpearmanRho - 0.9708 train_time - 39.4059

@@ -12,7 +12,7 @@ class NNformerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     model: str = "nnformer"
     
     # -------- 数据 / dataset --------
-    percent: float = 4236
+    percent: float = 469
     override_data: bool = False
     finetuning: bool = False
 
@@ -24,12 +24,12 @@ class NNformerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     depths: List[int] = field(default_factory=lambda: [6, 1, 1, 1])
     act_function: str = "relu"
     class_token: bool = True
-    depth_embed: bool = False
+    depth_embed: bool = True
     enc_dim: int = 96
     in_chans: int = 96
-    graph_d_model: int = 192
-    graph_n_head: int = 6
-    graph_d_ff: int = 768
+    graph_d_model: int = 160
+    graph_n_head: int = 4
+    graph_d_ff: int = 640
     d_model: int = 192
     avg_tokens: bool = False
 
@@ -67,7 +67,7 @@ class NNformerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     pretrained_path: Optional[str] = None
 
     # -------- EMA --------
-    model_ema: bool = False
+    model_ema: bool = True
     model_ema_decay: float = 0.99
     model_ema_force_cpu: bool = True
     model_ema_eval: bool = True
@@ -76,6 +76,3 @@ class NNformerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     lambda_mse: float = 1.0
     lambda_rank: float = 0.2
     lambda_consistency: float = 0.0
-
-    # -------- 评估 --------
-    test_freq: int = 1

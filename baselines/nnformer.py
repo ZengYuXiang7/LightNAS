@@ -344,8 +344,8 @@ class RegHead(nn.Module):
 def tokenizer3(
     ops: List[int], adj, depth: int, dim_x: int = 192, embed_type: str = "nape"
 ):
-    adj = torch.tensor(adj)
-
+    # adj = torch.tensor(adj)
+    rel_pos = adj
     if embed_type == "onehot_op":
         code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
         code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
@@ -366,22 +366,22 @@ def tokenizer3(
         return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
     else:
         # encode operation
+        # fn = Embedder(dim_x // 2, embed_type=embed_type)
+        # code_ops_list = [fn(torch.Tensor([30]))]
+        # code_ops_list += [fn(torch.Tensor([op])) for op in ops]
+        # code_ops = torch.stack(code_ops_list, dim=0)  # (len, dim_x)
+
+        # depth = torch.Tensor([depth])
+        # code_depth = fn(depth).reshape(1, -1)
+
+        # rel_pos = torch.full((len(ops) + 2, len(ops) + 2), fill_value=9).int()
+        # rel_pos[1:-1, 1:-1] = adj
+        
         fn = Embedder(dim_x // 2, embed_type=embed_type)
-        code_ops_list = [fn(torch.Tensor([30]))]
-        code_ops_list += [fn(torch.Tensor([op])) for op in ops]
-        code_ops = torch.stack(code_ops_list, dim=0)  # (len, dim_x)
-
-        depth = torch.Tensor([depth])
-        code_depth = fn(depth).reshape(1, -1)
-
-        # shortest_path, path = algos.floyd_warshall(adj.numpy())
-        # shortest_path = torch.from_numpy(shortest_path).long()
-        # shortest_path = torch.clamp(shortest_path, min=0, max=8)
-
-        rel_pos = torch.full((len(ops) + 2, len(ops) + 2), fill_value=9).int()
-        rel_pos[1:-1, 1:-1] = adj
-        # rel_pos[0, 0] = 0
-        # rel_pos[-1, -1] = 0
+        code_ops = torch.stack([fn(torch.Tensor([op])) for op in ops], dim=0)  # (len(ops), dim_x)
+        code_depth = fn(torch.Tensor([depth])).reshape(1, -1)
+        # rel_pos = torch.as_tensor(adj, dtype=torch.int32)  # (len(ops), len(ops))
+        # print(rel_pos)
         return code_ops, rel_pos, code_depth
 
 
@@ -420,7 +420,6 @@ class NNFormer(nn.Module):
         self.head = RegHead(dim, 1, avg_tokens, class_token, depth_embed, dropout)
 
         self.init_weights()
-        print(self)
 
     def init_weights(self):
         self.apply(self._init_weights)
@@ -442,8 +441,9 @@ class NNFormer(nn.Module):
         return no_decay
 
     def forward(self, seqcode, rel_pos, depth, adj, static_feats=None) -> Tensor:
-        # Original Encodings
         seqcode = self.op_embed(seqcode)
+        
+        # print(seqcode.shape, rel_pos.shape)
         if self.cls_token is not None:
             seqcode = torch.cat(
                 [self.cls_token.expand(seqcode.shape[0], -1, -1), seqcode], dim=1
@@ -458,6 +458,7 @@ class NNFormer(nn.Module):
             )
             new_rel_pos[:, 1:, 1:] = rel_pos
             rel_pos = new_rel_pos
+        # print(seqcode.shape, rel_pos.shape)
             
         if self.depth_embed is not None:
             seqcode = torch.cat([seqcode, self.depth_embed(depth)], dim=1)
@@ -471,12 +472,25 @@ class NNFormer(nn.Module):
             )
             new_rel_pos[:, :-1, :-1] = rel_pos
             rel_pos = new_rel_pos
-            
+        
+        # print(seqcode.shape, rel_pos.shape)
         seqcode = self.norm(seqcode)
-
         aev = self.encoder(seqcode, rel_pos, adj.to(torch.float))
         # multi_stage:aev(b, 1, d)
         predict = self.head(aev) + 0.5
         return predict
+    
+    
+def padding_for_batch3(code, adj):
+    MAX_LEN = 7
+    if len(adj) < MAX_LEN:
+        for i in range(MAX_LEN - len(adj)):
+            for l in adj:
+                l.append(0)
+        adj.extend([[0]*MAX_LEN for _ in range(MAX_LEN - len(adj))])
 
-
+        code_ = torch.zeros((MAX_LEN, code.shape[1]))
+        code_[:code.shape[0], :] = code
+        return code_, adj
+    else:
+        return code, adj
