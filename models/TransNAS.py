@@ -10,20 +10,6 @@ import torch
 import torch.nn as nn
 
 
-def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int) -> torch.Tensor:
-    """adj: [B,n,n] → 返回 LapPE [B,n,dp]"""
-    B, n, _ = adj.shape
-    outs = []
-    for b in range(B):
-        A = adj[b].float()
-        deg = A.sum(1).clamp(min=1e-12)
-        D_inv_sqrt = torch.diag(deg.pow(-0.5))
-        L = torch.eye(n, device=adj.device) - D_inv_sqrt @ A @ D_inv_sqrt
-        _, evecs = torch.linalg.eigh(L)
-        k = min(dp, n)
-        P = evecs[:, :k]
-        outs.append(F.pad(P, (0, dp - k)))
-    return torch.stack(outs, dim=0)  # [B,n,dp]
 
 
 class TransNAS(nn.Module):
@@ -31,11 +17,13 @@ class TransNAS(nn.Module):
         super(TransNAS, self).__init__()
         self.config = config
         self.d_model = config.d_model
-        self.tokenGT = TokenGT(c_node=1, d_model=config.d_model, nhead=config.num_heads, num_layers=config.num_layers, lap_dim=8, use_edge=False)
+        self.op_embedding = torch.nn.Embedding(7, config.d_model)
+        self.tokenGT = TokenGT(c_node=config.d_model, d_model=config.d_model, nhead=config.num_heads, num_layers=config.num_layers, lap_dim=config.lp_d_model, use_edge=False)
         self.fc = nn.Linear(config.d_model, 1)  # 回归或分类
 
-    def forward(self, graphs, features):
-        cls_out, _ = self.tokenGT(graphs, features)  # [B, d_model]
+    def forward(self, graphs, features, P):
+        features = self.op_embedding(features)
+        cls_out, _ = self.tokenGT(graphs, features, P)  # [B, d_model]
         y = self.fc(cls_out)                           # 回归或分类
         return y
     
@@ -48,7 +36,7 @@ class TokenGT(nn.Module):
         self.lap_dim = lap_dim
 
         # 节点 token 投影
-        self.node_proj = nn.Linear(c_node + lap_dim, d_model)
+        self.node_proj = nn.Linear(c_node + 2 * lap_dim, d_model)
 
         # 边 token 投影 (用常数 + LapPE(u)+LapPE(v))
         if use_edge:
@@ -64,62 +52,62 @@ class TokenGT(nn.Module):
         enc_layer = nn.TransformerEncoderLayer(d_model, nhead, batch_first=True)
         self.encoder = nn.TransformerEncoder(enc_layer, num_layers=num_layers)
 
-    def forward(self, adj: torch.Tensor, node_feats: torch.Tensor):
-        """
-        adj: [B,n,n]
-        node_feats: [B,n,c_node]
-        """
+    def forward(self, adj: torch.Tensor, node_feats: torch.Tensor, P: torch.Tensor):
         B, n, _ = adj.shape
+        
+        # P = laplacian_node_ids_from_adj(adj, self.lap_dim)  # [B,n,lap_dim]
 
-        # Laplacian PE
-        P = laplacian_node_ids_from_adj(adj, self.lap_dim)  # [B,n,lap_dim]
-
-        # --- 节点 token ---
-        node_tok = self.node_proj(torch.cat([node_feats, P], dim=-1))  # [B,n,d_model]
+        # node tokens: [Xv, Pv, Pv]
+        node_tok = self.node_proj(torch.cat([node_feats, P, P], dim=-1))  # [B,n,d]
         node_tok = node_tok + self.type_embed(torch.zeros(n, dtype=torch.long, device=adj.device)).unsqueeze(0)
-
         tokens = [node_tok]
 
-        # --- 边 token (可选) ---
         if self.use_edge:
-            edge_tokens = []
+            edge_tok_per_b = [None] * B
+            edge_len = torch.zeros(B, dtype=torch.long, device=adj.device)
             for b in range(B):
-                src, dst = (adj[b] > 0).nonzero(as_tuple=True)  # 单张图的边索引
-                m = src.size(0)  # 这张图的边数
+                Ab = (adj[b] > 0)
+                Ab = Ab.clone()
+                Ab.fill_diagonal_(False)
+                src, dst = torch.triu(Ab, diagonal=1).nonzero(as_tuple=True)
+                m = src.numel()
+                edge_len[b] = m
                 if m == 0:
                     continue
-                edge_feat = torch.ones(m, 1, device=adj.device)
-                Pu, Pv = P[b, src], P[b, dst]  # LapPE(u), LapPE(v)
-                edge_input = torch.cat([edge_feat, Pu, Pv], dim=-1)  # [m, 1+2*lap_dim]
-                etok = self.edge_proj(edge_input).unsqueeze(0)       # [1,m,d_model]
-                # 加上 type embedding (1 = edge)
-                etok = etok + self.type_embed(
-                    torch.ones(m, dtype=torch.long, device=adj.device)
-                ).unsqueeze(0)
-                edge_tokens.append(etok)
+                Pu, Pv = P[b, src], P[b, dst]
+                edge_input = torch.cat([torch.ones(m, 1, device=adj.device), Pu, Pv], dim=-1)  # [m,1+2*lap]
+                etok = self.edge_proj(edge_input).unsqueeze(0)                                  # [1,m,d]
+                etok = etok + self.type_embed(torch.ones(m, dtype=torch.long, device=adj.device)).unsqueeze(0)
+                edge_tok_per_b[b] = etok
 
-            if edge_tokens:
-                # pad 到相同长度
-                max_m = max([e.size(1) for e in edge_tokens])
+            max_m = int(edge_len.max().item() if edge_len.numel() else 0)
+            if max_m > 0:
                 padded = torch.zeros(B, max_m, self.node_proj.out_features, device=adj.device)
                 pad_mask_edges = torch.ones(B, max_m, dtype=torch.bool, device=adj.device)
-                for b, etok in enumerate(edge_tokens):
+                for b, etok in enumerate(edge_tok_per_b):
+                    if etok is None:
+                        continue
                     L = etok.size(1)
-                    padded[b, :L] = etok
+                    padded[b, :L] = etok[0]
                     pad_mask_edges[b, :L] = False
                 tokens.append(padded)
+            else:
+                pad_mask_edges = torch.zeros(B, 0, dtype=torch.bool, device=adj.device)
+        else:
+            pad_mask_edges = torch.zeros(B, 0, dtype=torch.bool, device=adj.device)
 
-        # --- special token + 拼接 ---
-        graph_tok = self.graph_tok.expand(B, -1, -1)  # [B,1,d_model]
-        seq = torch.cat([graph_tok] + tokens, dim=1)  # [B,L,d_model]
+        graph_tok = self.graph_tok.expand(B, -1, -1)  # [B,1,d]
+        seq = torch.cat([graph_tok] + tokens, dim=1)  # [B, 1+n(+max_m), d]
 
-        # --- Transformer 编码 ---
-        pad_mask = torch.zeros(B, seq.size(1), dtype=torch.bool, device=adj.device)
+        pad_mask = torch.cat([
+            torch.zeros(B, 1 + n, dtype=torch.bool, device=adj.device),
+            pad_mask_edges
+        ], dim=1)
+
         x_enc = self.encoder(seq, src_key_padding_mask=pad_mask)
-        graph_repr = x_enc[:, 0, :]  # [graph] token 表示
+        graph_repr = x_enc[:, 0, :]
         return graph_repr, x_enc
-
-        
+    
 
 
 class PairwiseDiffLoss(nn.Module):
@@ -200,3 +188,5 @@ class ACLoss(nn.Module):
         augmented = augmented.squeeze(-1) if augmented.ndim == 2 and augmented.shape[1] == 1 else augmented
 
         return self.criterion(source, augmented)
+    
+    

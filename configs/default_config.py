@@ -31,6 +31,7 @@ class TrainingConfig:
     device: str = 'cuda'
     monitor_metric: str = 'NMAE'
     use_amp: bool = False
+    monitor_reverse: bool = False
 
 
 @dataclass

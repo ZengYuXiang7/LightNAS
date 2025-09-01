@@ -8,7 +8,7 @@ from baselines.gru import GRU
 from baselines.lstm import LSTM
 from baselines.narformer import NarFormer
 from baselines.narformer2 import NarFormer2
-from baselines.nnformer import NNFormer
+from baselines.nnformer import NARLoss, NNFormer
 from models.layers.metric.distance import PairwiseLoss
 from exp.exp_base import BasicModel
 from models.TransNAS import ACLoss, PairwiseDiffLoss, TransNAS
@@ -79,6 +79,7 @@ class Model(BasicModel):
                 depth_embed=config.depth_embed,
                 dataset=config.dataset,
             )
+            self.nnformer_loss = NARLoss()
         
         elif config.model == 'nnlqp':
             self.model = NNLQP(self.input_size, config)

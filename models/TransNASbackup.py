@@ -11,9 +11,9 @@ import torch.nn as nn
 import einops
 
 
-class TransNAS(nn.Module):
+class VIT(nn.Module):
     def __init__(self, enc_in, config):
-        super(TransNAS, self).__init__()
+        super(VIT, self).__init__()
         self.config = config
         self.d_model = config.d_model
         self.seq_len = 9  # 如果是 9 个 token（例如来自 NAS cell）

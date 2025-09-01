@@ -9,16 +9,13 @@ import random
 def compute_loss(model, pred, label, config):
     pred = pred.reshape(label.shape)
     
+    if config.model == 'ours':
+        return model.loss_function(pred, label) + 0.5 * model.rank_loss(pred, label) + 0.1 * model.ac_loss(pred)
+    
+    
     loss = model.loss_function(pred, label)
-    
-    # 如果 config.rank_loss 为 True，则追加排序损失
-    # if getattr(config, 'rank_loss', False):
-    #     # print(f"Rank loss {model.rank_loss(pred, label)} enabled, adding to total loss.")
-    #     loss += model.rank_loss(pred, label) * 0.1
-    
-    # if getattr(config, 'ac_loss', False):
-    #     # 如果存在 ac_loss，则计算并添加到总损失中
-    #     # print(f"AC loss {model.ac_loss(pred)} enabled, adding to total loss.")
-    #     loss += model.ac_loss(pred) * 0.5
-        
     return loss
+    
+    # if config.model == 'nnformer':
+        # loss = model.nnformer_loss(pred, label)
+        # return loss

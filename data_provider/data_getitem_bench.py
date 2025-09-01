@@ -16,6 +16,20 @@ from dgl import from_scipy
 from torch.utils.data.dataloader import default_collate
 import torch.nn.functional as F
 
+def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int) -> torch.Tensor:
+    """adj: [B,n,n] → 返回 LapPE [B,n,dp]"""
+    n, _ = adj.shape
+    A = adj.float()
+    deg = A.sum(1).clamp(min=1e-12)
+    D_inv_sqrt = torch.diag(deg.pow(-0.5))
+    L = torch.eye(n, device=adj.device) - D_inv_sqrt @ A @ D_inv_sqrt
+    _, evecs = torch.linalg.eigh(L)
+    k = min(dp, n)
+    P = evecs[:, :k]
+    outs = F.pad(P, (0, dp - k))
+    return outs
+
+
 class NasBenchDataset(Dataset):
     def __init__(self, data, mode, config):
         self.config = config
@@ -28,18 +42,22 @@ class NasBenchDataset(Dataset):
     def __getitem__(self, idx):
         if self.config.model == 'ours':
         
-            adj_matrix = self.data['adj_matrix'][idx]
+            # adj_matrix = self.data['adj_matrix'][idx]
             features   = self.data['features'][idx]
             y          = self.data[self.config.predict_target][idx]
             
-            adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
-            features = torch.tensor(features, dtype=torch.long).unsqueeze(-1)
+            key = self.data['key'][idx]
+            arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
+            adj_matrix, features = info2mat(arch_str) 
             
+            # print(features)
+            adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
+            features = torch.tensor(features, dtype=torch.long)
             # graph = dgl.from_scipy(csr_matrix(adj_matrix))
             # graph = dgl.to_bidirected(graph)
+            P = laplacian_node_ids_from_adj(adj_matrix, self.config.lp_d_model)
             graph = adj_matrix
-            
-            return graph, features, y
+            return graph, features, P, y
         
         elif self.config.model == "flops":
             flops = self.data['flops'][idx]
@@ -146,8 +164,8 @@ class NasBenchDataset(Dataset):
         
     def custom_collate_fn(self, batch, config):
         if self.config.model == 'ours':
-            graph, features, y = zip(*batch)
-            return default_collate(graph).to(torch.float32), default_collate(features).to(torch.long), default_collate(y).to(torch.float32)
+            graph, features, P, y = zip(*batch)
+            return default_collate(graph).to(torch.float32), default_collate(features).to(torch.long), default_collate(P).to(torch.float32), default_collate(y).to(torch.float32)
         elif self.config.model in {"flops", "flops-mac"}:
             features, y = zip(*batch)
             return default_collate(features).to(torch.float32), default_collate(y).to(torch.float32)

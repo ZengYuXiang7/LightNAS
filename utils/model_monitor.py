@@ -7,6 +7,7 @@ import numpy as np
 class EarlyStopping:
     def __init__(self, config):
         self.config = config
+        self.monitor_reverse = config.monitor_reverse
         self.patience = config.patience
         self.counter = 0
         self.best_score = None
@@ -43,7 +44,7 @@ class EarlyStopping:
         return self.counter >= self.patience
 
     def track_one_epoch(self, epoch, model, error, metric):
-        if self.config.classification:
+        if self.monitor_reverse:
             self.track(epoch, model.state_dict(), -1 * error[metric])
         else:
             self.track(epoch, model.state_dict(), error[metric])

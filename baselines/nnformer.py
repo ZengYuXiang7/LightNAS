@@ -8,56 +8,6 @@ from timm.models.layers import DropPath, to_2tuple
 from torch import Tensor
 import numpy as np 
 
-class Embedder:
-    def __init__(
-        self, num_freqs, embed_type="nape", input_type="tensor", input_dims=1
-    ):
-        self.num_freqs = num_freqs
-        self.max_freq = max(32, num_freqs)
-        self.embed_type = embed_type
-        self.input_type = input_type
-        self.input_dims = input_dims
-        self.eps = 0.01
-        if input_type == "tensor":
-            self.embed_fns = [torch.sin, torch.cos]
-            self.embed = self.embed_tensor
-        else:
-            self.embed_fns = [np.sin, np.cos]
-            self.embed = self.embed_array
-        self.create_embedding_fn()
-
-    def __call__(self, x):
-        return self.embed(x)
-
-    def create_embedding_fn(self):
-        max_freq = self.max_freq
-        N_freqs = self.num_freqs
-
-        if self.embed_type == "nape":
-            freq_bands = (
-                (self.eps + torch.linspace(1, max_freq, N_freqs)) * math.pi / (max_freq + 1)
-            )
-
-        elif self.embed_type == "nerf":
-            freq_bands = (
-                torch.linspace(2.0**0.0, 2.0**max_freq, steps=N_freqs)
-            ) * math.pi
-
-        elif self.embed_type == "trans":
-            dim = self.num_freqs
-            freq_bands = torch.tensor([1 / (10000 ** (j / dim)) for j in range(dim)])
-
-        self.freq_bands = freq_bands
-        self.out_dim = self.input_dims * len(self.embed_fns) * len(freq_bands)
-
-    def embed_tensor(self, inputs: Tensor):
-        self.freq_bands = self.freq_bands.to(inputs.device)
-        return torch.cat([fn(self.freq_bands * inputs) for fn in self.embed_fns], -1)
-
-    def embed_array(self, inputs):
-        return np.concatenate([fn(self.freq_bands * inputs) for fn in self.embed_fns])
-
-
 class SquareReLU(nn.Module):
     def __init__(self):
         super().__init__()
@@ -341,50 +291,6 @@ class RegHead(nn.Module):
         return res
 
 
-def tokenizer3(
-    ops: List[int], adj, depth: int, dim_x: int = 192, embed_type: str = "nape"
-):
-    # adj = torch.tensor(adj)
-    rel_pos = adj
-    if embed_type == "onehot_op":
-        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
-        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
-        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
-    elif embed_type == "onehot_oppos":
-        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x // 2)
-        code_pos = F.one_hot(torch.arange(len(ops)), num_classes=dim_x // 2)
-        code_ops = torch.cat([code_ops, code_pos], dim=-1)
-        # # Another implementation
-        # code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
-        # code_ops[:, dim_x // 2:] = F.one_hot(torch.arrange(len(ops)), num_classes=dim_x // 2)
-        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
-        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
-    elif embed_type == "onehot_oplaplacian":
-        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
-        code_ops[:, dim_x // 2 : dim_x // 2 + adj.shape[-1]] = adj.sum(-1) - adj
-        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
-        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
-    else:
-        # encode operation
-        # fn = Embedder(dim_x // 2, embed_type=embed_type)
-        # code_ops_list = [fn(torch.Tensor([30]))]
-        # code_ops_list += [fn(torch.Tensor([op])) for op in ops]
-        # code_ops = torch.stack(code_ops_list, dim=0)  # (len, dim_x)
-
-        # depth = torch.Tensor([depth])
-        # code_depth = fn(depth).reshape(1, -1)
-
-        # rel_pos = torch.full((len(ops) + 2, len(ops) + 2), fill_value=9).int()
-        # rel_pos[1:-1, 1:-1] = adj
-        
-        fn = Embedder(dim_x // 2, embed_type=embed_type)
-        code_ops = torch.stack([fn(torch.Tensor([op])) for op in ops], dim=0)  # (len(ops), dim_x)
-        code_depth = fn(torch.Tensor([depth])).reshape(1, -1)
-        # rel_pos = torch.as_tensor(adj, dtype=torch.int32)  # (len(ops), len(ops))
-        # print(rel_pos)
-        return code_ops, rel_pos, code_depth
-
-
 class NNFormer(nn.Module):
     def __init__(
         self,
@@ -479,8 +385,141 @@ class NNFormer(nn.Module):
         # multi_stage:aev(b, 1, d)
         predict = self.head(aev) + 0.5
         return predict
+
+
+
+class Embedder:
+    def __init__(
+        self, num_freqs, embed_type="nape", input_type="tensor", input_dims=1
+    ):
+        self.num_freqs = num_freqs
+        self.max_freq = max(32, num_freqs)
+        self.embed_type = embed_type
+        self.input_type = input_type
+        self.input_dims = input_dims
+        self.eps = 0.01
+        if input_type == "tensor":
+            self.embed_fns = [torch.sin, torch.cos]
+            self.embed = self.embed_tensor
+        else:
+            self.embed_fns = [np.sin, np.cos]
+            self.embed = self.embed_array
+        self.create_embedding_fn()
+
+    def __call__(self, x):
+        return self.embed(x)
+
+    def create_embedding_fn(self):
+        max_freq = self.max_freq
+        N_freqs = self.num_freqs
+
+        if self.embed_type == "nape":
+            freq_bands = (
+                (self.eps + torch.linspace(1, max_freq, N_freqs)) * math.pi / (max_freq + 1)
+            )
+
+        elif self.embed_type == "nerf":
+            freq_bands = (
+                torch.linspace(2.0**0.0, 2.0**max_freq, steps=N_freqs)
+            ) * math.pi
+
+        elif self.embed_type == "trans":
+            dim = self.num_freqs
+            freq_bands = torch.tensor([1 / (10000 ** (j / dim)) for j in range(dim)])
+
+        self.freq_bands = freq_bands
+        self.out_dim = self.input_dims * len(self.embed_fns) * len(freq_bands)
+
+    def embed_tensor(self, inputs: Tensor):
+        self.freq_bands = self.freq_bands.to(inputs.device)
+        return torch.cat([fn(self.freq_bands * inputs) for fn in self.embed_fns], -1)
+
+    def embed_array(self, inputs):
+        return np.concatenate([fn(self.freq_bands * inputs) for fn in self.embed_fns])
+
+
+
+def tokenizer3(
+    ops: List[int], adj, depth: int, dim_x: int = 192, embed_type: str = "nape"
+):
+    # adj = torch.tensor(adj)
+    rel_pos = adj
+    if embed_type == "onehot_op":
+        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
+        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
+        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
+    elif embed_type == "onehot_oppos":
+        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x // 2)
+        code_pos = F.one_hot(torch.arange(len(ops)), num_classes=dim_x // 2)
+        code_ops = torch.cat([code_ops, code_pos], dim=-1)
+        # # Another implementation
+        # code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
+        # code_ops[:, dim_x // 2:] = F.one_hot(torch.arrange(len(ops)), num_classes=dim_x // 2)
+        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
+        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
+    elif embed_type == "onehot_oplaplacian":
+        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
+        code_ops[:, dim_x // 2 : dim_x // 2 + adj.shape[-1]] = adj.sum(-1) - adj
+        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
+        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
+    else:
+        # encode operation
+        # fn = Embedder(dim_x // 2, embed_type=embed_type)
+        # code_ops_list = [fn(torch.Tensor([30]))]
+        # code_ops_list += [fn(torch.Tensor([op])) for op in ops]
+        # code_ops = torch.stack(code_ops_list, dim=0)  # (len, dim_x)
+
+        # depth = torch.Tensor([depth])
+        # code_depth = fn(depth).reshape(1, -1)
+
+        # rel_pos = torch.full((len(ops) + 2, len(ops) + 2), fill_value=9).int()
+        # rel_pos[1:-1, 1:-1] = adj
+        
+        fn = Embedder(dim_x // 2, embed_type=embed_type)
+        code_ops = torch.stack([fn(torch.Tensor([op])) for op in ops], dim=0)  # (len(ops), dim_x)
+        code_depth = fn(torch.Tensor([depth])).reshape(1, -1)
+        # rel_pos = torch.as_tensor(adj, dtype=torch.int32)  # (len(ops), len(ops))
+        # print(rel_pos)
+        return code_ops, rel_pos, code_depth
     
-    
+
+class NARLoss(nn.Module):
+    def __init__(
+        self,
+        lambda_mse: float = 1.0,
+        lambda_rank: float = 0.2,
+        lambda_consist: float = 1.0,
+    ):
+        super().__init__()
+        self.lambda_mse = lambda_mse
+        self.lambda_rank = lambda_rank
+        self.lambda_consist = lambda_consist
+        self.loss_mse = nn.MSELoss()
+        self.loss_rank = nn.L1Loss()
+        # self.loss_rank = nn.SmoothL1Loss(beta=0.005)
+        self.loss_consist = nn.L1Loss()
+        # self.loss_consist = nn.SmoothL1Loss(beta=0.005)
+
+    def forward(self, predict: Tensor, target: Tensor):
+        loss_mse = self.loss_mse(predict, target) * self.lambda_mse
+
+        index = torch.randperm(predict.shape[0], device=predict.device)
+        v1 = predict - predict[index]
+        v2 = target - target[index]
+        loss_rank = self.loss_rank(v1, v2) * self.lambda_rank
+        # v1 = predict.unsqueeze(1) - predict.unsqueeze(0)
+        # v2 = target.unsqueeze(1) - target.unsqueeze(0)
+        # loss_rank = self.loss_rank(v1, v2) * self.lambda_rank
+
+        loss_consist = 0
+        if self.lambda_consist > 0:
+            source_pred, aug_pred = predict.chunk(2, 0)
+            loss_consist = (
+                self.loss_consist(source_pred, aug_pred) * self.lambda_consist
+            )
+        loss = loss_mse + loss_rank + loss_consist
+        return loss
+
 def padding_for_batch3(code, adj):
     MAX_LEN = 7
     if len(adj) < MAX_LEN:
