@@ -6,13 +6,9 @@ from datetime import datetime
 
 # 在这里写下超参数探索空间
 hyper_dict = {
-    'rounds': [2],
-    'gcn_method': ['gat', 'gcn', 'graphsage', 'gin'],  #
-    'norm_method': ['batch', 'rms', 'layer'],  #
-    'ffn_method': ['ffn', 'moe'],  #
-    'rank': [128, 32, 64, 256],
-    'num_layers': [4, 2, 3, 5, 8],
-    'loss_coef': [0.001, 0.0001, 0.01, 0.1, 1],  # weather electricity
+    'd_model': [60, 100, 128, 192],
+    'num_layers': [2, 1, 3, 4],
+    'num_heads': [4, 2, 8],
 }
 
 ######################################################################################################
@@ -42,7 +38,7 @@ def Ablation():
 
 
 def Our_model(hyper=None):
-    once_experiment('TestConfig', hyper_dict, grid_search=0)
+    once_experiment('OurModelConfig', hyper_dict, grid_search=0)
     return True
 
 

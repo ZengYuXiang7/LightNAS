@@ -17,10 +17,10 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     input_size: int = 192
     
     epochs: int = 1500
-    patience: int = 100
-    d_model: int = 60 
+    patience: int = 150
+    d_model: int = 192 
     lp_d_model: int = 16
-    optim: str = 'AdamW'
+    optim: str = 'Adam'
     
     num_layers: int = 2
     num_heads: int = 4

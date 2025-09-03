@@ -47,7 +47,7 @@ def get_att(d_model, num_heads, method):
 
 
 class Transformer(torch.nn.Module):
-    def __init__(self, d_model, num_heads, num_layers, norm_method='rms', ffn_method='moe', att_method='self'):
+    def __init__(self, d_model, num_layers, num_heads, norm_method='rms', ffn_method='moe', att_method='self'):
         super().__init__()
         self.layers = torch.nn.ModuleList([])
         for _ in range(num_layers):
@@ -63,8 +63,8 @@ class Transformer(torch.nn.Module):
             )
         self.norm = get_norm(d_model, norm_method)
 
-    def forward(self, x, x_mark=None):
+    def forward(self, x, key_padding_mask=None):
         for norm1, attn, norm2, ff in self.layers:
-            x = attn(norm1(x)) + x
+            x = attn(norm1(x), key_padding_mask=key_padding_mask) + x
             x = ff(norm2(x)) + x
         return x

@@ -27,7 +27,6 @@ class TransNAS(nn.Module):
         y = self.fc(cls_out)                           # 回归或分类
         return y
     
-    
 
 class TokenGT(nn.Module):
     def __init__(self, c_node: int, d_model: int = 128, nhead: int = 8, num_layers: int = 4, lap_dim: int = 8, use_edge: bool = False):
@@ -49,8 +48,10 @@ class TokenGT(nn.Module):
         self.graph_tok = nn.Parameter(torch.randn(1, 1, d_model))
 
         # Transformer 编码器
-        enc_layer = nn.TransformerEncoderLayer(d_model, nhead, batch_first=True)
-        self.encoder = nn.TransformerEncoder(enc_layer, num_layers=num_layers)
+        # enc_layer = nn.TransformerEncoderLayer(d_model, nhead, batch_first=True)
+        # self.encoder = nn.TransformerEncoder(enc_layer, num_layers=num_layers)
+        
+        self.encoder = Transformer(d_model, num_layers, nhead, 'rms', 'ffn', 'self')
 
     def forward(self, adj: torch.Tensor, node_feats: torch.Tensor, P: torch.Tensor):
         B, n, _ = adj.shape
@@ -81,6 +82,7 @@ class TokenGT(nn.Module):
                 edge_tok_per_b[b] = etok
 
             max_m = int(edge_len.max().item() if edge_len.numel() else 0)
+            
             if max_m > 0:
                 padded = torch.zeros(B, max_m, self.node_proj.out_features, device=adj.device)
                 pad_mask_edges = torch.ones(B, max_m, dtype=torch.bool, device=adj.device)
@@ -93,6 +95,7 @@ class TokenGT(nn.Module):
                 tokens.append(padded)
             else:
                 pad_mask_edges = torch.zeros(B, 0, dtype=torch.bool, device=adj.device)
+                
         else:
             pad_mask_edges = torch.zeros(B, 0, dtype=torch.bool, device=adj.device)
 
@@ -104,7 +107,7 @@ class TokenGT(nn.Module):
             pad_mask_edges
         ], dim=1)
 
-        x_enc = self.encoder(seq, src_key_padding_mask=pad_mask)
+        x_enc = self.encoder(seq, key_padding_mask=pad_mask)
         graph_repr = x_enc[:, 0, :]
         return graph_repr, x_enc
     

@@ -388,6 +388,52 @@ class NNFormer(nn.Module):
 
 
 
+def tokenizer3(
+    ops: List[int], adj, depth: int, dim_x: int = 192, embed_type: str = "nape"
+):
+    # adj = torch.tensor(adj)
+    rel_pos = adj
+    if embed_type == "onehot_op":
+        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
+        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
+        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
+    elif embed_type == "onehot_oppos":
+        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x // 2)
+        code_pos = F.one_hot(torch.arange(len(ops)), num_classes=dim_x // 2)
+        code_ops = torch.cat([code_ops, code_pos], dim=-1)
+        # # Another implementation
+        # code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
+        # code_ops[:, dim_x // 2:] = F.one_hot(torch.arrange(len(ops)), num_classes=dim_x // 2)
+        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
+        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
+    elif embed_type == "onehot_oplaplacian":
+        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
+        code_ops[:, dim_x // 2 : dim_x // 2 + adj.shape[-1]] = adj.sum(-1) - adj
+        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
+        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
+    else:
+        # encode operation
+        # fn = Embedder(dim_x // 2, embed_type=embed_type)
+        # code_ops_list = [fn(torch.Tensor([30]))]
+        # code_ops_list += [fn(torch.Tensor([op])) for op in ops]
+        # code_ops = torch.stack(code_ops_list, dim=0)  # (len, dim_x)
+
+        # depth = torch.Tensor([depth])
+        # code_depth = fn(depth).reshape(1, -1)
+
+        # rel_pos = torch.full((len(ops) + 2, len(ops) + 2), fill_value=9).int()
+        # rel_pos[1:-1, 1:-1] = adj
+        
+        fn = Embedder(dim_x // 2, embed_type=embed_type)
+        code_ops = torch.stack([fn(torch.Tensor([op])) for op in ops], dim=0)  # (len(ops), dim_x)
+        code_depth = fn(torch.Tensor([depth])).reshape(1, -1)
+        # rel_pos = torch.as_tensor(adj, dtype=torch.int32)  # (len(ops), len(ops))
+        # print(rel_pos)
+        return code_ops, rel_pos, code_depth
+    
+
+
+
 class Embedder:
     def __init__(
         self, num_freqs, embed_type="nape", input_type="tensor", input_dims=1
@@ -438,50 +484,6 @@ class Embedder:
         return np.concatenate([fn(self.freq_bands * inputs) for fn in self.embed_fns])
 
 
-
-def tokenizer3(
-    ops: List[int], adj, depth: int, dim_x: int = 192, embed_type: str = "nape"
-):
-    # adj = torch.tensor(adj)
-    rel_pos = adj
-    if embed_type == "onehot_op":
-        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
-        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
-        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
-    elif embed_type == "onehot_oppos":
-        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x // 2)
-        code_pos = F.one_hot(torch.arange(len(ops)), num_classes=dim_x // 2)
-        code_ops = torch.cat([code_ops, code_pos], dim=-1)
-        # # Another implementation
-        # code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
-        # code_ops[:, dim_x // 2:] = F.one_hot(torch.arrange(len(ops)), num_classes=dim_x // 2)
-        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
-        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
-    elif embed_type == "onehot_oplaplacian":
-        code_ops = F.one_hot(torch.tensor(ops), num_classes=dim_x)
-        code_ops[:, dim_x // 2 : dim_x // 2 + adj.shape[-1]] = adj.sum(-1) - adj
-        code_depth = F.one_hot(torch.tensor([depth]), num_classes=dim_x)
-        return (code_ops.to(torch.int8), adj.to(torch.int8), code_depth.to(torch.int8))
-    else:
-        # encode operation
-        # fn = Embedder(dim_x // 2, embed_type=embed_type)
-        # code_ops_list = [fn(torch.Tensor([30]))]
-        # code_ops_list += [fn(torch.Tensor([op])) for op in ops]
-        # code_ops = torch.stack(code_ops_list, dim=0)  # (len, dim_x)
-
-        # depth = torch.Tensor([depth])
-        # code_depth = fn(depth).reshape(1, -1)
-
-        # rel_pos = torch.full((len(ops) + 2, len(ops) + 2), fill_value=9).int()
-        # rel_pos[1:-1, 1:-1] = adj
-        
-        fn = Embedder(dim_x // 2, embed_type=embed_type)
-        code_ops = torch.stack([fn(torch.Tensor([op])) for op in ops], dim=0)  # (len(ops), dim_x)
-        code_depth = fn(torch.Tensor([depth])).reshape(1, -1)
-        # rel_pos = torch.as_tensor(adj, dtype=torch.int32)  # (len(ops), len(ops))
-        # print(rel_pos)
-        return code_ops, rel_pos, code_depth
-    
 
 class NARLoss(nn.Module):
     def __init__(

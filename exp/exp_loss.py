@@ -12,7 +12,6 @@ def compute_loss(model, pred, label, config):
     if config.model == 'ours':
         return model.loss_function(pred, label) + 0.5 * model.rank_loss(pred, label) + 0.1 * model.ac_loss(pred)
     
-    
     loss = model.loss_function(pred, label)
     return loss
     

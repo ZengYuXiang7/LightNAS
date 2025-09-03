@@ -461,7 +461,6 @@ def tokenizer2(ops, adj, dx, dp, embed_type='nerf', op_code_type='pe'):
 
 
 
-
 def get_embedder(multires, embed_type='nerf', input_type='numpy', i=0):
     if i == -1:
         return nn.Identity(), 3

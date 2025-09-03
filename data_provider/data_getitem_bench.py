@@ -50,12 +50,12 @@ class NasBenchDataset(Dataset):
             arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
             adj_matrix, features = info2mat(arch_str) 
             
-            # print(features)
             adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
             features = torch.tensor(features, dtype=torch.long)
             # graph = dgl.from_scipy(csr_matrix(adj_matrix))
             # graph = dgl.to_bidirected(graph)
             P = laplacian_node_ids_from_adj(adj_matrix, self.config.lp_d_model)
+            
             graph = adj_matrix
             return graph, features, P, y
         
@@ -143,7 +143,6 @@ class NasBenchDataset(Dataset):
             elif self.config.dataset == '101_acc':
                 adj_mat = self.data['adj_matrix'][idx]             # 直接取邻接矩阵
                 ops_idx = self.data['features'][idx]             # 直接取操作序列
-                
                 
             num_vertices = len(ops_idx)
             code, rel_pos, code_depth = tokenizer3(ops_idx, adj_mat, num_vertices, 96, 'nape')
