@@ -458,16 +458,15 @@ class Embedder:
     def create_embedding_fn(self):
         max_freq = self.max_freq
         N_freqs = self.num_freqs
+        # print(max_freq, N_freqs)
+        # print(((torch.linspace(2.0**0.0, 2.0**max_freq, steps=N_freqs)) * math.pi).shape)
+        # exit()
 
         if self.embed_type == "nape":
-            freq_bands = (
-                (self.eps + torch.linspace(1, max_freq, N_freqs)) * math.pi / (max_freq + 1)
-            )
+            freq_bands = ((self.eps + torch.linspace(1, max_freq, N_freqs)) * math.pi / (max_freq + 1))
 
         elif self.embed_type == "nerf":
-            freq_bands = (
-                torch.linspace(2.0**0.0, 2.0**max_freq, steps=N_freqs)
-            ) * math.pi
+            freq_bands = (torch.linspace(2.0**0.0, 2.0**max_freq, steps=N_freqs)) * math.pi
 
         elif self.embed_type == "trans":
             dim = self.num_freqs

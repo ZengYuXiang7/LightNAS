@@ -4,40 +4,42 @@
 CONFIGS=(
 #   "FlopsConfig"
 #   "MacConfig"
-#   "LSTMConfig"
-#   "GRUConfig"
-#   "BRPNASConfig"
-#   "NNLQPConfig"
-#   "GATConfig"
-#   "NarFormerConfig"
+  "LSTMConfig"
+  "GRUConfig"
+  "BRPNASConfig"
+  "NNLQPConfig"
+  "GATConfig"
+  "NarFormerConfig"
   "NarFormer2Config"
   "NNformerConfig"
   "OurModelConfig"
 #   "nnMeterConfig"
 )
-# datasets=(
-#     "desktop-cpu-core-i7-7820x-fp32.pkl"
-#     # "mobile-cpu-snapdragon-675-kryo-460-int8.pkl"
-# )
-spliter_ratios=(
-    "1:4:95"
-    "3:4:93"
-    "5:4:91"
-    "10:4:86"
+datasets=(
+    "desktop-cpu-core-i7-7820x-fp32.pkl"
+    # "mobile-cpu-snapdragon-675-kryo-460-int8.pkl"
 )
-for config in "${CONFIGS[@]}"
+spliter_ratios=(
+    "0.02:4:95.98"
+    "0.04:4:95.96"
+    "0.1:4:95.9"
+    "1:4:95"
+)
+for dataset in "${datasets[@]}"
 do
-    for spliter_ratio in "${spliter_ratios[@]}"
+    for config in "${CONFIGS[@]}"
     do
-        echo "使用splitter_ratio: $spliter_ratio，配置: $config"
-        
-        # 调用训练脚本，使用配置和数据集
-        python run_train.py --exp_name $config --retrain 1 --logger wangyang --transfer False \
-        --spliter_ratio "$spliter_ratio" --dataset 201_acc
-        
+        for spliter_ratio in "${spliter_ratios[@]}"
+        do
+            echo "正在训练数据集: $dataset，使用splitter_ratio: $spliter_ratio，配置: $config"
+            
+            # 调用训练脚本，使用配置和数据集
+            python run_train.py --exp_name $config --retrain 1 --logger zyx --transfer False \
+            --spliter_ratio "$spliter_ratio" --dataset 101_acc
+            
+        done
     done
 done
-
 
 
 

@@ -17,9 +17,9 @@ def add_parameter(command: str, params: dict) -> str:
         command += f" --{param_name} {param_value}"
     return command
 
-def once_experiment(exper_name, hyper_dict, grid_search=0, retrain=1, debug=0):
+def once_experiment(exper_name, hyper_dict, monitor_metric, grid_search=0, retrain=1, debug=0):
     # 先进行超参数探索
-    best_hyper = hyper_search(exper_name, hyper_dict, grid_search=grid_search, retrain=retrain, debug=debug)
+    best_hyper = hyper_search(exper_name, hyper_dict, monitor_metric=monitor_metric, grid_search=grid_search, retrain=retrain, debug=debug)
 
     # 再跑最佳参数实验
     commands = []
@@ -34,41 +34,37 @@ def once_experiment(exper_name, hyper_dict, grid_search=0, retrain=1, debug=0):
     return True
 
 
-def hyper_search(exp_name, hyper_dict, grid_search=0, retrain=1, debug=0):
+def hyper_search(exp_name, hyper_dict, monitor_metric, grid_search=0, retrain=1, debug=0):
     """
     入口函数：选择使用网格搜索还是逐步搜索
     """
     if grid_search:
-        return grid_search_hyperparameters(exp_name, hyper_dict, retrain, debug)
+        return grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, debug)
     else:
-        return sequential_hyper_search(exp_name, hyper_dict, retrain, debug)
+        return sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, debug)
 
 
-def run_and_get_metric(cmd_str, config, chosen_hyper, debug=False):
+def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=False):
     """
     运行训练命令，并提取 metric
     """
-    print(cmd_str)
+    timestamp = time.strftime('|%Y-%m-%d %H:%M:%S| ')
+    print(f"\033[1;38;2;151;200;129m{timestamp}\033[0m \033[1;38;2;100;149;237m{cmd_str}\033[0m")
     config.__dict__.update(chosen_hyper)
     log_filename = get_experiment_name(config)[0]
 
-    if debug:
-        print(log_filename, chosen_hyper)
-    else:
-        subprocess.run(cmd_str, shell=True)
-        pass
+    print(log_filename, chosen_hyper)
+    subprocess.run(cmd_str, shell=True)
 
     metric_file_address = f'./results/metrics/' + get_experiment_name(config)[0]
     this_expr_metrics = pickle.load(open(metric_file_address + '.pkl', 'rb'))
 
     # 选择最优 metric
-    classification_task = getattr(config, 'classification', False)
-    metric_name = 'AC' if classification_task else 'MAE'
-    best_value = np.mean(this_expr_metrics[metric_name])
+    best_value = np.mean(this_expr_metrics[monitor_metric])
     return best_value
 
 
-def grid_search_hyperparameters(exp_name, hyper_dict, retrain, debug):
+def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, debug):
     """
     进行网格搜索（笛卡尔积搜索所有超参数组合）
     """
@@ -101,7 +97,7 @@ def grid_search_hyperparameters(exp_name, hyper_dict, retrain, debug):
 
             f.write(f"COMMAND: {command}\n")
             # 运行并获取结果
-            current_metric = run_and_get_metric(command, config, combo_dict, debug)
+            current_metric = run_and_get_metric(command, config, combo_dict, monitor_metric, debug)
 
             if classification_task:
                 # 分类，metric 越大越好
@@ -122,7 +118,7 @@ def grid_search_hyperparameters(exp_name, hyper_dict, retrain, debug):
     return best_combo
 
 
-def sequential_hyper_search(exp_name, hyper_dict, retrain, debug):
+def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, debug):
     """
     逐步搜索超参数，每次调整一个参数，并保持其他最优值
     """
@@ -166,9 +162,13 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, debug):
                 # 运行命令、获取 metric
                 chosen_dict = best_hyper.copy()
                 chosen_dict[hyper_name] = value
+                
+                # Debug
+                if debug:
+                    command += f"--debug 1 "
 
                 # f.write(f"COMMAND: {command}\n")
-                current_metric = run_and_get_metric(command, config, chosen_dict, debug)
+                current_metric = run_and_get_metric(command, config, chosen_dict, monitor_metric, debug)
 
                 # 比较更新最优
                 if classification_task:
@@ -189,7 +189,7 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, debug):
             f.write(f"==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric:5.4f}\n")
 
         # 全部结束后，打印并写日志
-        # f.write(f"The Best Hyperparameters: {best_hyper}\n")
+        f.write(f"The Best Hyperparameters: {best_hyper}\n")
         print("The Best Hyperparameters:", best_hyper)
     return best_hyper
 
@@ -222,6 +222,7 @@ def run_command(command, log_file, retry_count=0):
                 f.write(f"Command failed, retrying in 3 seconds: {command}\n")
             retry_count += 1
             time.sleep(3)  # 等待一段时间后重试
+
 
 def log_message(message):
     log_file = "run.log"

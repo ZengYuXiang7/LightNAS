@@ -18,6 +18,8 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     
     epochs: int = 1500
     patience: int = 150
+    verbose: int = 200
+    
     d_model: int = 192 
     lp_d_model: int = 16
     optim: str = 'Adam'
@@ -27,7 +29,6 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     
     monitor_reverse: bool = True
     monitor_metric: str = 'KendallTau'
-    
     predict_target: str = 'accuracy'  #  latency accuracy 
 
     # Transformer 结构
@@ -35,19 +36,20 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     # norm_method: str = 'rms'
     # ffn_method: str = 'ffn'
     
-    gcn_method: str = 'gcn'
-    norm_method: str = 'batch'
-    ffn_method: str = 'ffn'
+    # gcn_method: str = 'gcn'
+    # norm_method: str = 'batch'
+    # ffn_method: str = 'ffn'
 
+    op_encoder: str = 'embedding'  # embedding, onehot, discrete
+    
     # 数据集路径
     transfer: bool = False
     
     # 位置编码相关
-    embed_type: str = 'nerf'
-    multires_x: int = 32
-    multires_r: int = 32
-    multires_p: int = 32
-    
+    # embed_type: str = 'nerf'
+    # multires_x: int = 32
+    # multires_r: int = 32
+    # multires_p: int = 32
     rank_loss: bool = True  # 
     ac_loss: bool = True  # 
     

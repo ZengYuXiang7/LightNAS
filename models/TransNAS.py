@@ -4,6 +4,7 @@
 import random
 import torch
 from baselines.narformer import *
+from models.layers.encoder.discrete_enc import DiscreteEncoder
 from models.layers.transformer import Transformer
 # self.encoder = Transformer(config.d_model, config.num_heads, config.num_layers, 'rms', 'ffn', 'self')
 import torch
@@ -17,8 +18,9 @@ class TransNAS(nn.Module):
         super(TransNAS, self).__init__()
         self.config = config
         self.d_model = config.d_model
-        self.op_embedding = torch.nn.Embedding(7, config.d_model)
-        self.tokenGT = TokenGT(c_node=config.d_model, d_model=config.d_model, nhead=config.num_heads, num_layers=config.num_layers, lap_dim=config.lp_d_model, use_edge=False)
+        # self.op_embedding = torch.nn.Embedding(7, config.d_model)
+        self.op_embedding = DiscreteEncoder(num_operations=7, encoding_dim=self.d_model, encoding_type=config.op_encoder, output_dim=self.d_model)
+        self.tokenGT = TokenGT(c_node=self.d_model, d_model=self.d_model, nhead=config.num_heads, num_layers=config.num_layers, lap_dim=config.lp_d_model, use_edge=False)
         self.fc = nn.Linear(config.d_model, 1)  # 回归或分类
 
     def forward(self, graphs, features, P):

@@ -16,3 +16,115 @@ Running at 2025-09-02 18:49: python run_train.py --exp_name OurModelConfig --ret
 [2025-09-02 20:27:59] Experiment Start!!!
 [2025-09-02 21:14:03] Experiment Start!!!
 [2025-09-03 15:58:35] Experiment Start!!!
+Value: 60, Metric: 0.9747
+Value: 100, Metric: 0.9641
+Value: 128, Metric: 0.9102
+Value: 192, Metric: 0.7843
+==> Best d_model: 192, local_best_metric: 0.7843
+Value: 2, Metric: 0.7843
+Value: 1, Metric: 1.3528
+[2025-09-03 22:03:11] Experiment Start!!!
+[2025-09-03 22:04:58] Experiment Start!!!
+Value: 1, Metric: 1.3528
+Value: 4, Metric: 0.9042
+==> Best num_layers: 4, local_best_metric: 0.9042
+Value: 4, Metric: 0.9042
+Value: 2, Metric: 0.8858
+Value: 8, Metric: 1.0435
+==> Best num_heads: 2, local_best_metric: 0.8858
+Running at 2025-09-04 00:58: python run_train.py --exp_name OurModelConfig --retrain 1 --d_model 192 --num_heads 2 --num_layers 4
+[2025-09-04 01:29:58] All commands executed successfully.
+
+[2025-09-05 15:01:20] Experiment Start!!!
+[2025-09-05 15:01:57] Experiment Start!!!
+Value: embedding, Metric: 0.8362
+Value: onehot, Metric: 0.8362
+Value: sinusoidal, Metric: 0.8362
+Value: trans, Metric: 0.8362
+Value: nerf, Metric: 0.8362
+Value: nape, Metric: 0.8362
+==> Best op_encoder: embedding, local_best_metric: 0.8362
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-05 15:01: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-05 15:02:54] Experiment Start!!!
+Value: embedding, Metric: 0.8362
+Value: onehot, Metric: 0.8362
+Value: sinusoidal, Metric: 0.8362
+Value: trans, Metric: 0.8362
+Value: nerf, Metric: 0.8362
+Value: nape, Metric: 0.8362
+==> Best op_encoder: embedding, local_best_metric: 0.8362
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-05 15:02: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-05 15:04:03] Experiment Start!!!
+Value: embedding, Metric: 0.8362
+Value: onehot, Metric: 0.8362
+Value: sinusoidal, Metric: 0.8362
+Value: trans, Metric: 0.8362
+Value: nerf, Metric: 0.8362
+Value: nape, Metric: 0.8362
+==> Best op_encoder: embedding, local_best_metric: 0.8362
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-05 15:04: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-05 15:05:33] Experiment Start!!!
+Value: embedding, Metric: 0.8362
+Value: onehot, Metric: 0.8362
+Value: sinusoidal, Metric: 0.8362
+Value: trans, Metric: 0.8362
+Value: nerf, Metric: 0.8362
+Value: nape, Metric: 0.8362
+==> Best op_encoder: embedding, local_best_metric: 0.8362
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-05 15:05: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-05 15:08:38] Experiment Start!!!
+Value: embedding, Metric: 0.8362
+Value: onehot, Metric: 0.8362
+Value: sinusoidal, Metric: 0.8362
+Value: trans, Metric: 0.8362
+Value: nerf, Metric: 0.8362
+Value: nape, Metric: 0.8362
+==> Best op_encoder: embedding, local_best_metric: 0.8362
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-05 15:08: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-05 15:09:27] Experiment Start!!!
+Value: embedding, Metric: 0.8362
+Value: onehot, Metric: 0.8362
+Value: sinusoidal, Metric: 0.8362
+Value: trans, Metric: 0.8362
+Value: nerf, Metric: 0.8362
+Value: nape, Metric: 0.8362
+==> Best op_encoder: embedding, local_best_metric: 0.8362
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-05 15:09: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-05 15:10:02] Experiment Start!!!
+Value: embedding, Metric: 0.8362
+Value: onehot, Metric: 0.8362
+Value: sinusoidal, Metric: 0.8362
+Value: trans, Metric: 0.8362
+Value: nerf, Metric: 0.8362
+Value: nape, Metric: 0.8362
+==> Best op_encoder: embedding, local_best_metric: 0.8362
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-05 15:10: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-05 15:10:39] Experiment Start!!!
+Value: embedding, Metric: 0.8362
+Value: onehot, Metric: 0.8362
+Value: sinusoidal, Metric: 0.8362
+Value: trans, Metric: 0.8362
+Value: nerf, Metric: 0.8362
+Value: nape, Metric: 0.8362
+==> Best op_encoder: embedding, local_best_metric: 0.8362
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-05 15:10: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-05 15:15:13] Experiment Start!!!
+[2025-09-05 15:18:34] Experiment Start!!!
+[2025-09-05 15:19:13] Experiment Start!!!
+Value: embedding, Metric: 0.3754
+Value: onehot, Metric: 0.3762
+Value: sinusoidal, Metric: 0.1623
+Value: trans, Metric: 0.0582
+Value: nerf, Metric: 0.1183
+Value: nape, Metric: 0.4564
+==> Best op_encoder: trans, local_best_metric: 0.0582
+The Best Hyperparameters: {'op_encoder': 'trans'}
+Running at 2025-09-05 15:19: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder trans

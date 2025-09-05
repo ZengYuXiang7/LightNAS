@@ -6,9 +6,10 @@ from datetime import datetime
 
 # 在这里写下超参数探索空间
 hyper_dict = {
-    'd_model': [60, 100, 128, 192],
-    'num_layers': [2, 1, 3, 4],
-    'num_heads': [4, 2, 8],
+    # 'd_model': [192],
+    # 'num_layers': [1, 4],
+    # 'num_heads': [4, 2, 8],
+    'op_encoder': ['embedding', 'onehot', 'sinusoidal', 'trans', 'nerf', 'nape']
 }
 
 ######################################################################################################
@@ -21,7 +22,7 @@ def experiment_run():
 
 def Baselines():
     # once_experiment('MLPConfig', hyper_dict)
-    once_experiment('RNNConfig', hyper_dict)
+    # once_experiment('RNNConfig', hyper_dict)
     # once_experiment('LSTMConfig', hyper_dict)
     # once_experiment('GRUConfig', hyper_dict)
     # once_experiment('CrossformerConfig', hyper_dict)
@@ -38,7 +39,8 @@ def Ablation():
 
 
 def Our_model(hyper=None):
-    once_experiment('OurModelConfig', hyper_dict, grid_search=0)
+    # monitor_metric = NMAE KendallTau
+    once_experiment('OurModelConfig', hyper_dict, monitor_metric='KendallTau', debug=1)
     return True
 
 

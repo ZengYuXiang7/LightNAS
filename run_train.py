@@ -21,7 +21,7 @@ def get_experiment_name(config):
     }
 
     # === 动态添加字段（只有在 config 中存在才加入）===
-    optional_fields = ['idx']
+    optional_fields = ['idx', 'op_encoder']
     for field in optional_fields:
         if hasattr(config, field):
             key = field.replace('_', ' ').title().replace(' ', '_')  # e.g. seq_len -> Seq_Len
@@ -74,7 +74,6 @@ if __name__ == '__main__':
     from utils.exp_metrics_plotter import MetricsPlotter
     from utils.utils import set_settings
     from utils.exp_config import get_config
-    config = get_config('OurModelConfig')
     # config = get_config('FlopsConfig')
     # config = get_config('MacConfig')
     # config = get_config('LSTMConfig')
@@ -84,6 +83,7 @@ if __name__ == '__main__':
     # config = get_config('NarFormerConfig')
     # config = get_config('NarFormer2Config')
     # config = get_config('NNformerConfig')
+    config = get_config('OurModelConfig')
     set_settings(config)
     
     if config.dataset == 'nnlqp':
