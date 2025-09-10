@@ -68,6 +68,7 @@ class SparseDispatcher(object):
         """返回每个专家对应的非零 gate 值列表"""
         return torch.split(self._nonzero_gates, self._part_sizes, dim=0)
 
+
 # 定义一个两层的前馈神经网络（MLP）
 class MLP(nn.Module):
     def __init__(self, d_model, d_ff):
@@ -83,6 +84,7 @@ class MLP(nn.Module):
         out = self.fc2(out)
         out = self.soft(out)
         return out
+    
 
 # 混合专家网络模块（Mixture of Experts）
 class SparseMoE(nn.Module):
@@ -217,7 +219,7 @@ class SparseMoE(nn.Module):
 
         # 合并各专家输出
         y = dispatcher.combine(expert_outputs)
-        return y, loss
+        return y
 
 if __name__ == '__main__':
     inputs = torch.randn(32, 50)

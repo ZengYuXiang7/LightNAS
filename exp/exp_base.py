@@ -3,15 +3,48 @@
 # 注意，这里的代码已经几乎完善，非必要不要改动（2025年3月27日23:33:32）
 import contextlib
 import torch
+import math
 from time import time
-
 from exp.exp_loss import compute_loss
 from exp.exp_metrics import ErrorMetrics
 from utils.model_trainer import get_loss_function, get_optimizer
 from torch.cuda.amp import autocast
+from torch.optim.lr_scheduler import LambdaLR
 from tqdm import *
 
+def build_stable_warmup_hold_cosine(
+    optimizer,
+    total_units: int,           # 总推进次数：按step就=总steps，按epoch就=总epochs
+    warmup_ratio: float = 0.05, # 热身比例（5%总进度）
+    hold_ratio: float = 0.00,   # 热身后保持比例（0~10%常见）
+    min_lr_ratio: float = 0.05, # 末端最小lr比例（相对初始lr），建议5%~10%
+):
+    """
+    返回一个 LambdaLR，调度规则：
+        0 → warmup:     线性从 0 → 1
+        warmup → hold:  保持 1
+        hold → end:     余弦从 1 → min_lr_ratio
+    注：你需要在训练中每一步（step版）或每个epoch（epoch版）调用 .step()
+    """
+    total_units = max(1, int(total_units))
+    wu = max(1, int(total_units * warmup_ratio))
+    hd = max(0, int(total_units * hold_ratio))
+    cos_len = max(1, total_units - wu - hd)
+    
+    def lr_lambda(cur):
+        # cur 从 0 开始计数：已推进次数
+        if cur < wu:  # warmup
+            return (cur + 1) / wu
+        if cur < wu + hd:  # hold
+            return 1.0
+        # cosine
+        t = cur - wu - hd
+        progress = t / cos_len  # 0 → 1
+        return min_lr_ratio + (1.0 - min_lr_ratio) * 0.5 * (1.0 + math.cos(math.pi * progress))
+    
+    return LambdaLR(optimizer, lr_lambda)
 
+                    
 class BasicModel(torch.nn.Module):
     def __init__(self, config):
         super(BasicModel, self).__init__()
@@ -26,9 +59,33 @@ class BasicModel(torch.nn.Module):
         self.to(config.device)
         self.loss_function = get_loss_function(config).to(config.device)
         self.optimizer     = get_optimizer(self.parameters(), lr=config.lr, decay=config.decay, config=config)
-        self.scheduler     = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode='min', factor=0.5, patience=config.patience // 1.5, threshold=0.0
-        )
+        # self.scheduler     = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        #     self.optimizer, mode='min', factor=0.5, patience=config.patience // 2, threshold=0.0, min_lr=1e-6
+        # )
+        # self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            # self.optimizer, T_max=config.epochs, eta_min=0
+        # )
+        if config.model == 'ours':
+            # self.scheduler = CosinePulseOnPlateau(
+            #     self.optimizer,
+            #     mode='min',
+            #     patience=config.patience // 2,       # 例：earlystop_patience=100 → 33
+            #     pulse_T=12,        # 单次脉冲长度（12 个验证 epoch 余弦到目标）
+            #     ratio=0.8,         # 每次把当前 LR 平滑降到 80%
+            #     min_lr=1e-6,
+            #     cooldown=1,        # 脉冲后冷却 1 轮，避免立即再触发
+            #     threshold=1e-4,
+            #     threshold_mode='rel',
+            #     verbose=True
+            # )
+            
+            self.scheduler = build_stable_warmup_hold_cosine(
+                self.optimizer,
+                total_units=config.epochs * 0.6,
+                warmup_ratio=0.05,   # 5% 热身
+                hold_ratio=0.02,     # 2% 保持（可为 0）
+                min_lr_ratio=0.05    # 末端保留 5% 初始 lr
+            )
 
     def train_one_epoch(self, dataModule):
         loss = None
@@ -56,8 +113,6 @@ class BasicModel(torch.nn.Module):
                 loss.backward()
                 self.optimizer.step()
 
-            # for i in range(len(pred)):
-                # print(f'Pred: {pred[i].item():.4f}, Real: {label[i].item():.4f}')
         t2 = time()
         return loss, t2 - t1
 
@@ -93,10 +148,48 @@ class BasicModel(torch.nn.Module):
         if self.config.dataset != 'weather':
             reals, preds = dataModule.y_scaler.inverse_transform(reals), dataModule.y_scaler.inverse_transform(preds)
             
-        # for i in range(len(preds)):
-            # print(f'Pred: {preds[i].item():.4f}, Real: {reals[i].item():.4f}')
-            
         if mode == 'valid':
-            self.scheduler.step(val_loss)
+            # self.scheduler.step(val_loss)
+            self.scheduler.step()
 
+        return ErrorMetrics(reals, preds, self.config)
+    
+    
+    # 专门为全数据集做的实验
+    def evaluate_whole_dataset(self, dataModule, mode='whole'):
+        self.eval()
+        torch.set_grad_enabled(False)
+        
+        preds, reals = [], []
+        
+        def get_pred_and_real(loader):
+            context = (
+            torch.amp.autocast(device_type=self.config.device)
+            if self.config.use_amp else
+            contextlib.nullcontext()
+            )
+            with context:
+                for batch in loader:
+                    all_item = [item.to(self.config.device) for item in batch]
+                    inputs, label = all_item[:-1], all_item[-1]
+                    pred = self.forward(*inputs)
+
+                    if mode == 'valid':
+                        val_loss += compute_loss(self, pred, label, self.config)
+
+                    if self.config.classification:
+                        pred = torch.max(pred, 1)[1]
+                        
+                    preds.append(pred)
+                    reals.append(label)
+        
+        get_pred_and_real(dataModule.train_loader)
+        get_pred_and_real(dataModule.valid_loader)
+        get_pred_and_real(dataModule.test_loader)
+
+        reals = torch.cat(reals, dim=0)
+        preds = torch.cat(preds, dim=0)
+        
+        reals, preds = dataModule.y_scaler.inverse_transform(reals), dataModule.y_scaler.inverse_transform(preds)
+            
         return ErrorMetrics(reals, preds, self.config)

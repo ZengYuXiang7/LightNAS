@@ -1,33 +1,22 @@
 # coding : utf-8
 # Author : yuxiang Zeng
-
+import numpy as np
 from utils.exp_sh import once_experiment
 from datetime import datetime
 
 # 在这里写下超参数探索空间
 hyper_dict = {
-    # 'd_model': [192],
-    # 'num_layers': [1, 4],
-    # 'num_heads': [4, 2, 8],
-    'op_encoder': ['embedding', 'onehot', 'sinusoidal', 'trans', 'nerf', 'nape']
+    'op_encoder': ['embedding'],  # 'embedding', 'nerf', 'nape'
+    'num_layers': [3],
+    'd_model': [256, 128, 192,],
 }
 
 ######################################################################################################
 # 这里是总执行实验顺序！！！！！！！！
 def experiment_run():
-    # Baselines()
-    # Ablation()
     Our_model()
     return True
 
-def Baselines():
-    # once_experiment('MLPConfig', hyper_dict)
-    # once_experiment('RNNConfig', hyper_dict)
-    # once_experiment('LSTMConfig', hyper_dict)
-    # once_experiment('GRUConfig', hyper_dict)
-    # once_experiment('CrossformerConfig', hyper_dict)
-    # once_experiment('TimesNetConfig', hyper_dict)
-    return True
 
 def Ablation():
     hyper_dict = {
@@ -40,7 +29,7 @@ def Ablation():
 
 def Our_model(hyper=None):
     # monitor_metric = NMAE KendallTau
-    once_experiment('OurModelConfig', hyper_dict, monitor_metric='KendallTau', debug=1)
+    once_experiment('OurModelConfig', hyper_dict, monitor_metric='KendallTau', reverse=True)
     return True
 
 
@@ -51,8 +40,12 @@ def log_message(message):
         f.write(f"[{timestamp}] {message}\n")
 
 if __name__ == "__main__":
-    log_message("Experiment Start!!!")
-    experiment_run()
-    log_message("All commands executed successfully.\n")
+    try:
+        log_message("Experiment Start!!!")
+        experiment_run()
+    except KeyboardInterrupt as e:
+        log_message("Experiment interrupted by user.")
+    finally:
+        log_message("All commands executed successfully.\n")
 
 

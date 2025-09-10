@@ -162,7 +162,7 @@ class DataModule:
                 pin_memory=True,
                 num_workers=max_workers,
                 prefetch_factor=prefetch_factor,
-                collate_fn=lambda batch: dataset.custom_collate_fn(batch, self.config),
+                collate_fn=lambda batch: dataset.custom_collate_fn(batch),
             )
         else:
             # 其他数据集需要 sampler
@@ -180,7 +180,7 @@ class DataModule:
                 pin_memory=True,
                 num_workers=max_workers,
                 prefetch_factor=prefetch_factor,
-                collate_fn=lambda batch: dataset.custom_collate_fn(batch, self.config),
+                collate_fn=lambda batch: dataset.custom_collate_fn(batch),
             )
 
 

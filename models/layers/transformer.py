@@ -10,7 +10,6 @@ from models.layers.feedforward.ffn import FeedForward
 from models.layers.feedforward.moe import MoE
 from models.layers.att.self_attention import Attention
 from models.layers.feedforward.smoe import SparseMoE
-from einops import rearrange
 
 def get_norm(d_model, method):
     if method == 'batch':
@@ -26,7 +25,7 @@ def get_ffn(d_model, method):
     if method == 'ffn':
         return FeedForward(d_model, d_ff=d_model * 2, dropout=0.10)
     elif method == 'moe':
-        return MoE(d_model=d_model, d_ff=d_model, num_m=1, num_router_experts=8, num_share_experts=1, num_k=2, loss_coef=0.001)
+        return MoE(d_model=d_model, d_ff=d_model, num_m=1, num_router_experts=4, num_share_experts=0, num_k=1, loss_coef=0.001)
     elif method == 'smoe':
         return SparseMoE(d_model=d_model, d_ff=d_model, num_experts=8, noisy_gating=True, num_k=2, loss_coef=0.001)
     return None
@@ -47,7 +46,7 @@ def get_att(d_model, num_heads, method):
 
 
 class Transformer(torch.nn.Module):
-    def __init__(self, d_model, num_layers, num_heads, norm_method='rms', ffn_method='moe', att_method='self'):
+    def __init__(self, d_model, num_layers, num_heads, norm_method='rms', ffn_method='ffn', att_method='self'):
         super().__init__()
         self.layers = torch.nn.ModuleList([])
         for _ in range(num_layers):
@@ -67,4 +66,4 @@ class Transformer(torch.nn.Module):
         for norm1, attn, norm2, ff in self.layers:
             x = attn(norm1(x), key_padding_mask=key_padding_mask) + x
             x = ff(norm2(x)) + x
-        return x
+        return self.norm(x)

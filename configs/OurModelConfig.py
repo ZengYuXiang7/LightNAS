@@ -16,15 +16,18 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     spliter_ratio: str = '5:4:91'
     input_size: int = 192
     
-    epochs: int = 1500
-    patience: int = 150
-    verbose: int = 200
+    epochs: int = 2000
+    patience: int = 200
+    verbose: int = 300
     
-    d_model: int = 192 
-    lp_d_model: int = 16
+    op_encoder: str = 'embedding'  # embedding, onehot, discrete
+    
+    d_model: int = 256 
+    lp_d_model: int = 8
+    lap_node_id_sign_flip: bool = True  # 是否对 LapPE 做随机符号翻转增强
     optim: str = 'Adam'
     
-    num_layers: int = 2
+    num_layers: int = 3
     num_heads: int = 4
     
     monitor_reverse: bool = True
@@ -39,17 +42,10 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     # gcn_method: str = 'gcn'
     # norm_method: str = 'batch'
     # ffn_method: str = 'ffn'
-
-    op_encoder: str = 'embedding'  # embedding, onehot, discrete
     
     # 数据集路径
     transfer: bool = False
     
-    # 位置编码相关
-    # embed_type: str = 'nerf'
-    # multires_x: int = 32
-    # multires_r: int = 32
-    # multires_p: int = 32
     rank_loss: bool = True  # 
     ac_loss: bool = True  # 
     

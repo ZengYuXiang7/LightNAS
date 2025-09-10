@@ -16,18 +16,47 @@ from torch.utils.data.dataloader import default_collate
 import torch.nn.functional as F
 
 
-def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int) -> torch.Tensor:
-    """adj: [B,n,n] → 返回 LapPE [B,n,dp]"""
-    n, _ = adj.shape
+def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int, drop_first: bool = True, unify_sign: bool = True):
+    """
+    从邻接矩阵提取 Laplacian PE 特征向量。
+    
+    参数:
+      adj: [N, N] 邻接矩阵 (0/1 或加权)
+      dp:  需要的 LapPE 维度，返回 [N, dp]
+      drop_first: 是否丢掉第一列常数特征向量 (特征值≈0)，默认 True
+      unify_sign: 是否统一符号 (避免 ± 号不定)
+
+    返回:
+      P: [N, dp] 特征向量矩阵
+    """
+    N = adj.size(0)
     A = adj.float()
-    deg = A.sum(1).clamp(min=1e-12)
-    D_inv_sqrt = torch.diag(deg.pow(-0.5))
-    L = torch.eye(n, device=adj.device) - D_inv_sqrt @ A @ D_inv_sqrt
-    _, evecs = torch.linalg.eigh(L)
-    k = min(dp, n)
-    P = evecs[:, :k]
-    outs = F.pad(P, (0, dp - k))
-    return outs
+    deg = A.sum(dim=1).clamp(min=1e-12)
+    d_inv_sqrt = deg.pow(-0.5)
+
+    # 拉普拉斯矩阵
+    L = torch.eye(N, device=A.device, dtype=A.dtype) - d_inv_sqrt[:, None] * A * d_inv_sqrt[None, :]
+    L = 0.5 * (L + L.T)  # 数值对称化
+
+    evals, evecs = torch.linalg.eigh(L)  # evals升序，evecs列与之配对
+
+    if drop_first and evecs.size(1) > 0:
+        evecs = evecs[:, 1:]  # 丢常数向量
+
+    k = min(dp, evecs.size(1))
+    P = evecs[:, :k] if k > 0 else evecs.new_zeros(N, 0)
+
+    # 符号统一
+    if unify_sign and P.numel() > 0:
+        sign = torch.sign(P[0:1, :])
+        sign[sign == 0] = 1.0
+        P = P * sign
+
+    # 如果 k < dp，右侧补零
+    if k < dp:
+        P = F.pad(P, (0, dp - k))
+
+    return P  # [N, dp]
 
 
 class NasBenchDataset(Dataset):
@@ -42,7 +71,6 @@ class NasBenchDataset(Dataset):
     def __getitem__(self, idx):
         if self.config.model == 'ours':
         
-            # adj_matrix = self.data['adj_matrix'][idx]
             features   = self.data['features'][idx]
             y          = self.data[self.config.predict_target][idx]
             
@@ -52,12 +80,11 @@ class NasBenchDataset(Dataset):
             
             adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
             features = torch.tensor(features, dtype=torch.long)
+            num_nodes = torch.tensor(features.shape[-1], dtype=torch.long)
             # graph = dgl.from_scipy(csr_matrix(adj_matrix))
             # graph = dgl.to_bidirected(graph)
-            P = laplacian_node_ids_from_adj(adj_matrix, self.config.lp_d_model)
-            
-            graph = adj_matrix
-            return graph, features, P, y
+            eigvec = laplacian_node_ids_from_adj(adj_matrix, self.config.lp_d_model)
+            return adj_matrix, features, eigvec, num_nodes, y
         
         elif self.config.model == "flops":
             flops = self.data['flops'][idx]
@@ -161,10 +188,10 @@ class NasBenchDataset(Dataset):
             raise ValueError(f"Unsupported model type: {self.config.model}")
         
         
-    def custom_collate_fn(self, batch, config):
+    def custom_collate_fn(self, batch):
         if self.config.model == 'ours':
-            graph, features, P, y = zip(*batch)
-            return default_collate(graph).to(torch.float32), default_collate(features).to(torch.long), default_collate(P).to(torch.float32), default_collate(y).to(torch.float32)
+            adj_matrix, features, eigvec, num_nodes, y = zip(*batch)
+            return default_collate(adj_matrix).to(torch.float32), default_collate(features).to(torch.long), default_collate(eigvec).to(torch.float32), default_collate(num_nodes).to(torch.long), default_collate(y).to(torch.float32)
         elif self.config.model in {"flops", "flops-mac"}:
             features, y = zip(*batch)
             return default_collate(features).to(torch.float32), default_collate(y).to(torch.float32)

@@ -128,3 +128,272 @@ Value: nape, Metric: 0.4564
 ==> Best op_encoder: trans, local_best_metric: 0.0582
 The Best Hyperparameters: {'op_encoder': 'trans'}
 Running at 2025-09-05 15:19: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder trans
+[2025-09-05 16:15:21] Experiment Start!!!
+[2025-09-05 16:15:35] Experiment Start!!!
+Value: embedding, Metric: 0.8519
+Value: onehot, Metric: 0.7924
+Value: sinusoidal, Metric: 0.5723
+Value: trans, Metric: 0.3330
+Value: nerf, Metric: 0.8204
+Value: nape, Metric: 0.8442
+Running at 2025-09-05 19:29: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder trans
+[2025-09-05 19:47:37] All commands executed successfully.
+
+[2025-09-05 22:30:06] Experiment Start!!!
+[2025-09-05 22:33:12] Experiment Start!!!
+[2025-09-05 22:33:41] Experiment Start!!!
+Value: 40, Metric: 0.8107
+Value: 60, Metric: 0.8001
+Value: 100, Metric: 0.8362
+Value: 192, Metric: 0.8442
+==> Best d_model: 192, local_best_metric: 0.8442
+The Best Hyperparameters: {'op_encoder': 'nape', 'd_model': 192}
+Running at 2025-09-06 00:44: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder nape --d_model 192
+[2025-09-06 01:15:08] All commands executed successfully.
+
+[2025-09-06 15:35:04] Experiment Start!!!
+Value: 192, Metric: 0.8442
+Value: 256, Metric: 0.8350
+Value: 320, Metric: 0.8069
+==> Best d_model: 192, local_best_metric: 0.8442
+The Best Hyperparameters: {'op_encoder': 'nape', 'd_model': 192}
+Running at 2025-09-06 17:10: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder nape --d_model 192
+[2025-09-06 17:41:35] All commands executed successfully.
+
+[2025-09-06 18:46:41] Experiment Start!!!
+[2025-09-06 18:48:05] Experiment Start!!!
+[2025-09-06 18:58:40] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 18:58: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:06:04] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:06: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:06: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:06: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:06: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:06:34] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:06: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:06: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:06: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:06: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:07:04] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:07: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:07: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:07:19] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:07: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:07: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:07: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:08:54] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:08: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:09: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:09:06] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:09: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:11:35] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:11: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:16:02] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:16: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:16: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:17:01] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:17: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:17: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:17:21] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:17: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:17: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:17: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:17: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:17: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:17: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:18: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:18: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:18: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:18:33] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:18: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:19:48] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:19: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:19: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:21:21] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:21: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:23:34] Experiment Start!!!
+The Best Hyperparameters: {'op_encoder': 'embedding'}
+Running at 2025-09-06 19:23: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+Retrying at 2025-09-06 19:23: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding
+[2025-09-06 19:39:12] Experiment Start!!!
+Value: 0, Metric: 0.6285
+Value: 4, Metric: 0.6609
+Value: 8, Metric: 0.8431
+Value: 16, Metric: 0.8519
+Value: 32, Metric: 0.8104
+==> Best lp_d_model: 16, local_best_metric: 0.8519
+The Best Hyperparameters: {'op_encoder': 'embedding', 'lp_d_model': 16}
+Running at 2025-09-06 21:39: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding --lp_d_model 16
+[2025-09-06 22:15:20] All commands executed successfully.
+
+[2025-09-07 11:02:00] Experiment Start!!!
+[2025-09-07 11:04:44] Experiment interrupted by user.
+[2025-09-07 11:04:44] All commands executed successfully.
+
+[2025-09-07 11:04:52] Experiment Start!!!
+Value: 10, Metric: 0.8474
+Value: 12, Metric: 0.8324
+Value: 16, Metric: 0.8406
+Value: 18, Metric: 0.8199
+==> Best lp_d_model: 10, local_best_metric: 0.8474
+The Best Hyperparameters: {'op_encoder': 'embedding', 'lp_d_model': 10}
+Running at 2025-09-07 13:15: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding --lp_d_model 10
+[2025-09-07 13:34:09] Experiment Start!!!
+[2025-09-07 13:46:59] All commands executed successfully.
+
+[2025-09-07 13:54:39] Experiment interrupted by user.
+[2025-09-07 13:54:39] All commands executed successfully.
+
+[2025-09-07 13:55:07] Experiment Start!!!
+[2025-09-07 14:06:00] Experiment interrupted by user.
+[2025-09-07 14:06:00] All commands executed successfully.
+
+[2025-09-07 14:07:44] Experiment Start!!!
+[2025-09-07 14:07:48] Experiment interrupted by user.
+[2025-09-07 14:07:48] All commands executed successfully.
+
+[2025-09-07 14:07:57] Experiment Start!!!
+[2025-09-07 14:08:47] Experiment interrupted by user.
+[2025-09-07 14:08:47] All commands executed successfully.
+
+[2025-09-07 14:08:51] Experiment Start!!!
+Value: 8, Metric: 0.8253
+Value: 10, Metric: 0.8237
+[2025-09-07 15:12:45] Experiment interrupted by user.
+[2025-09-07 15:12:45] All commands executed successfully.
+
+[2025-09-09 16:54:01] Experiment Start!!!
+[2025-09-09 16:56:28] Experiment interrupted by user.
+[2025-09-09 16:56:28] All commands executed successfully.
+
+[2025-09-09 16:56:35] Experiment Start!!!
+[2025-09-09 17:02:21] Experiment interrupted by user.
+[2025-09-09 17:02:21] All commands executed successfully.
+
+[2025-09-09 17:02:24] Experiment Start!!!
+[2025-09-09 17:02:48] Experiment interrupted by user.
+[2025-09-09 17:02:48] All commands executed successfully.
+
+[2025-09-09 17:05:27] Experiment Start!!!
+Value: 4, Metric: 0.8257
+Value: 5, Metric: 0.8291
+Value: 6, Metric: 0.8388
+Value: 8, Metric: 0.8403
+==> Best lp_d_model: 8, local_best_metric: 0.8403
+Value: embedding, Metric: 0.8403
+Value: nape, Metric: 0.8399
+==> Best op_encoder: embedding, local_best_metric: 0.8403
+Value: 2, Metric: 0.8403
+Value: 3, Metric: 0.8461
+Value: 4, Metric: 0.8298
+==> Best num_layers: 3, local_best_metric: 0.8461
+Value: 192, Metric: 0.8461
+Value: 96, Metric: 0.8214
+Value: 256, Metric: 0.8499
+==> Best d_model: 256, local_best_metric: 0.8499
+The Best Hyperparameters: {'op_encoder': 'embedding', 'num_layers': 3, 'd_model': 256, 'lp_d_model': 8}
+Running at 2025-09-10 00:07: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding --num_layers 3 --d_model 256 --lp_d_model 8
+[2025-09-10 00:40:08] All commands executed successfully.
+
+[2025-09-10 10:18:51] Experiment Start!!!
+[2025-09-10 10:21:47] Experiment interrupted by user.
+[2025-09-10 10:21:47] All commands executed successfully.
+
+[2025-09-10 10:23:04] Experiment Start!!!
+[2025-09-10 10:28:57] Experiment interrupted by user.
+[2025-09-10 10:28:57] All commands executed successfully.
+
+[2025-09-10 10:31:37] Experiment Start!!!
+[2025-09-10 10:35:10] Experiment interrupted by user.
+[2025-09-10 10:35:10] All commands executed successfully.
+
+[2025-09-10 10:35:14] Experiment Start!!!
+[2025-09-10 10:38:27] Experiment interrupted by user.
+[2025-09-10 10:38:27] All commands executed successfully.
+
+[2025-09-10 10:45:36] Experiment Start!!!
+[2025-09-10 10:46:41] Experiment interrupted by user.
+[2025-09-10 10:46:41] All commands executed successfully.
+
+[2025-09-10 10:46:47] Experiment Start!!!
+Value: 2, Metric: 0.8313
+Value: 3, Metric: 0.8482
+Value: 4, Metric: 0.8271
+==> Best num_layers: 3, local_best_metric: 0.8482
+The Best Hyperparameters: {'op_encoder': 'embedding', 'd_model': 256, 'num_layers': 3}
+Running at 2025-09-10 12:19: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding --d_model 256 --num_layers 3
+[2025-09-10 12:51:37] All commands executed successfully.
+
+[2025-09-10 15:05:38] Experiment Start!!!
+[2025-09-10 15:05:42] All commands executed successfully.
+
+[2025-09-10 15:08:56] Experiment Start!!!
+[2025-09-10 15:09:00] All commands executed successfully.
+
+[2025-09-10 15:10:06] Experiment Start!!!
+[2025-09-10 15:10:10] All commands executed successfully.
+
+[2025-09-10 15:12:06] Experiment Start!!!
+[2025-09-10 15:12:39] Experiment interrupted by user.
+[2025-09-10 15:12:39] All commands executed successfully.
+
+[2025-09-10 15:12:42] Experiment Start!!!
+[2025-09-10 15:17:27] Experiment interrupted by user.
+[2025-09-10 15:17:27] All commands executed successfully.
+
+[2025-09-10 15:17:37] Experiment Start!!!
+[2025-09-10 15:49:27] Experiment interrupted by user.
+[2025-09-10 15:49:27] All commands executed successfully.
+
+[2025-09-10 15:53:32] Experiment Start!!!
+Value: 256, Metric: 0.8482
+[2025-09-10 15:53:41] All commands executed successfully.
+
+[2025-09-10 15:53:57] Experiment Start!!!
+[2025-09-10 15:55:26] Experiment interrupted by user.
+[2025-09-10 15:55:26] All commands executed successfully.
+
+[2025-09-10 15:55:55] Experiment Start!!!
+[2025-09-10 15:57:56] Experiment interrupted by user.
+[2025-09-10 15:57:56] All commands executed successfully.
+
+[2025-09-10 19:32:11] Experiment Start!!!

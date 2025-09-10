@@ -17,9 +17,9 @@ def add_parameter(command: str, params: dict) -> str:
         command += f" --{param_name} {param_value}"
     return command
 
-def once_experiment(exper_name, hyper_dict, monitor_metric, grid_search=0, retrain=1, debug=0):
+def once_experiment(exper_name, hyper_dict, monitor_metric, reverse=False, grid_search=0, retrain=1, debug=0):
     # 先进行超参数探索
-    best_hyper = hyper_search(exper_name, hyper_dict, monitor_metric=monitor_metric, grid_search=grid_search, retrain=retrain, debug=debug)
+    best_hyper = hyper_search(exper_name, hyper_dict, monitor_metric=monitor_metric, reverse=reverse, grid_search=grid_search, retrain=retrain, debug=debug)
 
     # 再跑最佳参数实验
     commands = []
@@ -34,14 +34,14 @@ def once_experiment(exper_name, hyper_dict, monitor_metric, grid_search=0, retra
     return True
 
 
-def hyper_search(exp_name, hyper_dict, monitor_metric, grid_search=0, retrain=1, debug=0):
+def hyper_search(exp_name, hyper_dict, monitor_metric, reverse=False, grid_search=0, retrain=1, debug=0):
     """
     入口函数：选择使用网格搜索还是逐步搜索
     """
     if grid_search:
-        return grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, debug)
+        return grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug)
     else:
-        return sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, debug)
+        return sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug)
 
 
 def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=False):
@@ -64,7 +64,7 @@ def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=Fals
     return best_value
 
 
-def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, debug):
+def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug):
     """
     进行网格搜索（笛卡尔积搜索所有超参数组合）
     """
@@ -75,7 +75,7 @@ def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, d
     hyper_keys = list(hyper_dict.keys())
     hyper_values_list = [hyper_dict[k] for k in hyper_keys]
 
-    best_metric = 0 if classification_task else 1e9
+    best_metric = 0 if reverse else 1e9
     best_combo = None
 
     with open(log_file, 'a') as f:
@@ -99,7 +99,7 @@ def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, d
             # 运行并获取结果
             current_metric = run_and_get_metric(command, config, combo_dict, monitor_metric, debug)
 
-            if classification_task:
+            if reverse:
                 # 分类，metric 越大越好
                 if current_metric > best_metric:
                     best_metric = current_metric
@@ -118,12 +118,11 @@ def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, d
     return best_combo
 
 
-def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, debug):
+def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug):
     """
     逐步搜索超参数，每次调整一个参数，并保持其他最优值
     """
     config = get_config(exp_name)
-    classification_task = getattr(config, 'classification', False)
 
     log_file = f'./run.log'
     best_hyper = {}
@@ -138,7 +137,7 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, debug
 
             # f.write(f"\nHyper: {hyper_name}, Values: {hyper_values}\n")
             print(f"{hyper_name} => {hyper_values}")
-            local_best_metric = 0 if classification_task else 1e9
+            local_best_metric = 0 if reverse else 1e9
             current_best_value = None
             for value in hyper_values:
                 # 根据目前已有最优超参数 + 当前超参数构建命令
@@ -171,7 +170,7 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, debug
                 current_metric = run_and_get_metric(command, config, chosen_dict, monitor_metric, debug)
 
                 # 比较更新最优
-                if classification_task:
+                if reverse:
                     if current_metric > local_best_metric:
                         local_best_metric = current_metric
                         current_best_value = value

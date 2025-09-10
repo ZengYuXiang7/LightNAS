@@ -6,8 +6,10 @@ from tqdm import *
 import pickle
 from exp.exp_base import BasicModel
 from utils.model_monitor import EarlyStopping
+from utils.exp_logger import Logger
+from data_provider.data_center import DataModule
 
-def RunOnce(config, runid, model:BasicModel, datamodule, log):
+def RunOnce(config, runid, model:BasicModel, datamodule:DataModule, log:Logger):
     try:
         # 一些模型（如Keras兼容模型）可能需要compile，跳过非必要的compile
         model.compile()
@@ -50,7 +52,9 @@ def RunOnce(config, runid, model:BasicModel, datamodule, log):
     if retrain_required:
         model.setup_optimizer(config)
         train_time = []
-        for epoch in trange(config.epochs):
+        
+        t = trange(config.epochs, leave=True)
+        for epoch in t:
             if monitor.early_stop:
                 break  # 若满足early stopping条件则提前终止训练
 
@@ -72,6 +76,15 @@ def RunOnce(config, runid, model:BasicModel, datamodule, log):
 
             # 暂存模型参数（即使不是最优，也为了中断续训做准备）
             torch.save(model.state_dict(), model_path)
+            
+            # tqdm的后缀显示
+            be, delta_epochs = monitor.best_epoch or epoch, monitor.counter
+            metric_name, best_val_str = getattr(config, "monitor_metric", "val_loss"), (
+                f"{monitor.best_score:.4f}" if monitor.best_score is not None else "N/A"
+            )
+            
+            # 右侧后缀信息
+            t.set_description(f"Training: Best@{be} {metric_name}={best_val_str} Δ={delta_epochs}")
 
         # 加载最优模型参数（来自early stopping）
         model.load_state_dict(monitor.best_model)
@@ -81,6 +94,10 @@ def RunOnce(config, runid, model:BasicModel, datamodule, log):
 
         # 使用最优模型在测试集评估
         results = model.evaluate_one_epoch(datamodule, 'test')
+        
+        # 2025年09月10日15:59:43 专门给排序做时延
+        # results = model.evaluate_whole_dataset(datamodule, 'whole')
+        
         # results = {f'Valid{config.monitor_metric}': abs(monitor.best_score), **results}
         log.show_test_error(runid, monitor, results, sum_time)
 

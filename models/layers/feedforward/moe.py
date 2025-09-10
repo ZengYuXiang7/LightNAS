@@ -48,12 +48,12 @@ class MoE(torch.nn.Module):
         )
 
         # N' = mN - ks
-        self.num_router_experts = num_router_experts * num_m - self.num_share_experts
+        self.num_router_experts = self.num_router_experts * self.num_m - self.num_share_experts
         self.router_experts = torch.nn.ModuleList(
             Expert(self.d_model, self.d_ff // num_m) for _ in range(self.num_router_experts)
         )
         # K' = mk - ks
-        self.router_num_k = num_m * num_k - num_share_experts
+        self.router_num_k = self.num_m * self.num_k - self.num_share_experts
         self.router_gates = Gating(self.d_model, self.num_router_experts, self.router_num_k, self.loss_coef)
 
     def forward(self, x):
