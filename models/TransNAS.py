@@ -16,20 +16,25 @@ class TransNAS(nn.Module):
         self.d_model = config.d_model
         # self.op_embedding = torch.nn.Embedding(7, config.d_model)
         self.op_embedding = DiscreteEncoder(num_operations=7, encoding_dim=self.d_model, encoding_type=config.op_encoder, output_dim=self.d_model)
+        self.indeg_embedding = DiscreteEncoder(num_operations=10, encoding_dim=self.d_model, encoding_type='embedding', output_dim=self.d_model)
+        self.outdeg_embedding = DiscreteEncoder(num_operations=10, encoding_dim=self.d_model, encoding_type='embedding', output_dim=self.d_model)
         
         self.tokenGT = TokenGT(c_node=self.d_model, d_model=self.d_model, lap_dim=config.lp_d_model, use_edge=False)
         
-        self.encoder = Transformer(self.d_model, config.num_layers, 4, 'rms', 'ffn', 'self')
+        self.encoder = Transformer(self.d_model, config.num_layers, 4, 'rms', 'ffn', config.att_method)
         # enc_layer = nn.TransformerEncoderLayer(d_model, nhead, batch_first=True)
         # self.encoder = nn.TransformerEncoder(enc_layer, num_layers=num_layers)
         
         self.pred_head = nn.Linear(config.d_model, 1)  # 回归或分类
 
-    def forward(self, graphs, features, eigvec, num_nodes):
-        seq_embeds = self.op_embedding(features)
+    def forward(self, graphs, features, eigvec, indgree, outdegree, dij):
+        # seq_embeds = self.op_embedding(features)
+        # print(indgree.shape, outdegree.shape, self.indeg_embedding(indgree).shape)
+        # exit()
+        seq_embeds = self.op_embedding(features) + self.indeg_embedding(indgree) + self.outdeg_embedding(outdegree)
         
         # [B, seq_len, d_model]
-        seq_embeds, att_mask = self.tokenGT(graphs, seq_embeds, eigvec, num_nodes)   
+        seq_embeds, att_mask = self.tokenGT(graphs, seq_embeds, eigvec)   
                  
         # [B, d_model]
         cls_out = self.encoder(seq_embeds, key_padding_mask=att_mask)[:, 0, :]
@@ -226,7 +231,7 @@ class TokenGT(nn.Module):
         return padded_index, padded_node_mask, padded_edge_mask
 
     
-    def forward(self, adj: torch.Tensor, node_feats: torch.Tensor, eigvec: torch.Tensor, num_nodes:torch.Tensor):
+    def forward(self, adj: torch.Tensor, node_feats: torch.Tensor, eigvec: torch.Tensor, num_nodes=None):
         """
         adj:        [B, n, n]
         node_feats: [B, n, xdim]
@@ -253,6 +258,7 @@ class TokenGT(nn.Module):
                 tokens.append(edge_tokens)
         else:
             pad_mask_edges = torch.zeros(B, 0, dtype=torch.bool, device=device)
+
 
         # 图级 token
         graph_tok = self.graph_tok.expand(B, -1, -1)                       # [B, 1, d]

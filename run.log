@@ -397,3 +397,80 @@ Value: 256, Metric: 0.8482
 [2025-09-10 15:57:56] All commands executed successfully.
 
 [2025-09-10 19:32:11] Experiment Start!!!
+[2025-09-14 14:45:10] Experiment Start!!!
+Value: self, Metric: 0.5590
+Value: full, Metric: 0.3753
+Value: sa, Metric: 0.3753
+Value: external, Metric: 0.3753
+Value: gqa, Metric: 0.3753
+Value: mqa, Metric: 0.3753
+==> Best att_method: self, local_best_metric: 0.5590
+The Best Hyperparameters: {'att_method': 'self'}
+Running at 2025-09-14 14:45: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method self
+[2025-09-14 14:45:58] Experiment interrupted by user.
+[2025-09-14 14:45:58] All commands executed successfully.
+
+[2025-09-14 14:47:18] Experiment Start!!!
+Value: external, Metric:   nan
+Value: gqa, Metric:   nan
+Value: mqa, Metric:   nan
+==> Best att_method: None, local_best_metric: 0.0000
+The Best Hyperparameters: {'att_method': None}
+Running at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+[2025-09-14 14:48:59] Experiment interrupted by user.
+[2025-09-14 14:48:59] All commands executed successfully.
+
+[2025-09-14 14:51:33] Experiment Start!!!
+Value: gqa, Metric:   nan
+Value: mqa, Metric:   nan
+==> Best att_method: None, local_best_metric: 0.0000
+The Best Hyperparameters: {'att_method': None}
+Running at 2025-09-14 14:51: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Retrying at 2025-09-14 14:51: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
+[2025-09-14 14:51:49] Experiment interrupted by user.
+[2025-09-14 14:51:49] All commands executed successfully.
+
+[2025-09-14 14:52:29] Experiment Start!!!
+Value: gqa, Metric: 0.4747
+Value: mqa, Metric: 0.4747
+==> Best att_method: gqa, local_best_metric: 0.4747
+The Best Hyperparameters: {'att_method': 'gqa'}
+Running at 2025-09-14 14:52: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method gqa
+[2025-09-14 14:52:45] Experiment interrupted by user.
+[2025-09-14 14:52:45] All commands executed successfully.
+
+[2025-09-14 14:53:22] Experiment Start!!!
+The Best Hyperparameters: {'att_method': 'gqa'}
+Running at 2025-09-14 14:53: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method gqa
+[2025-09-14 14:53:31] Experiment interrupted by user.
+[2025-09-14 14:53:31] All commands executed successfully.
+

@@ -108,7 +108,6 @@ if __name__ == '__main__':
     prev_K = torch.randn(batch_size, 0, k)  # 初始空记忆
     prev_V = torch.randn(batch_size, 0, v)
 
-
     for step in range(3):
         Y, prev_K, prev_V = mqa_incr(x, prev_K, prev_V)
         print(f"Step {step + 1}:")

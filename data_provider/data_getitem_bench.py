@@ -14,49 +14,7 @@ from tqdm import *
 from dgl import from_scipy
 from torch.utils.data.dataloader import default_collate
 import torch.nn.functional as F
-
-
-def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int, drop_first: bool = True, unify_sign: bool = True):
-    """
-    从邻接矩阵提取 Laplacian PE 特征向量。
-    
-    参数:
-      adj: [N, N] 邻接矩阵 (0/1 或加权)
-      dp:  需要的 LapPE 维度，返回 [N, dp]
-      drop_first: 是否丢掉第一列常数特征向量 (特征值≈0)，默认 True
-      unify_sign: 是否统一符号 (避免 ± 号不定)
-
-    返回:
-      P: [N, dp] 特征向量矩阵
-    """
-    N = adj.size(0)
-    A = adj.float()
-    deg = A.sum(dim=1).clamp(min=1e-12)
-    d_inv_sqrt = deg.pow(-0.5)
-
-    # 拉普拉斯矩阵
-    L = torch.eye(N, device=A.device, dtype=A.dtype) - d_inv_sqrt[:, None] * A * d_inv_sqrt[None, :]
-    L = 0.5 * (L + L.T)  # 数值对称化
-
-    evals, evecs = torch.linalg.eigh(L)  # evals升序，evecs列与之配对
-
-    if drop_first and evecs.size(1) > 0:
-        evecs = evecs[:, 1:]  # 丢常数向量
-
-    k = min(dp, evecs.size(1))
-    P = evecs[:, :k] if k > 0 else evecs.new_zeros(N, 0)
-
-    # 符号统一
-    if unify_sign and P.numel() > 0:
-        sign = torch.sign(P[0:1, :])
-        sign[sign == 0] = 1.0
-        P = P * sign
-
-    # 如果 k < dp，右侧补零
-    if k < dp:
-        P = F.pad(P, (0, dp - k))
-
-    return P  # [N, dp]
+from models.my_feature import laplacian_node_ids_from_adj, preprocess_binary_inout_and_spd
 
 
 class NasBenchDataset(Dataset):
@@ -73,18 +31,20 @@ class NasBenchDataset(Dataset):
         
             features   = self.data['features'][idx]
             y          = self.data[self.config.predict_target][idx]
-            
             key = self.data['key'][idx]
             arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
             adj_matrix, features = info2mat(arch_str) 
-            
             adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
             features = torch.tensor(features, dtype=torch.long)
-            num_nodes = torch.tensor(features.shape[-1], dtype=torch.long)
-            # graph = dgl.from_scipy(csr_matrix(adj_matrix))
-            # graph = dgl.to_bidirected(graph)
             eigvec = laplacian_node_ids_from_adj(adj_matrix, self.config.lp_d_model)
-            return adj_matrix, features, eigvec, num_nodes, y
+            
+            indgree, outdegree, dij = preprocess_binary_inout_and_spd(
+                adj_matrix,
+                include_self_loops_in_degree=False,
+                directed_for_spd=True,   # 如需无向最短路可改成 False
+            )
+            # print(indgree.shape, outdegree.shape, dij.shape)
+            return adj_matrix, features, eigvec, indgree, outdegree, dij, y
         
         elif self.config.model == "flops":
             flops = self.data['flops'][idx]
@@ -190,8 +150,8 @@ class NasBenchDataset(Dataset):
         
     def custom_collate_fn(self, batch):
         if self.config.model == 'ours':
-            adj_matrix, features, eigvec, num_nodes, y = zip(*batch)
-            return default_collate(adj_matrix).to(torch.float32), default_collate(features).to(torch.long), default_collate(eigvec).to(torch.float32), default_collate(num_nodes).to(torch.long), default_collate(y).to(torch.float32)
+            adj_matrix, features, eigvec, indgree, outdegree, dij, y = zip(*batch)
+            return default_collate(adj_matrix).to(torch.float32), default_collate(features).to(torch.long), default_collate(eigvec).to(torch.float32), default_collate(indgree).to(torch.long), default_collate(outdegree).to(torch.long), default_collate(dij).to(torch.float32), default_collate(y).to(torch.float32)
         elif self.config.model in {"flops", "flops-mac"}:
             features, y = zip(*batch)
             return default_collate(features).to(torch.float32), default_collate(y).to(torch.float32)

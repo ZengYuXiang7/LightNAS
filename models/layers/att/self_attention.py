@@ -12,6 +12,7 @@ class Attention(torch.nn.Module):
     def forward(self, x, key_padding_mask=None):
         out, weights = self.att(x, x, x, key_padding_mask=key_padding_mask)
         return out
+    
 
 if __name__ == '__main__':
     inputs = torch.randn(1, 10, 64)

@@ -18,7 +18,7 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     
     epochs: int = 2000
     patience: int = 200
-    verbose: int = 300
+    verbose: int = 500
     
     op_encoder: str = 'embedding'  # embedding, onehot, discrete
     

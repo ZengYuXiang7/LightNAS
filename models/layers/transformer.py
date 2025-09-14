@@ -3,9 +3,11 @@
 import torch
 
 from models.layers.att.external_attention import ExternalAttention
+from models.layers.att.full_attention import CustomAttention
 from models.layers.att.groupquery_attention import GroupQueryAttention
 from models.layers.att.multilatent_attention import MLA
 from models.layers.att.multiquery_attention import MultiQueryAttentionBatched
+from models.layers.att.self_attention2 import ScaledDotProductAttention
 from models.layers.feedforward.ffn import FeedForward
 from models.layers.feedforward.moe import MoE
 from models.layers.att.self_attention import Attention
@@ -34,14 +36,18 @@ def get_ffn(d_model, method):
 def get_att(d_model, num_heads, method):
     if method == 'self':
         return Attention(d_model, num_heads, dropout=0.10)
+    elif method == 'full':
+        return CustomAttention(d_model=d_model, n_heads=num_heads)
+    elif method == 'sa':
+        return ScaledDotProductAttention(d_model=d_model, h=num_heads)
     elif method == 'external':
         return ExternalAttention(d_model, S=d_model*2)
     elif method == 'mla':
         return MLA(d_model, S=d_model*2)
     elif method == 'gqa':
-        return GroupQueryAttention(d_model, S=d_model*2)
+        return GroupQueryAttention(dim=d_model, heads=num_heads, group_num=2)
     elif method == 'mqa':
-        return MultiQueryAttentionBatched(d_model, S=d_model*2)
+        return MultiQueryAttentionBatched(d_model, num_heads, d_model, d_model)
     return None
 
 
@@ -64,6 +70,6 @@ class Transformer(torch.nn.Module):
 
     def forward(self, x, key_padding_mask=None):
         for norm1, attn, norm2, ff in self.layers:
-            x = attn(norm1(x), key_padding_mask=key_padding_mask) + x
+            x = attn(norm1(x), key_padding_mask) + x
             x = ff(norm2(x)) + x
         return self.norm(x)
