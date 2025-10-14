@@ -151,7 +151,7 @@ class NasBenchDataset(Dataset):
     def custom_collate_fn(self, batch):
         if self.config.model == 'ours':
             adj_matrix, features, eigvec, indgree, outdegree, dij, y = zip(*batch)
-            return default_collate(adj_matrix).to(torch.float32), default_collate(features).to(torch.long), default_collate(eigvec).to(torch.float32), default_collate(indgree).to(torch.long), default_collate(outdegree).to(torch.long), default_collate(dij).to(torch.float32), default_collate(y).to(torch.float32)
+            return default_collate(adj_matrix).to(torch.float32), default_collate(features).to(torch.long), default_collate(eigvec).to(torch.float32), default_collate(indgree).to(torch.long), default_collate(outdegree).to(torch.long), default_collate(dij).to(torch.long), default_collate(y).to(torch.float32)
         elif self.config.model in {"flops", "flops-mac"}:
             features, y = zip(*batch)
             return default_collate(features).to(torch.float32), default_collate(y).to(torch.float32)

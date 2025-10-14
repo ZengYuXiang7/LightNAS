@@ -11,6 +11,18 @@ from run_train import get_experiment_name
 from utils.exp_config import get_config
 
 
+
+def write_and_print(string):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with open('./run.log', 'a') as f:
+        print(string)
+        f.write(f"[{timestamp}] {string}\n")
+        # f.write(string + '\n')
+        
+    return True
+
+
 # 搜索最佳超参数然后取最佳
 def add_parameter(command: str, params: dict) -> str:
     for param_name, param_value in params.items():
@@ -30,7 +42,7 @@ def once_experiment(exper_name, hyper_dict, monitor_metric, reverse=False, grid_
 
     # 执行所有命令
     for command in commands:
-        run_command(command, './run.log')
+        run_command(command)
     return True
 
 
@@ -63,59 +75,6 @@ def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=Fals
     best_value = np.mean(this_expr_metrics[monitor_metric])
     return best_value
 
-
-def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug):
-    """
-    进行网格搜索（笛卡尔积搜索所有超参数组合）
-    """
-    config = get_config(exp_name)
-    classification_task = getattr(config, 'classification', False)
-
-    log_file = f'./run.log'
-    hyper_keys = list(hyper_dict.keys())
-    hyper_values_list = [hyper_dict[k] for k in hyper_keys]
-
-    best_metric = 0 if reverse else 1e9
-    best_combo = None
-
-    with open(log_file, 'a') as f:
-        f.write("\n=== Grid Search ===\n")
-        for combo in product(*hyper_values_list):
-            # combo 是一个元组，如 (10, 0.1) -> 对应 (Rank=10, Order=0.1)
-            combo_dict = dict(zip(hyper_keys, combo))
-
-            # 构建命令
-            command = f"python train_model.py --exp_name {exp_name} --hyper_search 1 --retrain {retrain} "
-            # 在命令里添加所有超参数
-            for param_key, param_val in combo_dict.items():
-                command += f"--{param_key} {param_val} "
-
-            # 先给其他未出现在 combo_dict 的超参数，指定其默认值
-            for other_key, other_values in hyper_dict.items():
-                if other_key not in combo_dict:
-                    command += f"--{other_key} {other_values[0]} "
-
-            f.write(f"COMMAND: {command}\n")
-            # 运行并获取结果
-            current_metric = run_and_get_metric(command, config, combo_dict, monitor_metric, debug)
-
-            if reverse:
-                # 分类，metric 越大越好
-                if current_metric > best_metric:
-                    best_metric = current_metric
-                    best_combo = combo_dict
-            else:
-                # 回归/预测，metric (MAE) 越小越好
-                if current_metric < best_metric:
-                    best_metric = current_metric
-                    best_combo = combo_dict
-            print(f"Combo: {combo_dict}, Metric= {current_metric}\n")
-            f.write(f"Combo: {combo_dict}, Metric= {current_metric}\n")
-
-        # 记录最优组合
-        print(f"Best combo: {best_combo}, Best metric: {best_metric}\n")
-        f.write(f"Best combo: {best_combo}, Best metric: {best_metric}\n")
-    return best_combo
 
 
 def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug):
@@ -179,22 +138,69 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, rever
                         local_best_metric = current_metric
                         current_best_value = value
 
-                f.write(f"Value: {value}, Metric: {current_metric:5.4f}\n")
-                print(f"Value: {value}, Metric: {current_metric:5.4f}")
-
+                write_and_print(f"{hyper_name}: {value}, Metric: {current_metric:5.4f}")
             # 结束后，更新最优
             best_hyper[hyper_name] = current_best_value
-            print(f"\n\n==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric:5.4f}")
-            f.write(f"==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric:5.4f}\n")
-
+            write_and_print(f"==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric:5.4f}\n")
+            
         # 全部结束后，打印并写日志
-        f.write(f"The Best Hyperparameters: {best_hyper}\n")
-        print("The Best Hyperparameters:", best_hyper)
+        write_and_print(f"The Best Hyperparameters: {best_hyper}\n")
     return best_hyper
 
 
+def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug):
+    """
+    进行网格搜索（笛卡尔积搜索所有超参数组合）
+    """
+    config = get_config(exp_name)
 
-def run_command(command, log_file, retry_count=0):
+    log_file = f'./run.log'
+    hyper_keys = list(hyper_dict.keys())
+    hyper_values_list = [hyper_dict[k] for k in hyper_keys]
+
+    best_metric = 0 if reverse else 1e9
+    best_combo = None
+
+    with open(log_file, 'a') as f:
+        f.write("\n=== Grid Search ===\n")
+        for combo in product(*hyper_values_list):
+            # combo 是一个元组，如 (10, 0.1) -> 对应 (Rank=10, Order=0.1)
+            combo_dict = dict(zip(hyper_keys, combo))
+
+            # 构建命令
+            command = f"python train_model.py --exp_name {exp_name} --hyper_search 1 --retrain {retrain} "
+            # 在命令里添加所有超参数
+            for param_key, param_val in combo_dict.items():
+                command += f"--{param_key} {param_val} "
+
+            # 先给其他未出现在 combo_dict 的超参数，指定其默认值
+            for other_key, other_values in hyper_dict.items():
+                if other_key not in combo_dict:
+                    command += f"--{other_key} {other_values[0]} "
+
+            f.write(f"COMMAND: {command}\n")
+            # 运行并获取结果
+            current_metric = run_and_get_metric(command, config, combo_dict, monitor_metric, debug)
+
+            if reverse:
+                # 分类，metric 越大越好
+                if current_metric > best_metric:
+                    best_metric = current_metric
+                    best_combo = combo_dict
+            else:
+                # 回归/预测，metric (MAE) 越小越好
+                if current_metric < best_metric:
+                    best_metric = current_metric
+                    best_combo = combo_dict
+            write_and_print(f"Combo: {combo_dict}, Metric= {current_metric}\n")
+
+        # 记录最优组合
+        write_and_print(f"Best combo: {best_combo}, Best metric: {best_metric}\n")
+    return best_combo
+
+
+
+def run_command(command, log_file='./run.log', retry_count=0):
     success = False
     while not success:
         # 获取当前时间并格式化
@@ -207,8 +213,8 @@ def run_command(command, log_file, retry_count=0):
             retry_message = "Running"
 
         # 将执行的命令和时间写入日志文件
-        with open(log_file, 'a') as f:
-            f.write(f"{retry_message} at {current_time}: {command}\n")
+        
+        write_and_print(f"{retry_message} at {current_time}: {command}\n")
 
         # 直接执行命令，将输出和错误信息打印到终端
         process = subprocess.run(f'ulimit -s unlimited; ulimit -c unlimited&& ulimit -a && echo {command} &&' + command, shell=True)
@@ -222,12 +228,3 @@ def run_command(command, log_file, retry_count=0):
             retry_count += 1
             time.sleep(3)  # 等待一段时间后重试
 
-
-def log_message(message):
-    log_file = "run.log"
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(log_file, 'a') as f:
-        if message[0] == '\n':
-            message = message[1:]
-            f.write('\n')
-        f.write(f"[{timestamp}] {message}\n")

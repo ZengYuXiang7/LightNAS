@@ -1,5 +1,7 @@
 # coding : utf-8
 # Author : Yuxiang Zeng
+import os
+os.environ["MKL_THREADING_LAYER"] = "GNU"
 import numpy as np
 import torch
 import collections

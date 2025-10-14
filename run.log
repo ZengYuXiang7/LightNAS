@@ -129,13 +129,16 @@ Value: nape, Metric: 0.4564
 The Best Hyperparameters: {'op_encoder': 'trans'}
 Running at 2025-09-05 15:19: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder trans
 [2025-09-05 16:15:21] Experiment Start!!!
+
 [2025-09-05 16:15:35] Experiment Start!!!
-Value: embedding, Metric: 0.8519
-Value: onehot, Metric: 0.7924
-Value: sinusoidal, Metric: 0.5723
-Value: trans, Metric: 0.3330
-Value: nerf, Metric: 0.8204
-Value: nape, Metric: 0.8442
+Value: embedding,    Metric: 0.8519
+Value: onehot,       Metric: 0.7924
+Value: sinusoidal,   Metric: 0.5723
+Value: trans,        Metric: 0.3330
+Value: nerf,         Metric: 0.8204
+Value: nape,         Metric: 0.8442
+
+
 Running at 2025-09-05 19:29: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder trans
 [2025-09-05 19:47:37] All commands executed successfully.
 
@@ -334,25 +337,6 @@ The Best Hyperparameters: {'op_encoder': 'embedding', 'num_layers': 3, 'd_model'
 Running at 2025-09-10 00:07: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding --num_layers 3 --d_model 256 --lp_d_model 8
 [2025-09-10 00:40:08] All commands executed successfully.
 
-[2025-09-10 10:18:51] Experiment Start!!!
-[2025-09-10 10:21:47] Experiment interrupted by user.
-[2025-09-10 10:21:47] All commands executed successfully.
-
-[2025-09-10 10:23:04] Experiment Start!!!
-[2025-09-10 10:28:57] Experiment interrupted by user.
-[2025-09-10 10:28:57] All commands executed successfully.
-
-[2025-09-10 10:31:37] Experiment Start!!!
-[2025-09-10 10:35:10] Experiment interrupted by user.
-[2025-09-10 10:35:10] All commands executed successfully.
-
-[2025-09-10 10:35:14] Experiment Start!!!
-[2025-09-10 10:38:27] Experiment interrupted by user.
-[2025-09-10 10:38:27] All commands executed successfully.
-
-[2025-09-10 10:45:36] Experiment Start!!!
-[2025-09-10 10:46:41] Experiment interrupted by user.
-[2025-09-10 10:46:41] All commands executed successfully.
 
 [2025-09-10 10:46:47] Experiment Start!!!
 Value: 2, Metric: 0.8313
@@ -363,114 +347,218 @@ The Best Hyperparameters: {'op_encoder': 'embedding', 'd_model': 256, 'num_layer
 Running at 2025-09-10 12:19: python run_train.py --exp_name OurModelConfig --retrain 1 --op_encoder embedding --d_model 256 --num_layers 3
 [2025-09-10 12:51:37] All commands executed successfully.
 
-[2025-09-10 15:05:38] Experiment Start!!!
-[2025-09-10 15:05:42] All commands executed successfully.
 
-[2025-09-10 15:08:56] Experiment Start!!!
-[2025-09-10 15:09:00] All commands executed successfully.
 
-[2025-09-10 15:10:06] Experiment Start!!!
-[2025-09-10 15:10:10] All commands executed successfully.
-
-[2025-09-10 15:12:06] Experiment Start!!!
-[2025-09-10 15:12:39] Experiment interrupted by user.
-[2025-09-10 15:12:39] All commands executed successfully.
-
-[2025-09-10 15:12:42] Experiment Start!!!
-[2025-09-10 15:17:27] Experiment interrupted by user.
-[2025-09-10 15:17:27] All commands executed successfully.
-
-[2025-09-10 15:17:37] Experiment Start!!!
-[2025-09-10 15:49:27] Experiment interrupted by user.
-[2025-09-10 15:49:27] All commands executed successfully.
-
-[2025-09-10 15:53:32] Experiment Start!!!
-Value: 256, Metric: 0.8482
-[2025-09-10 15:53:41] All commands executed successfully.
-
-[2025-09-10 15:53:57] Experiment Start!!!
-[2025-09-10 15:55:26] Experiment interrupted by user.
-[2025-09-10 15:55:26] All commands executed successfully.
-
-[2025-09-10 15:55:55] Experiment Start!!!
-[2025-09-10 15:57:56] Experiment interrupted by user.
-[2025-09-10 15:57:56] All commands executed successfully.
-
-[2025-09-10 19:32:11] Experiment Start!!!
-[2025-09-14 14:45:10] Experiment Start!!!
-Value: self, Metric: 0.5590
-Value: full, Metric: 0.3753
-Value: sa, Metric: 0.3753
-Value: external, Metric: 0.3753
-Value: gqa, Metric: 0.3753
-Value: mqa, Metric: 0.3753
-==> Best att_method: self, local_best_metric: 0.5590
+[2025-09-14 15:00:37] Experiment Start!!!
+Value: self, Metric: 0.8614
+Value: full, Metric: 0.8524
+Value: sa, Metric: 0.8524
+Value: external, Metric: 0.0009
+Value: gqa, Metric: 0.7953
+==> Best att_method: self, local_best_metric: 0.8614
 The Best Hyperparameters: {'att_method': 'self'}
-Running at 2025-09-14 14:45: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method self
-[2025-09-14 14:45:58] Experiment interrupted by user.
-[2025-09-14 14:45:58] All commands executed successfully.
+Running at 2025-09-14 17:53: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method self
+[2025-09-14 18:34:40] All commands executed successfully.
+[2025-09-16 16:17:10] Experiment Start!!!
+[2025-09-16 17:04:13] d_model: 96, Metric: 0.8276
+[2025-09-16 17:49:11] d_model: 192, Metric: 0.8413
+[2025-09-16 18:33:39] d_model: 256, Metric: 0.8417
+[2025-09-16 19:20:23] d_model: 320, Metric: 0.8330
+[2025-09-16 19:20:23] ==> Best d_model: 256, local_best_metric: 0.8417
 
-[2025-09-14 14:47:18] Experiment Start!!!
-Value: external, Metric:   nan
-Value: gqa, Metric:   nan
-Value: mqa, Metric:   nan
-==> Best att_method: None, local_best_metric: 0.0000
-The Best Hyperparameters: {'att_method': None}
-Running at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:47: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:48: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-[2025-09-14 14:48:59] Experiment interrupted by user.
-[2025-09-14 14:48:59] All commands executed successfully.
+[2025-09-16 20:10:37] num_layers: 2, Metric: 0.8417
+[2025-09-16 22:55:55] num_layers: 3, Metric: 0.8524
+[2025-09-16 23:45:17] num_layers: 4, Metric: 0.8551
+[2025-09-16 23:45:17] ==> Best num_layers: 4, local_best_metric: 0.8551
 
-[2025-09-14 14:51:33] Experiment Start!!!
-Value: gqa, Metric:   nan
-Value: mqa, Metric:   nan
-==> Best att_method: None, local_best_metric: 0.0000
-The Best Hyperparameters: {'att_method': None}
-Running at 2025-09-14 14:51: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Retrying at 2025-09-14 14:51: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method None
-[2025-09-14 14:51:49] Experiment interrupted by user.
-[2025-09-14 14:51:49] All commands executed successfully.
+[2025-09-16 23:45:17] The Best Hyperparameters: {'num_layers': 4, 'att_method': 'full', 'd_model': 256}
 
-[2025-09-14 14:52:29] Experiment Start!!!
-Value: gqa, Metric: 0.4747
-Value: mqa, Metric: 0.4747
-==> Best att_method: gqa, local_best_metric: 0.4747
-The Best Hyperparameters: {'att_method': 'gqa'}
-Running at 2025-09-14 14:52: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method gqa
-[2025-09-14 14:52:45] Experiment interrupted by user.
-[2025-09-14 14:52:45] All commands executed successfully.
+[2025-09-16 23:45:17] Running at 2025-09-16 23:45: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 4 --att_method full --d_model 256
 
-[2025-09-14 14:53:22] Experiment Start!!!
-The Best Hyperparameters: {'att_method': 'gqa'}
-Running at 2025-09-14 14:53: python run_train.py --exp_name OurModelConfig --retrain 1 --att_method gqa
-[2025-09-14 14:53:31] Experiment interrupted by user.
-[2025-09-14 14:53:31] All commands executed successfully.
+[2025-09-17 00:28:47] All commands executed successfully.
+
+[2025-09-17 09:35:59] Experiment Start!!!
+[2025-09-17 09:36:03] d_model: 96, Metric: 0.8276
+[2025-09-17 09:36:06] d_model: 192, Metric: 0.8413
+[2025-09-17 09:36:10] d_model: 256, Metric: 0.8551
+[2025-09-17 09:36:14] d_model: 320, Metric: 0.8330
+[2025-09-17 09:36:14] ==> Best d_model: 256, local_best_metric: 0.8551
+
+[2025-09-17 09:36:17] num_layers: 2, Metric: 0.8551
+[2025-09-17 09:36:21] num_layers: 3, Metric: 0.8551
+[2025-09-17 09:36:25] num_layers: 4, Metric: 0.8551
+[2025-09-17 09:36:25] ==> Best num_layers: 2, local_best_metric: 0.8551
+
+[2025-09-17 09:36:25] The Best Hyperparameters: {'num_layers': 2, 'att_method': 'sa', 'd_model': 256}
+
+[2025-09-17 09:36:25] Running at 2025-09-17 09:36: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method sa --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method sa --d_model 256
+[2025-09-17 09:36:31] Retrying at 2025-09-17 09:36: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method sa --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method sa --d_model 256
+[2025-09-17 09:36:38] Retrying at 2025-09-17 09:36: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method sa --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method sa --d_model 256
+[2025-09-17 09:36:45] Retrying at 2025-09-17 09:36: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method sa --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method sa --d_model 256
+[2025-09-17 09:36:51] Retrying at 2025-09-17 09:36: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method sa --d_model 256
+
+[2025-09-17 09:36:53] Experiment interrupted by user.
+[2025-09-17 09:36:53] All commands executed successfully.
+
+[2025-09-17 09:38:46] Experiment Start!!!
+[2025-09-17 09:38:50] d_model: 96, Metric: 0.8276
+[2025-09-17 09:38:54] d_model: 192, Metric: 0.8413
+[2025-09-17 09:38:57] d_model: 256, Metric: 0.8551
+[2025-09-17 09:39:01] d_model: 320, Metric: 0.8330
+[2025-09-17 09:39:01] ==> Best d_model: 256, local_best_metric: 0.8551
+
+[2025-09-17 09:39:05] num_layers: 2, Metric: 0.8551
+[2025-09-17 09:39:08] Experiment interrupted by user.
+[2025-09-17 09:39:08] All commands executed successfully.
+
+[2025-09-17 09:46:36] Experiment Start!!!
+[2025-09-17 09:46:40] d_model: 96, Metric: 0.8276
+[2025-09-17 09:46:41] Experiment interrupted by user.
+[2025-09-17 09:46:41] All commands executed successfully.
+
+[2025-09-17 09:46:44] Experiment Start!!!
+[2025-09-17 09:46:48] d_model: 96, Metric: 0.8276
+[2025-09-17 09:46:51] Experiment interrupted by user.
+[2025-09-17 09:46:51] All commands executed successfully.
+
+[2025-09-17 09:47:01] Experiment Start!!!
+[2025-09-17 09:47:05] d_model: 96, Metric: 0.8276
+[2025-09-17 09:47:08] Experiment interrupted by user.
+[2025-09-17 09:47:08] All commands executed successfully.
+
+[2025-09-17 09:52:11] Experiment Start!!!
+[2025-09-17 09:52:14] d_model: 96, Metric: 0.8276
+[2025-09-17 09:52:16] Experiment interrupted by user.
+[2025-09-17 09:52:16] All commands executed successfully.
+
+[2025-09-17 09:52:31] Experiment Start!!!
+[2025-09-17 09:52:34] d_model: 96, Metric: 0.8276
+[2025-09-17 09:52:38] d_model: 192, Metric: 0.8413
+[2025-09-17 09:52:42] d_model: 256, Metric: 0.8551
+[2025-09-17 09:52:45] d_model: 320, Metric: 0.8330
+[2025-09-17 09:52:45] ==> Best d_model: 256, local_best_metric: 0.8551
+
+[2025-09-17 09:52:48] Experiment interrupted by user.
+[2025-09-17 09:52:48] All commands executed successfully.
+
+[2025-09-17 09:54:23] Experiment Start!!!
+[2025-09-17 09:54:27] d_model: 96, Metric: 0.8276
+[2025-09-17 09:54:28] Experiment interrupted by user.
+[2025-09-17 09:54:28] All commands executed successfully.
+
+[2025-09-17 09:55:00] Experiment Start!!!
+[2025-09-17 09:55:03] d_model: 96, Metric: 0.8276
+[2025-09-17 09:55:05] Experiment interrupted by user.
+[2025-09-17 09:55:05] All commands executed successfully.
+
+[2025-09-17 09:55:29] Experiment Start!!!
+[2025-09-17 09:55:33] d_model: 96, Metric: 0.8276
+[2025-09-17 09:55:37] d_model: 192, Metric: 0.8413
+[2025-09-17 09:55:40] d_model: 256, Metric: 0.8551
+[2025-09-17 09:55:44] d_model: 320, Metric: 0.8330
+[2025-09-17 09:55:44] ==> Best d_model: 256, local_best_metric: 0.8551
+
+[2025-09-17 09:55:48] num_layers: 2, Metric: 0.8551
+[2025-09-17 09:55:51] num_layers: 3, Metric: 0.8551
+[2025-09-17 09:55:55] num_layers: 4, Metric: 0.8551
+[2025-09-17 09:55:55] ==> Best num_layers: 2, local_best_metric: 0.8551
+
+[2025-09-17 09:55:55] The Best Hyperparameters: {'num_layers': 2, 'att_method': 'full', 'd_model': 256}
+
+[2025-09-17 09:55:55] Running at 2025-09-17 09:55: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+[2025-09-17 09:56:01] Retrying at 2025-09-17 09:56: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+[2025-09-17 09:56:08] Retrying at 2025-09-17 09:56: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+[2025-09-17 09:56:15] Retrying at 2025-09-17 09:56: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+[2025-09-17 09:56:21] Retrying at 2025-09-17 09:56: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+[2025-09-17 09:56:28] Retrying at 2025-09-17 09:56: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+
+Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+[2025-09-17 09:56:35] Retrying at 2025-09-17 09:56: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+
+[2025-09-17 11:24:50] Experiment Start!!!
+[2025-09-17 11:24:53] d_model: 192, Metric: 0.8413
+[2025-09-17 11:24:56] d_model: 256, Metric: 0.8551
+[2025-09-17 11:24:59] d_model: 320, Metric: 0.8330
+[2025-09-17 11:24:59] ==> Best d_model: 256, local_best_metric: 0.8551
+
+[2025-09-17 11:25:14] Retrying at 2025-09-17 11:25: python run_train.py --exp_name OurModelConfig --retrain 1 --num_layers 2 --att_method full --d_model 256
+[2025-09-18 10:35:56] Experiment Start!!!
+[2025-09-18 11:27:31] d_model: 128, Metric: 0.8397
+[2025-09-18 11:27:53] Experiment interrupted by user.
+[2025-09-18 11:27:53] All commands executed successfully.
+
+[2025-09-18 15:03:19] Experiment Start!!!
+[2025-09-18 15:44:12] d_model: 128, Metric: 0.8640
+[2025-09-18 16:36:25] d_model: 192, Metric: 0.8669
+[2025-09-18 17:24:23] d_model: 96, Metric: 0.8585
+[2025-09-18 18:15:04] d_model: 256, Metric: 0.8662
+[2025-09-18 18:15:04] ==> Best d_model: 192, local_best_metric: 0.8669
+
+[2025-09-18 19:06:03] num_layers: 3, Metric: 0.8669
+[2025-09-18 19:42:51] num_layers: 4, Metric: 0.8756
+[2025-10-13 13:24:07] Experiment Start!!!
+[2025-10-13 13:24:13] try_exp: 2, Metric: 0.5983
+[2025-10-13 13:24:20] try_exp: 3, Metric: 0.6069
+[2025-10-13 13:24:26] try_exp: 4, Metric: 0.6046
+[2025-10-13 13:24:33] try_exp: 5, Metric: 0.6101
+[2025-10-13 13:24:39] try_exp: 6, Metric: 0.5110
+[2025-10-13 13:24:46] try_exp: 7, Metric: 0.5966
+[2025-10-13 13:24:52] try_exp: 8, Metric: 0.6113
+[2025-10-13 13:24:52] ==> Best try_exp: 8, local_best_metric: 0.6113
+
+[2025-10-13 13:24:52] The Best Hyperparameters: {'try_exp': 8}
+
+[2025-10-13 13:24:52] Running at 2025-10-13 13:24: python run_train.py --exp_name OurModelConfig --retrain 1 --try_exp 8
+
+[2025-10-13 13:24:53] Experiment interrupted by user.
+[2025-10-13 13:24:53] All commands executed successfully.
+
+[2025-10-13 13:25:21] Experiment Start!!!
+[2025-10-13 14:13:39] try_exp: 2, Metric: 0.8640
+[2025-10-13 14:46:53] try_exp: 3, Metric: 0.8670
+[2025-10-13 14:48:44] Experiment interrupted by user.
+[2025-10-13 14:48:44] All commands executed successfully.
+
+[2025-10-13 14:49:09] Experiment Start!!!
+[2025-10-13 14:49:12] Experiment interrupted by user.
+[2025-10-13 14:49:12] All commands executed successfully.
+
+[2025-10-13 14:49:26] Experiment Start!!!
+[2025-10-13 14:49:27] Experiment interrupted by user.
+[2025-10-13 14:49:27] All commands executed successfully.
+
+[2025-10-13 14:49:33] Experiment Start!!!
+[2025-10-13 15:40:11] try_exp: 1, Metric: 0.8694
+[2025-10-13 16:24:33] try_exp: 2, Metric: 0.8727
+[2025-10-13 16:58:53] try_exp: 3, Metric: 0.8715
+[2025-10-13 17:27:43] try_exp: 4, Metric: 0.8704
+[2025-10-13 17:58:31] try_exp: 5, Metric: 0.8718
+[2025-10-13 18:32:25] try_exp: 6, Metric: 0.8756
+[2025-10-13 19:12:05] try_exp: 7, Metric: 0.8734
+[2025-10-13 19:47:34] try_exp: 8, Metric: 0.8751
+[2025-10-13 19:47:34] ==> Best try_exp: 6, local_best_metric: 0.8756
+
+[2025-10-13 19:47:34] The Best Hyperparameters: {'try_exp': 6}
+
+[2025-10-13 19:47:34] Running at 2025-10-13 19:47: python run_train.py --exp_name OurModelConfig --retrain 1 --try_exp 6
+
+[2025-10-13 20:22:03] All commands executed successfully.
 

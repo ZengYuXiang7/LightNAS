@@ -11,7 +11,7 @@ from baselines.narformer2 import NarFormer2
 from baselines.nnformer import NARLoss, NNFormer
 from models.layers.metric.distance import PairwiseLoss
 from exp.exp_base import BasicModel
-from models.TransNAS import ACLoss, PairwiseDiffLoss, TransNAS
+from models.TransNAS import ACLoss, PairwiseDiffLoss, SoftRankLoss, TransNAS
 from models.backbone import Backbone
 
 
@@ -88,8 +88,9 @@ class Model(BasicModel):
             self.model = TransNAS(self.input_size, config)  
             # self.model = Backbone(self.input_size, config)
             # self.model = BRPNAS(self.input_size, config)  
-            self.rank_loss = PairwiseDiffLoss('l1')
+            self.sr_loss = PairwiseDiffLoss('l1')
             self.ac_loss = ACLoss('l1')
+            self.rank_loss = SoftRankLoss(config)
             
         else:
             raise ValueError(f"Unsupported model type: {config.model}")

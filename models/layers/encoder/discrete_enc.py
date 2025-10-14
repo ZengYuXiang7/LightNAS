@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import math
+import torch.nn.init as init
 
 class DiscreteEncoder(nn.Module):
     def __init__(
@@ -78,7 +79,16 @@ class DiscreteEncoder(nn.Module):
             self.proj_out = nn.Linear(native_dim, output_dim, bias=post_bias)
         else:
             self.proj_out = None  # 恒等
-
+            
+        self.apply(self.init_weights)
+    
+    def init_weights(self, m):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                init.normal_(m.weight, std=0.02)
+                if m.bias is not None:
+                    init.constant_(m.bias, 0)
+                    
     def forward(self, operation_ids: torch.Tensor) -> torch.Tensor:
         """
         :param operation_ids: (B, n) 的整型 ID

@@ -59,26 +59,11 @@ class BasicModel(torch.nn.Module):
         self.to(config.device)
         self.loss_function = get_loss_function(config).to(config.device)
         self.optimizer     = get_optimizer(self.parameters(), lr=config.lr, decay=config.decay, config=config)
-        # self.scheduler     = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        #     self.optimizer, mode='min', factor=0.5, patience=config.patience // 2, threshold=0.0, min_lr=1e-6
-        # )
+        
         # self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             # self.optimizer, T_max=config.epochs, eta_min=0
         # )
         if config.model == 'ours':
-            # self.scheduler = CosinePulseOnPlateau(
-            #     self.optimizer,
-            #     mode='min',
-            #     patience=config.patience // 2,       # 例：earlystop_patience=100 → 33
-            #     pulse_T=12,        # 单次脉冲长度（12 个验证 epoch 余弦到目标）
-            #     ratio=0.8,         # 每次把当前 LR 平滑降到 80%
-            #     min_lr=1e-6,
-            #     cooldown=1,        # 脉冲后冷却 1 轮，避免立即再触发
-            #     threshold=1e-4,
-            #     threshold_mode='rel',
-            #     verbose=True
-            # )
-            
             self.scheduler = build_stable_warmup_hold_cosine(
                 self.optimizer,
                 total_units=config.epochs * 0.6,
@@ -86,6 +71,11 @@ class BasicModel(torch.nn.Module):
                 hold_ratio=0.02,     # 2% 保持（可为 0）
                 min_lr_ratio=0.05    # 末端保留 5% 初始 lr
             )
+        else:
+            self.scheduler     = torch.optim.lr_scheduler.ReduceLROnPlateau(
+                self.optimizer, mode='min', factor=0.5, patience=config.patience // 2, threshold=0.0, min_lr=1e-6
+            )
+            
 
     def train_one_epoch(self, dataModule):
         loss = None

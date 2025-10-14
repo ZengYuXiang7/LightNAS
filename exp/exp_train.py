@@ -104,6 +104,7 @@ def RunOnce(config, runid, model:BasicModel, datamodule:DataModule, log:Logger):
         # 保存最优模型参数
         torch.save(monitor.best_model, model_path)
         log(f'Model parameters saved to {model_path}')
+        print('-' * 130)
 
     # 将训练时间加入返回结果中
     results['train_time'] = sum_time

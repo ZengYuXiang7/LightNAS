@@ -2,70 +2,47 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from math import sqrt
-from einops import rearrange, repeat
 import torch.nn.functional as F
-
-
-class TriangularCausalMask():
-    def __init__(self, B, L, device="cpu"):
-        mask_shape = [B, 1, L, L]
-        with torch.no_grad():
-            self._mask = torch.triu(torch.ones(mask_shape, dtype=torch.bool), diagonal=1).to(device)
-
-    @property
-    def mask(self):
-        return self._mask
+from torch.nn import init
 
 
 class FullAttention(nn.Module):
-    def __init__(self, mask_flag=True, scale=None, attention_dropout=0.1, output_attention=False):
-        super(FullAttention, self).__init__()
-        self.scale = scale
-        self.mask_flag = mask_flag
+    def __init__(self, is_casual=False, attention_dropout=0.1, output_attention=False):
+        super().__init__()
+        self.is_casual = is_casual
+        self.dropout_p = attention_dropout
         self.output_attention = output_attention
-        self.attention_dropout = attention_dropout
-        # self.dropout = nn.Dropout(attention_dropout)
 
-    def forward(self, queries, keys, values, attn_mask, tau=None, delta=None):
-        B, L, H, E = queries.shape
-        _, S, _, D = values.shape
-        
-        scale = self.scale or 1. / sqrt(E)
+    def forward(self, queries, keys, values, attn_mask=None):
+        # 输入: [B, L, H, D]
+        q = queries.permute(0, 2, 1, 3)  # [B,H,L,D]
+        k = keys.permute(0, 2, 1, 3)     # [B,H,S,D]
+        v = values.permute(0, 2, 1, 3)   # [B,H,S,D]
 
-        scores = torch.einsum("blhe,bshe->bhls", queries, keys)
+        A = F.scaled_dot_product_attention(
+            q, k, v,
+            attn_mask=attn_mask,
+            dropout_p=self.dropout_p if self.training else 0.0,
+            is_causal=self.is_casual,
+        )  # [B,H,L,D]
 
-        if self.mask_flag:
-            if attn_mask is None:
-                attn_mask = TriangularCausalMask(B, L, device=queries.device)
-            # scores.masked_fill_(attn_mask.mask, -np.inf)
-            neg_inf = torch.finfo(scores.dtype).min
-            scores = scores.masked_fill(attn_mask.mask, neg_inf)
-            
-        A = F.dropout(torch.softmax(scale * scores, dim=-1), p=self.attention_dropout, training=self.training)
-        V = torch.einsum("bhls, bshd->blhd", A, values)
-
-        if self.output_attention:
-            return V.contiguous(), A
-        else:
-            return V.contiguous(), None
+        out = A.permute(0, 2, 1, 3).contiguous()  # 回到 [B,L,H,D]
+        return out
         
         
 class AttentionLayer(nn.Module):
-    def __init__(self, attention, d_model, n_heads, d_keys=None, d_values=None):
+    def __init__(self, attn, d_model, n_heads):
         super(AttentionLayer, self).__init__()
 
-        d_keys = d_keys or (d_model // n_heads)
-        d_values = d_values or (d_model // n_heads)
-
-        self.inner_attention = attention
-        self.query_projection = nn.Linear(d_model, d_keys * n_heads)
-        self.key_projection = nn.Linear(d_model, d_keys * n_heads)
-        self.value_projection = nn.Linear(d_model, d_values * n_heads)
-        self.out_projection = nn.Linear(d_values * n_heads, d_model)
+        self.inner_attention = attn
+        self.query_projection = nn.Linear(d_model, d_model)
+        self.key_projection = nn.Linear(d_model, d_model)
+        self.value_projection = nn.Linear(d_model, d_model)
+        
+        self.out_projection = nn.Linear(d_model, d_model)
         self.n_heads = n_heads
 
-    def forward(self, queries, keys, values, attn_mask=None, tau=None, delta=None):
+    def forward(self, queries, keys, values, attn_mask=None):
         B, L, _ = queries.shape
         _, S, _ = keys.shape
         H = self.n_heads
@@ -74,27 +51,25 @@ class AttentionLayer(nn.Module):
         keys = self.key_projection(keys).view(B, S, H, -1)
         values = self.value_projection(values).view(B, S, H, -1)
 
-        out, attn = self.inner_attention(
+        out = self.inner_attention(
             queries,
             keys,
             values,
             attn_mask,
-            tau=tau,
-            delta=delta
         )
         out = out.view(B, L, -1)
 
-        return self.out_projection(out), attn
-
-
+        return self.out_projection(out)
+    
+    
 class CustomAttention(torch.nn.Module):
     def __init__(self, d_model, n_heads):
         super().__init__()
-        self.dot_product = FullAttention(mask_flag=False, output_attention=False)
-        self.att = AttentionLayer(self.dot_product, d_model=d_model, n_heads=n_heads)
+        self.dot_product = FullAttention()
+        self.att = AttentionLayer(d_model=d_model, n_heads=n_heads, attn=self.dot_product)
 
     def forward(self, x, attn_mask=None):
-        out, attn = self.att(x, x, x, attn_mask=attn_mask)
+        out = self.att(x, x, x, attn_mask=attn_mask)
         return out
 
     

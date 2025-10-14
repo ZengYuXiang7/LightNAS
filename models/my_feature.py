@@ -95,7 +95,9 @@ def apsp_unweighted_bfs(adj: torch.Tensor, *, directed: bool = True) -> torch.Te
 
     # 转成 float，并把不可达置为 +inf
     D = D_int.to(torch.float32)
-    D[D_int == INF_INT] = float('inf')
+    # D[D_int == INF_INT] = float('inf')
+    # 2025年09月18日11:11:29
+    D[D_int == INF_INT] = int(99)
     return D
 
 

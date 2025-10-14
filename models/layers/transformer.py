@@ -1,7 +1,6 @@
 # coding : utf-8
 # Author : yuxiang Zeng
 import torch
-
 from models.layers.att.external_attention import ExternalAttention
 from models.layers.att.full_attention import CustomAttention
 from models.layers.att.groupquery_attention import GroupQueryAttention
@@ -25,7 +24,7 @@ def get_norm(d_model, method):
 
 def get_ffn(d_model, method):
     if method == 'ffn':
-        return FeedForward(d_model, d_ff=d_model * 2, dropout=0.10)
+        return FeedForward(d_model, d_ff=d_model * 2, dropout=0.00)
     elif method == 'moe':
         return MoE(d_model=d_model, d_ff=d_model, num_m=1, num_router_experts=4, num_share_experts=0, num_k=1, loss_coef=0.001)
     elif method == 'smoe':
@@ -41,7 +40,7 @@ def get_att(d_model, num_heads, method):
     elif method == 'sa':
         return ScaledDotProductAttention(d_model=d_model, h=num_heads)
     elif method == 'external':
-        return ExternalAttention(d_model, S=d_model*2)
+        return ExternalAttention(d_model, S=128)
     elif method == 'mla':
         return MLA(d_model, S=d_model*2)
     elif method == 'gqa':
@@ -68,8 +67,8 @@ class Transformer(torch.nn.Module):
             )
         self.norm = get_norm(d_model, norm_method)
 
-    def forward(self, x, key_padding_mask=None):
+    def forward(self, x, attn_mask=None):
         for norm1, attn, norm2, ff in self.layers:
-            x = attn(norm1(x), key_padding_mask) + x
+            x = attn(norm1(x), attn_mask) + x
             x = ff(norm2(x)) + x
         return self.norm(x)

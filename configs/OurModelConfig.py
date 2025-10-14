@@ -18,16 +18,16 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     
     epochs: int = 2000
     patience: int = 200
-    verbose: int = 500
+    verbose: int = 2000
     
     op_encoder: str = 'embedding'  # embedding, onehot, discrete
     
-    d_model: int = 256 
+    d_model: int = 192 
     lp_d_model: int = 8
     lap_node_id_sign_flip: bool = True  # 是否对 LapPE 做随机符号翻转增强
     optim: str = 'Adam'
     
-    num_layers: int = 3
+    num_layers: int = 4
     num_heads: int = 4
     
     monitor_reverse: bool = True
@@ -35,7 +35,8 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     predict_target: str = 'accuracy'  #  latency accuracy 
 
     # Transformer 结构
-    # att_method: str = 'rms'
+    att_method: str = 'self'
+    att_bias: bool = True  # 是否使用距离嵌入
     # norm_method: str = 'rms'
     # ffn_method: str = 'ffn'
     
@@ -48,4 +49,6 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     
     rank_loss: bool = True  # 
     ac_loss: bool = True  # 
+    
+    try_exp: int = 1  # 1-8
     

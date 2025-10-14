@@ -9,8 +9,11 @@ class Attention(torch.nn.Module):
         super().__init__()
         self.att = torch.nn.MultiheadAttention(d_model, num_heads, dropout, batch_first=True)
 
-    def forward(self, x, key_padding_mask=None):
-        out, weights = self.att(x, x, x, key_padding_mask=key_padding_mask)
+    def forward(self, x, attn_mask=None):
+        if attn_mask is not None:
+            bs, h, n, m = attn_mask.shape
+            attn_mask = attn_mask.reshape(bs * h, n, m)  # [B*H, N, N]
+        out, weights = self.att(x, x, x, attn_mask=attn_mask)
         return out
     
 
