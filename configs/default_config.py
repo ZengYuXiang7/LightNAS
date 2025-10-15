@@ -16,6 +16,7 @@ class DatasetInfo:
     scaler_method: str = 'minmax'
     # spliter_ratio: str = '7:1:2'
     spliter_ratio: str = '5:1:94'
+    sample_method: str = 'random'  # random  sequential
     
     
 @dataclass

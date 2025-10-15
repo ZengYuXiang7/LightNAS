@@ -29,8 +29,6 @@ class Model(BasicModel):
         elif config.model == 'flops-mac':
             self.model = Flops(2, config)
             
-        
-            
             
         elif config.model == 'lstm':
             self.model = LSTM(self.input_size, config)  

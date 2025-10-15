@@ -17,10 +17,12 @@ class TransNAS(nn.Module):
         self.d_model = config.d_model
         # self.op_embedding = torch.nn.Embedding(7, config.d_model)
         self.op_embedding = DiscreteEncoder(num_operations=7, encoding_dim=self.d_model, encoding_type=config.op_encoder, output_dim=self.d_model)
+        
         self.indeg_embedding = DiscreteEncoder(num_operations=10, encoding_dim=self.d_model, encoding_type='embedding', output_dim=self.d_model)
         self.outdeg_embedding = DiscreteEncoder(num_operations=10, encoding_dim=self.d_model, encoding_type='embedding', output_dim=self.d_model)
         
-        self.att_bias = SPDSpatialBias(num_heads=config.num_heads, max_dist=99)    
+        self.att_bias = SPDSpatialBias(num_heads=config.num_heads, max_dist=99)   
+         
         self.tokenGT = TokenGT(c_node=self.d_model, d_model=self.d_model, lap_dim=config.lp_d_model, use_edge=False)
         
         self.encoder = Transformer(self.d_model, config.num_layers, config.num_heads, 'rms', 'ffn', config.att_method)
@@ -50,6 +52,9 @@ class TransNAS(nn.Module):
 
         y = self.pred_head(cls_out)                           # 回归或分类
         return y
+
+
+
 
 
 class SPDSpatialBias(nn.Module):
@@ -445,18 +450,7 @@ class SoftRankLoss(torch.nn.Module):
     def __init__(self, config):
         super(SoftRankLoss, self).__init__()
         self.config = config
-        if config.try_exp == 1:
-            self.sp_tau = 1
-            self.kd_alpha = 10
-            self.kd_jitter = 0
-        elif config.try_exp == 2:
-            self.sp_tau = 3
-            self.kd_alpha = 10
-            self.kd_jitter = 0
-        elif config.try_exp == 3:
-            self.sp_tau = 1
-            self.kd_alpha = 3
-            self.kd_jitter = 0  
+
         
     # Kendall
     def diffkendall_tau(self, x, y, alpha=10.0, jitter=0.0):
@@ -484,7 +478,7 @@ class SoftRankLoss(torch.nn.Module):
 
     
     # Spearman
-    def soft_rank(self, v, tau=1.0):
+    def soft_rank(self, v, tau=1.6):
         v = v.view(-1, 1)
         P = torch.sigmoid((v.T - v) / tau)     # [n,n]
         r = 1.0 + P.sum(dim=1)                 # 近似秩
@@ -510,8 +504,8 @@ class SoftRankLoss(torch.nn.Module):
         if preds.ndim != 1 or labels.ndim != 1:
             raise ValueError("Both preds and labels must be 1D tensors.")
 
-        loss_spearman = self.spearman_loss(preds, labels, tau=self.sp_tau)
-        loss_kendall = self.diffkendall_loss(preds, labels, alpha=self.kd_alpha, jitter=self.kd_jitter)
+        loss_spearman = self.spearman_loss(preds, labels, tau=1.6)
+        loss_kendall = self.diffkendall_loss(preds, labels, alpha=10, jitter=0)
 
         return loss_spearman, loss_kendall
     

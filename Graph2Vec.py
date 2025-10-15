@@ -115,8 +115,7 @@ adjs = np.random.randint(0, 2, size=(m, n, n))  # 随机生成邻接矩阵
 features = np.random.randn(m, n, d)  # 随机生成节点特征
 
 # 调用函数获取聚类标签
-labels = graph_clustering(adjs, features, model_type='Graph2Vec', dimensions=128, workers=4, epochs=20, 
-                           n_clusters=3, random_state=42)
+labels = graph_clustering(adjs, features, model_type='Graph2Vec', dimensions=128, workers=4, epochs=20, n_clusters=3, random_state=42)
 
 # 输出聚类标签
 print("聚类标签:", labels)

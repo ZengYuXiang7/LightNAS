@@ -9,7 +9,6 @@ import pickle
 import torch
 from data_provider.data_scaler import get_scaler
 import numpy as np
-from torch.utils.data import Sampler
 import dgl 
 from tqdm import *
 
@@ -74,19 +73,33 @@ class DataModule:
         total = sum(parts)
         tr, vr, te = [p / total for p in parts]
 
-        # 打乱索引
-        seed = getattr(config, "seed", None)
-        rng = np.random.default_rng(seed)
         idx = list(range(N))
-        rng.shuffle(idx)
-
-        # 计算切分点
         n_train = int(N * tr)
         n_valid = int(N * vr)
-        train_idx = idx[:n_train]
-        valid_idx = idx[n_train:n_train + n_valid]
-        test_idx  = idx[n_train + n_valid:]
-
+        
+        # 切分训练验证测试集
+        if config.sample_method == 'random':
+            rng = np.random.default_rng(config.seed)
+            rng.shuffle(idx)
+            # 计算切分点
+            
+            train_idx = idx[:n_train]
+            valid_idx = idx[n_train:n_train + n_valid]
+            test_idx  = idx[n_train + n_valid:]
+            
+        # 采用自己设计的采样方法
+        elif config.sample_method == 'ours':
+            train_idx = pickle.load(open('./data/201_traing_sample.pkl', 'rb'))[n_train]
+            
+            # 剩余样本索引用于valid/test
+            remaining_idx = [i for i in idx if i not in set(train_idx)]
+            rng = np.random.default_rng(config.seed)
+            rng.shuffle(remaining_idx)
+            
+            valid_idx = remaining_idx[:n_valid]
+            test_idx  = remaining_idx[n_valid:]
+            print("成功采用自己设计的采样方法")
+            
         # 按索引切片为三个 dict
         def slice_dict(d, indices):
             out = {}
@@ -120,6 +133,7 @@ class DataModule:
         y_scaler = get_scaler(values, config, selected_method='stander')
         return x_scaler, y_scaler
     
+    
     def normalize_data(self, data, x_scaler, y_scaler, config):
         """
         对数据进行归一化处理。
@@ -144,7 +158,6 @@ class DataModule:
         return normalized_data
         
     
-
     def build_loader(self, dataset, bs, is_train):
         if platform.system() == 'Linux' and 'ubuntu' in platform.version().lower():
             max_workers = min(multiprocessing.cpu_count() // 3, 12)

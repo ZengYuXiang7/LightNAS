@@ -37,12 +37,6 @@ class OurModelConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     # Transformer 结构
     att_method: str = 'self'
     att_bias: bool = True  # 是否使用距离嵌入
-    # norm_method: str = 'rms'
-    # ffn_method: str = 'ffn'
-    
-    # gcn_method: str = 'gcn'
-    # norm_method: str = 'batch'
-    # ffn_method: str = 'ffn'
     
     # 数据集路径
     transfer: bool = False

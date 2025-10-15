@@ -562,3 +562,86 @@ Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelCo
 
 [2025-10-13 20:22:03] All commands executed successfully.
 
+[2025-10-14 14:09:24] Experiment Start!!!
+[2025-10-14 14:09:58] Experiment interrupted by user.
+[2025-10-14 14:09:58] All commands executed successfully.
+
+[2025-10-14 14:10:33] Experiment Start!!!
+[2025-10-14 14:37:02] try_exp: 1, Metric: 0.8743
+[2025-10-14 15:16:26] try_exp: 2, Metric: 0.8737
+[2025-10-14 15:47:49] try_exp: 3, Metric: 0.8754
+[2025-10-14 15:47:54] try_exp: 4, Metric: 0.8754
+[2025-10-14 15:47:58] try_exp: 5, Metric: 0.8754
+[2025-10-14 15:48:03] try_exp: 6, Metric: 0.8754
+[2025-10-14 15:48:07] try_exp: 7, Metric: 0.8754
+[2025-10-14 15:48:12] try_exp: 8, Metric: 0.8754
+[2025-10-14 15:48:12] ==> Best try_exp: 3, local_best_metric: 0.8754
+
+[2025-10-14 15:48:12] The Best Hyperparameters: {'try_exp': 3}
+
+[2025-10-14 15:48:12] Running at 2025-10-14 15:48: python run_train.py --exp_name OurModelConfig --retrain 1 --try_exp 3
+
+[2025-10-14 16:20:43] All commands executed successfully.
+
+[2025-10-14 17:18:12] Experiment Start!!!
+[2025-10-14 17:18:16] Experiment interrupted by user.
+[2025-10-14 17:18:16] All commands executed successfully.
+
+[2025-10-14 17:18:28] Experiment Start!!!
+[2025-10-14 18:04:25] try_exp: 1, Metric: 0.8746
+[2025-10-14 18:41:11] try_exp: 2, Metric: 0.8764
+[2025-10-14 19:17:16] try_exp: 3, Metric: 0.8761
+[2025-10-14 19:55:06] try_exp: 4, Metric: 0.8761
+[2025-10-14 19:55:10] try_exp: 5, Metric: 0.8761
+[2025-10-14 19:55:15] try_exp: 6, Metric: 0.8761
+[2025-10-14 19:55:19] try_exp: 7, Metric: 0.8761
+[2025-10-14 19:55:24] try_exp: 8, Metric: 0.8761
+[2025-10-14 19:55:24] ==> Best try_exp: 2, local_best_metric: 0.8764
+
+[2025-10-14 19:55:24] The Best Hyperparameters: {'try_exp': 2}
+
+[2025-10-14 19:55:24] Running at 2025-10-14 19:55: python run_train.py --exp_name OurModelConfig --retrain 1 --try_exp 2
+
+[2025-10-14 22:01:31] Experiment Start!!!
+[2025-10-14 22:02:58] Experiment interrupted by user.
+[2025-10-14 22:02:58] All commands executed successfully.
+
+[2025-10-14 22:04:08] Experiment Start!!!
+[2025-10-14 22:41:44] try_exp: 1, Metric: 0.8772
+[2025-10-14 23:17:15] try_exp: 2, Metric: 0.8765
+[2025-10-14 23:58:59] try_exp: 3, Metric: 0.8765
+[2025-10-14 23:59:04] try_exp: 4, Metric: 0.8765
+[2025-10-14 23:59:09] try_exp: 5, Metric: 0.8765
+[2025-10-14 23:59:13] try_exp: 6, Metric: 0.8765
+[2025-10-14 23:59:18] try_exp: 7, Metric: 0.8765
+[2025-10-14 23:59:23] try_exp: 8, Metric: 0.8765
+[2025-10-14 23:59:23] ==> Best try_exp: 1, local_best_metric: 0.8772
+
+[2025-10-14 23:59:23] The Best Hyperparameters: {'try_exp': 1}
+
+[2025-10-14 23:59:23] Running at 2025-10-14 23:59: python run_train.py --exp_name OurModelConfig --retrain 1 --try_exp 1
+
+[2025-10-15 00:39:39] All commands executed successfully.
+
+[2025-10-15 09:49:19] Experiment Start!!!
+[2025-10-15 10:22:55] try_exp: 1, Metric: 0.8756
+[2025-10-15 10:52:18] try_exp: 2, Metric: 0.8741
+[2025-10-15 11:34:24] try_exp: 3, Metric: 0.8757
+
+
+[2025-10-15 11:34:29] try_exp: 4, Metric: 0.8757
+[2025-10-15 11:34:34] try_exp: 5, Metric: 0.8757
+[2025-10-15 11:34:39] try_exp: 6, Metric: 0.8757
+[2025-10-15 11:34:43] try_exp: 7, Metric: 0.8757
+[2025-10-15 11:34:48] try_exp: 8, Metric: 0.8757
+[2025-10-15 11:34:48] ==> Best try_exp: 3, local_best_metric: 0.8757
+
+[2025-10-15 11:34:48] The Best Hyperparameters: {'try_exp': 3}
+
+[2025-10-15 11:34:48] Running at 2025-10-15 11:34: python run_train.py --exp_name OurModelConfig --retrain 1 --try_exp 3
+
+[2025-10-15 12:16:20] All commands executed successfully.
+
+[2025-10-15 14:55:00] Experiment Start!!!
+[2025-10-15 15:26:26] try_exp: 1, Metric: 0.8747
+[2025-10-15 16:07:06] try_exp: 2, Metric: 0.8753

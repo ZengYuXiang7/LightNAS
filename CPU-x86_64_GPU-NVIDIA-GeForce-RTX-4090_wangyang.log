@@ -32,7 +32,3 @@
 |2025-09-05 14:07:16| MAE - 0.9960 MSE - 4.1482 RMSE - 2.0366 MAPE - 0.0134 NMAE - 0.0117 NRMSE - 0.0239 Acc_10 - 0.9846 KendallTau - 0.8030 SpearmanRho - 0.9428 train_time - 71.8496
 |2025-09-05 14:24:15| Model : narformer, dataset : 201_acc, spliter_ratio : 1:4:95, d_model : 192
 |2025-09-05 14:24:15| MAE - 3.6981 MSE - 42.6533 RMSE - 6.5299 MAPE - 0.0511 NMAE - 0.0435 NRMSE - 0.0766 Acc_10 - 0.8925 KendallTau - 0.5284 SpearmanRho - 0.7207 train_time - 33.9173
-|2025-09-05 14:54:35| Model : narformer, dataset : 201_acc, spliter_ratio : 3:4:93, d_model : 192
-|2025-09-05 14:54:35| MAE - 3.2614 MSE - 40.8098 RMSE - 6.3856 MAPE - 0.0462 NMAE - 0.0384 NRMSE - 0.0749 Acc_10 - 0.8940 KendallTau - 0.3843 SpearmanRho - 0.4969 train_time - 114.9755
-|2025-09-05 15:19:27| Model : narformer, dataset : 201_acc, spliter_ratio : 5:4:91, d_model : 192
-|2025-09-05 15:19:27| MAE - 3.5135 MSE - 41.1296 RMSE - 6.4100 MAPE - 0.0489 NMAE - 0.0413 NRMSE - 0.0752 Acc_10 - 0.8954 KendallTau - 0.3885 SpearmanRho - 0.5123 train_time - 92.7495
