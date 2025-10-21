@@ -69,7 +69,7 @@ def get_bench201_acc(config):
 
 
 def get_bench101_acc(config):
-    with open('.data/201_acc_data.pkl', 'rb') as f:
+    with open('.data/101_acc_data.pkl', 'rb') as f:
         data = pickle.load(f)
     return data
 

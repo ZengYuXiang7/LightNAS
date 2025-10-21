@@ -88,6 +88,9 @@ if __name__ == '__main__':
     config = get_config('OurModelConfig')
     set_settings(config)
     
+    config.dataset = '101_acc'
+    config.sample_method = 'random'
+    
     if config.dataset == 'nnlqp':
         config.input_size = 29
         if config.model == 'narformer':
@@ -96,7 +99,9 @@ if __name__ == '__main__':
             config.d_model = 1216
     elif config.dataset == '101_acc':
         config.bs = 1024
-            
+        config.spliter_ratio = '1:4:95'  #  '0.02:4:95.98' '0.04:4:95.96' '0.1:4:95.9'
+        
+    
     log_filename, exper_detail = get_experiment_name(config)
     plotter = MetricsPlotter(log_filename, config)
     log = Logger(log_filename, exper_detail, plotter, config)

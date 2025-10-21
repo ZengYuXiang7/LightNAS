@@ -35,12 +35,21 @@ class DataModule:
         self.valid_set = get_dataset(self.valid_data, 'valid', config)
         self.test_set  = get_dataset(self.test_data,  'test',  config)
         
+        # 打印数据集长度信息
+        config.log.only_print(
+            f'Train_length : {len(self.train_set)} '
+            f'Valid_length : {len(self.valid_set)} '
+            f'Test_length : {len(self.test_set)}'
+        )
+        
+        # 开始构建 DataLoader
         self.train_loader = self.build_loader(self.train_set, bs=config.bs, is_train=True)
         self.valid_loader = self.build_loader(self.valid_set, bs=config.bs, is_train=False)
-        self.test_loader  = self.build_loader(self.test_set,  bs=config.bs, is_train=False)
-        config.log.only_print(f'Train_length : {len(self.train_loader.dataset)} Valid_length : {len(self.valid_loader.dataset)} Test_length : {len(self.test_loader.dataset)}')
     
-
+    # 有的时候测试集是大数据量，我们单独构建一个函数来获取测试集的 DataLoader
+    def get_testloader(self):
+        self.test_loader  = self.build_loader(self.test_set, bs=self.config.bs, is_train=False)
+        
     def get_split_dataset(self, data, config):
         """
         仅切分，不做归一化。
@@ -166,7 +175,8 @@ class DataModule:
             max_workers = 0
             prefetch_factor = None
 
-        if self.config.dataset in ['101_acc', '201_acc']:
+        if self.config.dataset in ['201_acc'] or \
+                self.config.model in ['narformer', 'narformer2', 'nnformer']:
             # 不需要 sampler，直接用 batch_size
             return DataLoader(
                 dataset,
@@ -281,8 +291,6 @@ def take_subset(obj, ratio=0.1, seed=0, random_sample=False):
     return _slice_by_idx(obj, idx)
 
 
-    
-    
     
     
 def get_train_valid_test_dataset(x, y, train_size, valid_size, config):

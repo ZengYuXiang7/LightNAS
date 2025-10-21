@@ -38,7 +38,6 @@ class TransNAS(nn.Module):
         # exit()
         seq_embeds = self.op_embedding(features) + self.indeg_embedding(indgree) + self.outdeg_embedding(outdegree)
         
-        
         # [B, seq_len, d_model]
         seq_embeds, att_mask = self.tokenGT(graphs, seq_embeds, eigvec)   
         
@@ -51,10 +50,8 @@ class TransNAS(nn.Module):
         cls_out = self.encoder(seq_embeds, att_bias)[:, 0, :]   # [B, d_model]
 
         y = self.pred_head(cls_out)                           # 回归或分类
+        
         return y
-
-
-
 
 
 class SPDSpatialBias(nn.Module):

@@ -59,7 +59,6 @@ class BasicModel(torch.nn.Module):
         self.to(config.device)
         self.loss_function = get_loss_function(config).to(config.device)
         self.optimizer     = get_optimizer(self.parameters(), lr=config.lr, decay=config.decay, config=config)
-        
         # self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             # self.optimizer, T_max=config.epochs, eta_min=0
         # )
@@ -76,6 +75,16 @@ class BasicModel(torch.nn.Module):
                 self.optimizer, mode='min', factor=0.5, patience=config.patience // 2, threshold=0.0, min_lr=1e-6
             )
             
+    def global_grad_norm(self,):
+        import math
+        total = 0.0
+        for p in self.parameters():
+            if p.grad is not None:
+                param_norm = p.grad.data.float().norm(2)
+                if torch.isnan(param_norm) or torch.isinf(param_norm):
+                    return float('inf')
+                total += param_norm.item() ** 2
+        return math.sqrt(total)
 
     def train_one_epoch(self, dataModule):
         loss = None
@@ -83,7 +92,7 @@ class BasicModel(torch.nn.Module):
         torch.set_grad_enabled(True)
         t1 = time()
 
-        for train_batch in (dataModule.train_loader):
+        for step, train_batch in enumerate(dataModule.train_loader):
             all_item = [item.to(self.config.device) for item in train_batch]
             inputs, label = all_item[:-1], all_item[-1]
 
@@ -109,7 +118,12 @@ class BasicModel(torch.nn.Module):
     def evaluate_one_epoch(self, dataModule, mode='valid'):
         self.eval()
         torch.set_grad_enabled(False)
-        dataloader = dataModule.valid_loader if mode == 'valid' and len(dataModule.valid_loader.dataset) != 0 else dataModule.test_loader
+        
+        if mode == 'valid' and len(dataModule.valid_loader.dataset) != 0:
+            dataloader = dataModule.valid_loader
+        else:
+            dataloader = dataModule.get_testloader()
+            
         preds, reals, val_loss = [], [], 0.
 
         context = (

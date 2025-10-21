@@ -645,3 +645,51 @@ Command failed, retrying in 3 seconds: python run_train.py --exp_name OurModelCo
 [2025-10-15 14:55:00] Experiment Start!!!
 [2025-10-15 15:26:26] try_exp: 1, Metric: 0.8747
 [2025-10-15 16:07:06] try_exp: 2, Metric: 0.8753
+[2025-10-15 16:47:42] try_exp: 3, Metric: 0.8758
+[2025-10-15 17:40:23] try_exp: 4, Metric: 0.8758
+[2025-10-15 18:16:50] try_exp: 5, Metric: 0.8743
+[2025-10-15 18:53:52] try_exp: 6, Metric: 0.8734
+[2025-10-15 18:53:56] try_exp: 7, Metric: 0.8734
+[2025-10-15 18:54:01] try_exp: 8, Metric: 0.8734
+[2025-10-15 18:54:01] ==> Best try_exp: 3, local_best_metric: 0.8758
+
+[2025-10-15 18:54:01] The Best Hyperparameters: {'try_exp': 3}
+
+[2025-10-15 18:54:01] Running at 2025-10-15 18:54: python run_train.py --exp_name OurModelConfig --retrain 1 --try_exp 3
+
+[2025-10-15 19:07:03] Experiment interrupted by user.
+[2025-10-15 19:07:03] All commands executed successfully.
+
+[2025-10-15 20:44:27] Experiment Start!!!
+[2025-10-15 21:09:30] Experiment Start!!!
+[2025-10-15 21:09:55] Experiment interrupted by user.
+[2025-10-15 21:09:55] All commands executed successfully.
+
+[2025-10-15 21:10:00] Experiment Start!!!
+[2025-10-15 21:41:10] sample_method: ours, Metric: 0.8796
+[2025-10-15 22:22:18] sample_method: random, Metric: 0.8772
+[2025-10-15 22:22:18] ==> Best sample_method: ours, local_best_metric: 0.8796
+
+[2025-10-15 22:22:18] The Best Hyperparameters: {'sample_method': 'ours'}
+
+[2025-10-15 22:22:18] Running at 2025-10-15 22:22: python run_train.py --exp_name OurModelConfig --retrain 1 --sample_method ours
+
+[2025-10-15 22:57:24] All commands executed successfully.
+
+[2025-10-16 10:44:11] Experiment Start!!!
+[2025-10-16 11:12:43] try_exp: 1, Metric: 0.8788
+[2025-10-16 11:44:09] try_exp: 2, Metric: 0.8796
+[2025-10-16 12:20:29] try_exp: 3, Metric: 0.8786
+[2025-10-16 12:59:54] try_exp: 4, Metric: 0.8771
+[2025-10-16 13:34:23] try_exp: 5, Metric: 0.8801
+[2025-10-16 13:34:28] try_exp: 6, Metric: 0.8801
+[2025-10-16 13:34:33] try_exp: 7, Metric: 0.8801
+[2025-10-16 13:34:39] try_exp: 8, Metric: 0.8801
+[2025-10-16 13:34:39] ==> Best try_exp: 5, local_best_metric: 0.8801
+
+[2025-10-16 13:34:39] The Best Hyperparameters: {'try_exp': 5}
+
+[2025-10-16 13:34:39] Running at 2025-10-16 13:34: python run_train.py --exp_name OurModelConfig --retrain 1 --try_exp 5
+
+[2025-10-16 14:09:13] All commands executed successfully.
+

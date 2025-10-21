@@ -3,7 +3,9 @@ from torch.utils.data import Sampler
 import numpy as np 
 from tqdm import *
 import torch 
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections import defaultdict
+from threading import Lock
 
 
 class FixedLengthBatchSampler(Sampler):
@@ -32,6 +34,17 @@ class FixedLengthBatchSampler(Sampler):
 
         # 构建 {长度: [样本索引]} 的映射
         self.length_map = self.get_length_map()
+        
+        
+        # 2025年10月21日19:25:14 为了防止排序loss出现NAN，也就是只有一个样例的情况
+        min_len = 3
+        self.length_map = {k: v for k, v in self.length_map.items() if len(v) >= min_len}
+        # print(f"过滤后剩余 {len(self.length_map)} 项。")
+        
+        # 缓存类成员为局部变量
+        # data_source = self.data_source
+        # method = self.config.model
+        # self.length_map = build_length_map_parallel(data_source, maxlen=maxlen, method=method)
 
         # 初始化内部状态
         self.reset()
@@ -156,3 +169,58 @@ class FixedLengthBatchSampler(Sampler):
         返回总批次数 (整批数+可选残余批)
         """
         return len(self.order)
+    
+
+
+def build_length_map_parallel(data_source, maxlen=None, method='ours'):
+    """
+    并行构建数据长度映射表，带进度条
+    
+    参数:
+        data_source: 存储张量的列表，每个元素是形状为 (length, ...) 的张量
+        maxlen: 最大长度限制，超过此长度的样本会被丢弃
+    返回:
+        长度到样本索引的映射字典
+    """
+    length_map = defaultdict(list)
+    lock = Lock()  # 线程锁保证对length_map的安全操作
+    
+    def process_item(i):
+        """处理单个数据项的函数"""
+        try:
+            if method in ['ours', 'gat']:
+                data = data_source[i][1]
+            else:
+                data = data_source[i][0]
+                
+            # data = data_source[i]
+            length = len(data)  # 获取序列长度（第一维）
+            
+            if maxlen is not None and maxlen > 0 and length > maxlen:
+                return None
+            
+            return (length, i)
+        except Exception as e:
+            print(f"处理索引{i}时出错: {e}")
+            return None
+    
+    total = len(data_source)
+    if total == 0:
+        return dict(length_map)
+    
+    max_workers = 4
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(process_item, i) for i in range(total)]
+        
+        # 添加进度条，总任务数为total
+        with tqdm(total=total, desc="处理进度") as pbar:
+            for future in as_completed(futures):
+                result = future.result()
+                if result is not None:
+                    length, idx = result
+                    with lock:
+                        length_map[length].append(idx)
+                pbar.update(1)  # 每完成一个任务，进度条+1
+    
+    return dict(length_map)

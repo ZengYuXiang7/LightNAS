@@ -9,8 +9,8 @@ hyper_dict = {
     # 'op_encoder': ['embedding'],  # 'embedding', 'nerf', 'nape'
     # 'd_model': [128, 192, 96, 256],
     # 'att_method': ['self'],  # 'self', 'full', 'sa', 'external',  'gqa'
-    'try_exp': [1, 2, 3, 4, 5, 6, 7, 8],  # 1-8
-    # 'sample_method': ['random', 'ours'],  
+    # 'try_exp': [1, 2, 3, 4, 5, 6, 7, 8],  # 1-8
+    # 'sample_method': ['ours', 'random'],  
 }
 
 ######################################################################################################

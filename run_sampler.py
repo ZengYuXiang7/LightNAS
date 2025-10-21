@@ -1,3 +1,5 @@
+
+# 请使用python 3.10版本运行此代码
 from data_process.create_latency import *
 from tqdm import *
 import networkx as nx

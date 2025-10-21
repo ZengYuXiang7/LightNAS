@@ -2,8 +2,6 @@
 # Author : yuxiang Zeng
 from dataclasses import dataclass
 
-
-
 @dataclass
 class DatasetInfo:
     path: str = './data'
@@ -16,7 +14,7 @@ class DatasetInfo:
     scaler_method: str = 'minmax'
     # spliter_ratio: str = '7:1:2'
     spliter_ratio: str = '5:1:94'
-    sample_method: str = 'random'  # random  sequential
+    sample_method: str = 'ours'  # random  ours
     
     
 @dataclass

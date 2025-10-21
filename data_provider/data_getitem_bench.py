@@ -26,26 +26,47 @@ class NasBenchDataset(Dataset):
     def __len__(self):
         return len(self.data[self.config.predict_target])
 
+
     def __getitem__(self, idx):
         if self.config.model == 'ours':
-        
-            features   = self.data['features'][idx]
-            y          = self.data[self.config.predict_target][idx]
-            key = self.data['key'][idx]
-            arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
-            adj_matrix, features = info2mat(arch_str) 
-            adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
-            features = torch.tensor(features, dtype=torch.long)
-            eigvec = laplacian_node_ids_from_adj(adj_matrix, self.config.lp_d_model)
             
-            indgree, outdegree, dij = preprocess_binary_inout_and_spd(
-                adj_matrix,
-                include_self_loops_in_degree=False,
-                directed_for_spd=True,   # 如需无向最短路可改成 False
-            )
-            # print(indgree.shape, outdegree.shape, dij.shape)
-            return adj_matrix, features, eigvec, indgree, outdegree, dij, y
-        
+            if self.config.dataset == '201_acc':
+                
+                features   = self.data['features'][idx]
+                y          = self.data[self.config.predict_target][idx]
+                
+                key = self.data['key'][idx]
+                arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
+                adj_matrix, features = info2mat(arch_str) 
+                adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
+                features = torch.tensor(features, dtype=torch.long)
+                eigvec = laplacian_node_ids_from_adj(adj_matrix, self.config.lp_d_model)
+                
+                indgree, outdegree, dij = preprocess_binary_inout_and_spd(
+                    adj_matrix,
+                    include_self_loops_in_degree=False,
+                    directed_for_spd=True,   # 如需无向最短路可改成 False
+                )
+                # print(indgree.shape, outdegree.shape, dij.shape)
+                return adj_matrix, features, eigvec, indgree, outdegree, dij, y
+            
+            
+            elif self.config.dataset == '101_acc':
+                adj_matrix = self.data['adj_matrix'][idx]             # 直接取邻接矩阵
+                features = self.data['features'][idx]             # 直接取操作序列
+                features = torch.tensor(features, dtype=torch.long)
+                adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
+                eigvec = laplacian_node_ids_from_adj(adj_matrix, self.config.lp_d_model)
+                indgree, outdegree, dij = preprocess_binary_inout_and_spd(
+                    adj_matrix,
+                    include_self_loops_in_degree=False,
+                    directed_for_spd=True,   # 如需无向最短路可改成 False
+                )
+                y = self.data[self.config.predict_target][idx].reshape(-1)
+                # print(adj_matrix.shape, features.shape, eigvec.shape, indgree.shape, outdegree.shape, dij.shape, y.shape)
+                return adj_matrix, features, eigvec, indgree, outdegree, dij, y
+            
+            
         elif self.config.model == "flops":
             flops = self.data['flops'][idx]
             y     = self.data[self.config.predict_target][idx]
@@ -175,3 +196,53 @@ class NasBenchDataset(Dataset):
             return default_collate(code).to(torch.float32), default_collate(rel_pos).to(torch.long), default_collate(code_depth).to(torch.float32), default_collate(adj_mat).to(torch.float32), default_collate(y).to(torch.float32)
         
 
+    def our_method_padding(self, adj_matrix, features, eigvec, indgree, outdegree, dij):
+        N = adj_matrix.shape[0]  # 当前样本的节点数
+        max_N = self.max_node    # 全局最大节点数（提前设定）
+        
+        # 1. adj_matrix: (N, N) → (max_N, max_N)，填充 0（无连接）
+        adj_pad = torch.nn.functional.pad(
+            adj_matrix, 
+            pad=(0, max_N - N, 0, max_N - N),  # 左右、上下各补多少
+            value=0.0
+        )
+        
+        # 2. features: 若为 (N,) 先扩为 (N, 1)，再 pad 到 (max_N, F)，填充 -1（特殊占位符）
+        if features.dim() == 1:
+            features = features.unsqueeze(1)  # (N,) → (N, 1)
+        F = features.shape[1]  # 特征维度
+        feat_pad = torch.nn.functional.pad(
+            features, 
+            pad=(0, 0, 0, max_N - N),  # 只在节点维度补（第二个维度不补）
+            value=-1  # 用 -1 标记 padding 特征（避免与真实特征冲突）
+        )
+        
+        # 3. eigvec: (N, D) → (max_N, D)，填充 0
+        D = self.config.lp_d_model
+        eigvec_pad = torch.nn.functional.pad(
+            eigvec, 
+            pad=(0, 0, 0, max_N - N),  # D 维度不变，节点维度补 0
+            value=0.0
+        )
+        
+        # 4. indgree: (N,) → (max_N,)，填充 0（无入度）
+        indgree_pad = torch.nn.functional.pad(
+            indgree, 
+            pad=(0, max_N - N), 
+            value=0.0
+        )
+        
+        # 5. outdegree: (N,) → (max_N,)，填充 0（无出度）
+        outdegree_pad = torch.nn.functional.pad(
+            outdegree, 
+            pad=(0, max_N - N), 
+            value=0.0
+        )
+        
+        # 6. dij: (N, N) → (max_N, max_N)，填充 inf（无路径）
+        dij_pad = torch.nn.functional.pad(
+            dij, 
+            pad=(0, max_N - N, 0, max_N - N), 
+            value=float('inf')  # 用 inf 标记 padding 节点间的路径（与真实路径区分）
+        )
+        return adj_pad, feat_pad, eigvec_pad, indgree_pad, outdegree_pad, dij_pad
