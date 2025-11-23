@@ -1,9 +1,8 @@
-
 # 请使用python 3.10版本运行此代码
 from data_process.create_latency import *
 from tqdm import *
 import networkx as nx
-import pickle 
+import pickle
 from sklearn.cluster import KMeans
 import numpy as np
 from sklearn.cluster import KMeans
@@ -11,28 +10,39 @@ from sklearn.preprocessing import normalize
 from karateclub import Graph2Vec
 
 
-def get_dataset_graph(dataset='201_acc'):
-    raw_data = pickle.load(open('data/201_acc_data.pkl', 'rb'))
-    all_keys = raw_data['key']
-    
+def get_dataset_graph(dataset="201_acc"):
     all_graphs = []
-    if dataset == '201_acc':
+    if dataset == "201_acc":
+        raw_data = pickle.load(open("data/201_acc_data.pkl", "rb"))
+        all_keys = raw_data["key"]
         for key in tqdm(all_keys):
-            arch_str = get_arch_str_from_arch_vector(key)             # 架构向量转字符串
-            adj_matrix, features = info2mat(arch_str) 
-            graph = nx.from_numpy_array(adj_matrix)   # 邻接矩阵 -> 图
+            arch_str = get_arch_str_from_arch_vector(key)  # 架构向量转字符串
+            adj_matrix, features = info2mat(arch_str)
+            graph = nx.from_numpy_array(adj_matrix)  # 邻接矩阵 -> 图
             # 添加节点特征
             for j in range(graph.number_of_nodes()):
-                graph.nodes[j]['feature'] = np.eye(7, dtype=int)[features[j]]
+                graph.nodes[j]["feature"] = np.eye(7, dtype=int)[features[j]]
                 # graph.nodes[j]['feature'] = features[j]
             all_graphs.append(graph)
-    elif dataset == 'nasbench101':
-        pass 
-    
-    elif dataset == 'nnlqp':
+
+    elif dataset == "101_acc":
+        raw_data = pickle.load(open("data/101_acc_data.pkl", "rb"))
+        adj_matrix = raw_data["adj_matrix"]
+        all_features = raw_data["features"]
+
+        for i in tqdm(range(len(adj_matrix))):
+            graph = nx.from_numpy_array(np.array(adj_matrix[i]))
+            # 添加节点特征
+            for j in range(graph.number_of_nodes()):
+                node_id = np.array(all_features[i][j])
+                # 注意： 这里检查一下是最大操作数是多少，几个操作元
+                graph.nodes[j]["feature"] = np.eye(5, dtype=int)[node_id]
+
+            all_graphs.append(graph)
+
+    elif dataset == "nnlqp":
         pass
-    
-    
+
     return all_graphs
 
 
@@ -64,11 +74,10 @@ def get_graph2vec_clusters(graphs, dimensions=64, epochs=10):
     """
     # Graph2Vec 表征
     model = Graph2Vec(dimensions=dimensions, workers=4, epochs=epochs)
+    # print(graphs)
     model.fit(graphs)
     embeddings = model.get_embedding()
-
     return embeddings
-
 
 
 def select_diverse_by_kmeans(embeddings: np.ndarray, n_clusters: int = 100):
@@ -93,24 +102,37 @@ def select_diverse_by_kmeans(embeddings: np.ndarray, n_clusters: int = 100):
 
 
 # sample_idx = sample_method('ours', sample_num=100)
-def sample_method(method='ours', sample_num=100):
-    if method == 'random':
+def sample_method(method="ours", sample_num=100, dataset="201_acc"):
+    if method == "random":
         cluster_idx = np.random.choice(len(all_graphs), sample_num, replace=False)
-    elif method == 'ours':
-        all_graphs = get_dataset_graph(dataset='201_acc')
+    elif method == "ours":
+        all_graphs = get_dataset_graph(dataset=dataset)
         embeddings = get_graph2vec_clusters(all_graphs, dimensions=32, epochs=10)
         cluster_idx = select_diverse_by_kmeans(embeddings, n_clusters=sample_num)
     return cluster_idx
 
 
 if __name__ == "__main__":
-    with open('./data/201_traing_sample.pkl', 'wb') as f:
+
+    with open("./data/201_traing_sample.pkl", "wb") as f:
         all_cluster_idx = {}
-        all_sanerios = [152, 456, 764, 1528]
+        all_sanerios = [152, 458, 764, 1528]
         for sanerio in all_sanerios:
             print(f"=== Sanerio {sanerio} ===")
-            cluster_idx = sample_method('ours', sample_num=sanerio)
+            cluster_idx = sample_method("ours", sample_num=sanerio, dataset="201_acc")
             print(len(cluster_idx), cluster_idx[:10])
             all_cluster_idx[sanerio] = cluster_idx
         pickle.dump(all_cluster_idx, f)
-    print('Done!')
+    print("Done!")
+
+    with open("./data/101_traing_sample.pkl", "wb") as f:
+        all_cluster_idx = {}
+        # 这里改一下
+        all_sanerios = [102, 169, 423, 4236]
+        for sanerio in all_sanerios:
+            print(f"=== Sanerio {sanerio} ===")
+            cluster_idx = sample_method("ours", sample_num=sanerio, dataset="101_acc")
+            print(len(cluster_idx), cluster_idx[:10])
+            all_cluster_idx[sanerio] = cluster_idx
+        pickle.dump(all_cluster_idx, f)
+    print("Done!")

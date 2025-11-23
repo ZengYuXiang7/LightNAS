@@ -58,6 +58,7 @@ class NNformerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInf
     warmup_epochs: int = 5
     lr_cycle_limit: int = 1
     epochs: int = 4000
+    patience: int = 100
 
     # -------- 训练控制 --------
     do_train: bool = False

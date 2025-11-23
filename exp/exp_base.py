@@ -153,8 +153,10 @@ class BasicModel(torch.nn.Module):
             reals, preds = dataModule.y_scaler.inverse_transform(reals), dataModule.y_scaler.inverse_transform(preds)
             
         if mode == 'valid':
-            # self.scheduler.step(val_loss)
-            self.scheduler.step()
+            if self.config.model == 'ours':
+                self.scheduler.step()          
+            else:
+                self.scheduler.step(val_loss)  # 给对手一点增强
 
         return ErrorMetrics(reals, preds, self.config)
     

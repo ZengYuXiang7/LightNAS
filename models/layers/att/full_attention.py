@@ -1,9 +1,10 @@
-
 import torch
 import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
 from torch.nn import init
+
+from models.layers.encoder.rotary_enc import RotaryEmbedding
 
 
 class FullAttention(nn.Module):
@@ -16,11 +17,13 @@ class FullAttention(nn.Module):
     def forward(self, queries, keys, values, attn_mask=None):
         # 输入: [B, L, H, D]
         q = queries.permute(0, 2, 1, 3)  # [B,H,L,D]
-        k = keys.permute(0, 2, 1, 3)     # [B,H,S,D]
-        v = values.permute(0, 2, 1, 3)   # [B,H,S,D]
+        k = keys.permute(0, 2, 1, 3)  # [B,H,S,D]
+        v = values.permute(0, 2, 1, 3)  # [B,H,S,D]
 
         A = F.scaled_dot_product_attention(
-            q, k, v,
+            q,
+            k,
+            v,
             attn_mask=attn_mask,
             dropout_p=self.dropout_p if self.training else 0.0,
             is_causal=self.is_casual,
@@ -28,8 +31,8 @@ class FullAttention(nn.Module):
 
         out = A.permute(0, 2, 1, 3).contiguous()  # 回到 [B,L,H,D]
         return out
-        
-        
+
+
 class AttentionLayer(nn.Module):
     def __init__(self, attn, d_model, n_heads):
         super(AttentionLayer, self).__init__()
@@ -38,9 +41,15 @@ class AttentionLayer(nn.Module):
         self.query_projection = nn.Linear(d_model, d_model)
         self.key_projection = nn.Linear(d_model, d_model)
         self.value_projection = nn.Linear(d_model, d_model)
-        
+
         self.out_projection = nn.Linear(d_model, d_model)
         self.n_heads = n_heads
+
+        self.rope = RotaryEmbedding(
+            head_size=d_model // n_heads,
+            rotary_dim=d_model // n_heads,
+            max_position_embeddings=128,
+        )
 
     def forward(self, queries, keys, values, attn_mask=None):
         B, L, _ = queries.shape
@@ -51,40 +60,47 @@ class AttentionLayer(nn.Module):
         keys = self.key_projection(keys).view(B, S, H, -1)
         values = self.value_projection(values).view(B, S, H, -1)
 
+        # 旋转位置编码
+        positions = torch.arange(L, dtype=torch.long)
+        queries, keys = self.rope(positions, queries, keys)
+
         out = self.inner_attention(
             queries,
             keys,
             values,
             attn_mask,
         )
+
         out = out.view(B, L, -1)
 
         return self.out_projection(out)
-    
-    
+
+
 class CustomAttention(torch.nn.Module):
     def __init__(self, d_model, n_heads):
         super().__init__()
         self.dot_product = FullAttention()
-        self.att = AttentionLayer(d_model=d_model, n_heads=n_heads, attn=self.dot_product)
+        self.att = AttentionLayer(
+            d_model=d_model, n_heads=n_heads, attn=self.dot_product
+        )
 
     def forward(self, x, attn_mask=None):
         out = self.att(x, x, x, attn_mask=attn_mask)
         return out
 
-    
+
 if __name__ == "__main__":
     # 超参数
     B, L, S, d_model, n_heads = 2, 4, 6, 16, 4
 
     # 构造输入
-    x = torch.randn(B, L, d_model)   # [2, 4, 16]
-    attn_mask = None   # 也可以用 TriangularCausalMask(B, L).mask
+    x = torch.randn(B, L, d_model)  # [2, 4, 16]
+    attn_mask = None  # 也可以用 TriangularCausalMask(B, L).mask
 
     att = CustomAttention(d_model=d_model, n_heads=n_heads)
     # 构造 AttentionLayer
     out, attn = att(x)
 
-    print("out.shape:", out.shape)   # [B, L, d_model] -> [2, 4, 16]
-    print("attn.shape:", attn.shape if attn is not None else None)  
+    print("out.shape:", out.shape)  # [B, L, d_model] -> [2, 4, 16]
+    print("attn.shape:", attn.shape if attn is not None else None)
     # [B, H, L, S] -> [2, 4, 4, 6]

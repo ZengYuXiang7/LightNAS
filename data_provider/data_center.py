@@ -1,18 +1,22 @@
 # coding : utf-8
 # Author : Yuxiang Zeng
 # 注意，这里的代码已经几乎完善，非必要不要改动（2025年06月22日15:57:27）
-import platform
+# --- 标准库 ---
 import multiprocessing
-from torch.utils.data import DataLoader
-from data_provider.data_control import get_dataset, load_data
+import platform
 import pickle
-import torch
-from data_provider.data_scaler import get_scaler
+
+# --- 第三方库 ---
 import numpy as np
-import dgl 
+import torch
+from torch.utils.data import DataLoader
 from tqdm import *
 
+# --- 项目内模块 ---
+from data_provider.data_control import get_dataset, load_data
+from data_provider.data_scaler import get_scaler
 from data_provider.data_smapler import FixedLengthBatchSampler
+
 
 # 数据集定义
 class DataModule:
@@ -20,36 +24,53 @@ class DataModule:
         self.config = config
         self.path = config.path
         self.data = load_data(config)
-        
+
         if config.debug:
-            self.data = take_subset(self.data, ratio=0.1, seed=config.seed, random_sample=False)
-            
-        self.train_data, self.valid_data, self.test_data = self.get_split_dataset(self.data, config)
-        
+            self.data = take_subset(
+                self.data, ratio=0.1, seed=config.seed, random_sample=False
+            )
+
+        self.train_data, self.valid_data, self.test_data = self.get_split_dataset(
+            self.data, config
+        )
+
         self.x_scaler, self.y_scaler = self.get_scalers(self.train_data, config)
-        self.train_data = self.normalize_data(self.train_data, self.x_scaler, self.y_scaler, config)
-        self.valid_data = self.normalize_data(self.valid_data, self.x_scaler, self.y_scaler, config)
-        self.test_data  = self.normalize_data(self.test_data,  self.x_scaler, self.y_scaler, config)
-        
-        self.train_set = get_dataset(self.train_data, 'train', config)
-        self.valid_set = get_dataset(self.valid_data, 'valid', config)
-        self.test_set  = get_dataset(self.test_data,  'test',  config)
-        
+        self.train_data = self.normalize_data(
+            self.train_data, self.x_scaler, self.y_scaler, config
+        )
+        self.valid_data = self.normalize_data(
+            self.valid_data, self.x_scaler, self.y_scaler, config
+        )
+        self.test_data = self.normalize_data(
+            self.test_data, self.x_scaler, self.y_scaler, config
+        )
+
+        self.train_set = get_dataset(self.train_data, "train", config)
+        self.valid_set = get_dataset(self.valid_data, "valid", config)
+        self.test_set = get_dataset(self.test_data, "test", config)
+
         # 打印数据集长度信息
         config.log.only_print(
-            f'Train_length : {len(self.train_set)} '
-            f'Valid_length : {len(self.valid_set)} '
-            f'Test_length : {len(self.test_set)}'
+            f"Train_length : {len(self.train_set)} "
+            f"Valid_length : {len(self.valid_set)} "
+            f"Test_length : {len(self.test_set)}"
         )
-        
+
         # 开始构建 DataLoader
-        self.train_loader = self.build_loader(self.train_set, bs=config.bs, is_train=True)
-        self.valid_loader = self.build_loader(self.valid_set, bs=config.bs, is_train=False)
-    
+        self.train_loader = self.build_loader(
+            self.train_set, bs=config.bs, is_train=True
+        )
+        self.valid_loader = self.build_loader(
+            self.valid_set, bs=config.bs, is_train=False
+        )
+
     # 有的时候测试集是大数据量，我们单独构建一个函数来获取测试集的 DataLoader
     def get_testloader(self):
-        self.test_loader  = self.build_loader(self.test_set, bs=self.config.bs, is_train=False)
-        
+        self.test_loader = self.build_loader(
+            self.test_set, bs=self.config.bs, is_train=False
+        )
+        return self.test_loader
+
     def get_split_dataset(self, data, config):
         """
         仅切分，不做归一化。
@@ -65,68 +86,72 @@ class DataModule:
         N = None
         for k, v in data.items():
             if isinstance(v, np.ndarray):
-                v = v.tolist()   # 转成 list
+                v = v.tolist()  # 转成 list
                 data[k] = v
             elif not isinstance(v, list):
-                v = list(v)      # 其他类型也转 list
+                v = list(v)  # 其他类型也转 list
                 data[k] = v
 
             if N is None:
                 N = len(v)
             else:
-                assert len(v) == N, f"字段 {k} 的样本数 {len(v)} 与其他字段不一致（应为 {N})"
+                assert (
+                    len(v) == N
+                ), f"字段 {k} 的样本数 {len(v)} 与其他字段不一致（应为 {N})"
 
         # 解析比例
         ratio_str = config.spliter_ratio
-        parts = list(map(int, ratio_str.strip().split(":")))
+        parts = list(map(float, ratio_str.strip().split(":")))
         total = sum(parts)
         tr, vr, te = [p / total for p in parts]
 
         idx = list(range(N))
         n_train = int(N * tr)
         n_valid = int(N * vr)
-        
+
         # 切分训练验证测试集
-        if config.sample_method == 'random':
+        if config.sample_method == "random":
             rng = np.random.default_rng(config.seed)
             rng.shuffle(idx)
             # 计算切分点
-            
             train_idx = idx[:n_train]
-            valid_idx = idx[n_train:n_train + n_valid]
-            test_idx  = idx[n_train + n_valid:]
-            
+            valid_idx = idx[n_train : n_train + n_valid]
+            test_idx = idx[n_train + n_valid :]
+
         # 采用自己设计的采样方法
-        elif config.sample_method == 'ours':
-            train_idx = pickle.load(open('./data/201_traing_sample.pkl', 'rb'))[n_train]
-            
+        elif config.sample_method == "ours":
+            if config.dataset == "201_acc":
+                address = "./data/201_traing_sample.pkl"
+            elif config.dataset == "101_acc":
+                address = "./data/101_traing_sample.pkl"
+            train_idx = pickle.load(open(address, "rb"))[n_train]
+
             # 剩余样本索引用于valid/test
             remaining_idx = [i for i in idx if i not in set(train_idx)]
             rng = np.random.default_rng(config.seed)
             rng.shuffle(remaining_idx)
-            
+
             valid_idx = remaining_idx[:n_valid]
-            test_idx  = remaining_idx[n_valid:]
+            test_idx = remaining_idx[n_valid:]
             print("成功采用自己设计的采样方法")
-            
+
         # 按索引切片为三个 dict
         def slice_dict(d, indices):
             out = {}
             for k, v in d.items():
-                out[k] = [v[i] for i in indices]   # 保持 list
+                out[k] = [v[i] for i in indices]  # 保持 list
             return out
 
         train_data = slice_dict(data, train_idx)
         valid_data = slice_dict(data, valid_idx)
-        test_data  = slice_dict(data, test_idx)
+        test_data = slice_dict(data, test_idx)
 
         return train_data, valid_data, test_data
-    
-    
+
     def get_scalers(self, data: dict, config):
         """
         为指定的字段训练归一化器，并以 dict 形式返回。
-        
+
         输入:
             data: dict[int -> sample_dict]，例如 {0: {"flops":..., "params":..., "accuracy":...}, ...}
             keys: 需要归一化的字段名
@@ -136,17 +161,18 @@ class DataModule:
         x_keys = ("flops", "params")
         x_scaler = {}
         for key in x_keys:
-            x_scaler[key] = get_scaler(np.array(data[key]), config, selected_method='stander')
-        
+            x_scaler[key] = get_scaler(
+                np.array(data[key]), config, selected_method="stander"
+            )
+
         values = np.array(np.array(data[config.predict_target]), dtype=np.float32)
-        y_scaler = get_scaler(values, config, selected_method='stander')
+        y_scaler = get_scaler(values, config, selected_method="stander")
         return x_scaler, y_scaler
-    
-    
+
     def normalize_data(self, data, x_scaler, y_scaler, config):
         """
         对数据进行归一化处理。
-        
+
         输入:
             data: dict[int -> sample_dict]，例如 {0: {"flops":..., "params":..., "accuracy":...}, ...}
             x_scaler: dict[str -> StandardScaler]，用于归一化输入特征
@@ -165,23 +191,25 @@ class DataModule:
             else:
                 normalized_data[key] = value
         return normalized_data
-        
-    
+
     def build_loader(self, dataset, bs, is_train):
-        if platform.system() == 'Linux' and 'ubuntu' in platform.version().lower():
+        if platform.system() == "Linux" and "ubuntu" in platform.version().lower():
             max_workers = min(multiprocessing.cpu_count() // 3, 12)
             prefetch_factor = 4  # 可调至 6，建议不要超过 8
         else:
             max_workers = 0
             prefetch_factor = None
 
-        if self.config.dataset in ['201_acc'] or \
-                self.config.model in ['narformer', 'narformer2', 'nnformer']:
+        if self.config.dataset in ["201_acc"] or self.config.model in [
+            "narformer",
+            "narformer2",
+            "nnformer",
+        ]:
             # 不需要 sampler，直接用 batch_size
             return DataLoader(
                 dataset,
                 batch_size=bs,
-                shuffle=is_train,   # 是否需要打乱，视你实验需求决定
+                shuffle=is_train,  # 是否需要打乱，视你实验需求决定
                 pin_memory=True,
                 num_workers=max_workers,
                 prefetch_factor=prefetch_factor,
@@ -191,7 +219,7 @@ class DataModule:
             # 其他数据集需要 sampler
             sampler = FixedLengthBatchSampler(
                 data_source=dataset,
-                dataset='',
+                dataset="",
                 batch_size=bs,
                 include_partial=True,
                 config=self.config,
@@ -291,24 +319,23 @@ def take_subset(obj, ratio=0.1, seed=0, random_sample=False):
     return _slice_by_idx(obj, idx)
 
 
-    
-    
 def get_train_valid_test_dataset(x, y, train_size, valid_size, config):
     if config.shuffle:
         indices = np.random.permutation(len(x))
         x, y = x[indices], y[indices]
     train_x = x[:train_size]
     train_y = y[:train_size]
-    valid_x = x[train_size:train_size + valid_size]
-    valid_y = y[train_size:train_size + valid_size]
-    test_x = x[train_size + valid_size:]
-    test_y = y[train_size + valid_size:]
+    valid_x = x[train_size : train_size + valid_size]
+    valid_y = y[train_size : train_size + valid_size]
+    test_x = x[train_size + valid_size :]
+    test_y = y[train_size + valid_size :]
     return train_x, train_y, valid_x, valid_y, test_x, test_y
 
 
 def get_train_valid_test_classification_dataset(x, y, train_size, valid_size, config):
     from collections import defaultdict
     import random
+
     class_data = defaultdict(list)
     for now_x, now_label in zip(x, y):
         class_data[now_label].append(now_x)
@@ -319,8 +346,8 @@ def get_train_valid_test_classification_dataset(x, y, train_size, valid_size, co
         random.shuffle(now_x)
         train_x.extend(now_x[:train_size])
         train_y.extend([label] * len(now_x[:train_size]))
-        valid_x.extend(now_x[train_size:train_size + valid_size])
-        valid_y.extend([label] * len(now_x[train_size:train_size + valid_size]))
-        test_x.extend(now_x[train_size + valid_size:])
-        test_y.extend([label] * len(now_x[train_size + valid_size:]))
+        valid_x.extend(now_x[train_size : train_size + valid_size])
+        valid_y.extend([label] * len(now_x[train_size : train_size + valid_size]))
+        test_x.extend(now_x[train_size + valid_size :])
+        test_y.extend([label] * len(now_x[train_size + valid_size :]))
     return train_x, train_y, valid_x, valid_y, test_x, test_y

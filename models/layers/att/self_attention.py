@@ -7,7 +7,7 @@ from einops import rearrange
 class Attention(torch.nn.Module):
     def __init__(self, d_model, num_heads, dropout=0.10):
         super().__init__()
-        self.att = torch.nn.MultiheadAttention(d_model, num_heads, dropout, batch_first=True)
+        self.att = torch.nn.MultiheadAttention(d_model, num_heads, dropout, batch_first=True, bias=True)
 
     def forward(self, x, attn_mask=None):
         if attn_mask is not None:

@@ -9,15 +9,17 @@ import random
 def compute_loss(model, pred, label, config):
     pred = pred.reshape(label.shape)
     
-    
     if config.model == 'ours':
         mse = model.loss_function(pred, label)
         
         # ---- full model: mse + spearman/kendall + sr + ac ----
         loss_sp, loss_kd = model.rank_loss(pred, label)
+        
         sr = 0.5 * model.sr_loss(pred, label)   
         ac = 0.1 * model.ac_loss(pred)
-        total_loss = 1.0 * mse + 1.0 * loss_sp + 1.0 * loss_kd + sr + ac   
+        
+        total_loss = 1.0 * mse + loss_sp + loss_kd + sr + ac  
+         
         return total_loss
     
     

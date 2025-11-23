@@ -121,7 +121,6 @@ class DiscreteEncoder(nn.Module):
         return x
 
     # ---------- encoders ----------
-
     def _embedding_encoding(self, operation_ids: torch.Tensor) -> torch.Tensor:
         return self.operation_embedding(operation_ids)
 
