@@ -84,7 +84,7 @@ class CustomAttention(torch.nn.Module):
             d_model=d_model, n_heads=n_heads, attn=self.dot_product
         )
 
-    def forward(self, x, attn_mask=None):
+    def forward(self, x, attn_mask=None, key_padding_mask=None):
         out = self.att(x, x, x, attn_mask=attn_mask)
         return out
 

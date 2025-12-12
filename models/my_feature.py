@@ -1,12 +1,14 @@
-import torch 
+import torch
 import torch.nn.functional as F
 from collections import deque
 
 
-def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int, drop_first: bool = True, unify_sign: bool = True):
+def laplacian_node_ids_from_adj(
+    adj: torch.Tensor, dp: int, drop_first: bool = True, unify_sign: bool = True
+):
     """
     从邻接矩阵提取 Laplacian PE 特征向量。
-    
+
     参数:
       adj: [N, N] 邻接矩阵 (0/1 或加权)
       dp:  需要的 LapPE 维度，返回 [N, dp]
@@ -22,7 +24,10 @@ def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int, drop_first: bool = T
     d_inv_sqrt = deg.pow(-0.5)
 
     # 拉普拉斯矩阵
-    L = torch.eye(N, device=A.device, dtype=A.dtype) - d_inv_sqrt[:, None] * A * d_inv_sqrt[None, :]
+    L = (
+        torch.eye(N, device=A.device, dtype=A.dtype)
+        - d_inv_sqrt[:, None] * A * d_inv_sqrt[None, :]
+    )
     L = 0.5 * (L + L.T)  # 数值对称化
 
     evals, evecs = torch.linalg.eigh(L)  # evals升序，evecs列与之配对
@@ -46,20 +51,19 @@ def laplacian_node_ids_from_adj(adj: torch.Tensor, dp: int, drop_first: bool = T
     return P  # [N, dp]
 
 
-
 def in_out_degree_binary(adj: torch.Tensor, *, include_self_loops: bool = False):
     """
     0/1 有向邻接矩阵的入/出度（计边数）。
     返回: in_deg, out_deg  (均为 [n], dtype=int64)
     """
     assert adj.dim() == 2 and adj.size(0) == adj.size(1), "adj must be [n,n]"
-    A = (adj != 0)  # 二值化，非零即边
+    A = adj != 0  # 二值化，非零即边
     if not include_self_loops:
         idx = torch.arange(A.size(0), device=A.device)
         A = A.clone()
         A[idx, idx] = False
     out_deg = A.sum(dim=1).to(torch.int64)  # 行和
-    in_deg  = A.sum(dim=0).to(torch.int64)  # 列和
+    in_deg = A.sum(dim=0).to(torch.int64)  # 列和
     return in_deg, out_deg
 
 
@@ -71,7 +75,7 @@ def apsp_unweighted_bfs(adj: torch.Tensor, *, directed: bool = True) -> torch.Te
     """
     assert adj.dim() == 2 and adj.size(0) == adj.size(1), "adj must be [n,n]"
     n = adj.size(0)
-    A = (adj != 0)
+    A = adj != 0
     if not directed:
         A = A | A.T  # 无向化（如需）
 
@@ -97,7 +101,7 @@ def apsp_unweighted_bfs(adj: torch.Tensor, *, directed: bool = True) -> torch.Te
     D = D_int.to(torch.float32)
     # D[D_int == INF_INT] = float('inf')
     # 2025年09月18日11:11:29
-    D[D_int == INF_INT] = int(99)
+    D[D_int == INF_INT] = int(14)
     return D
 
 
@@ -112,9 +116,12 @@ def preprocess_binary_inout_and_spd(
       - 二值入/出度（计边数）
       - 无权最短路矩阵（单位跳数），不可达=+inf
     """
-    in_deg, out_deg = in_out_degree_binary(adj, include_self_loops=include_self_loops_in_degree)
+    in_deg, out_deg = in_out_degree_binary(
+        adj, include_self_loops=include_self_loops_in_degree
+    )
     D = apsp_unweighted_bfs(adj, directed=directed_for_spd)
-    return in_deg, out_deg, D 
+    return in_deg, out_deg, D
+
 
 """
     feats = preprocess_binary_inout_and_spd(
@@ -127,4 +134,3 @@ def preprocess_binary_inout_and_spd(
     print("D:\n", feats["D"])            # float32, +inf 表示不可达
     
 """
-    

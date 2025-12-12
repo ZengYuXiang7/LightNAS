@@ -9,14 +9,14 @@ import torch
 import numpy as np
 import time
 import gc
-    
-    
+
+
 def evaluate_model_efficiency(datamodule, model, log, config):
     device = config.device
     model = model.to(device)
     model.eval()
-    
-    loader = datamodule.train_loader  # 使用验证集评估效率，确保 bs=1
+
+    loader = datamodule.valid_loader  # 使用验证集评估效率，确保 bs=1
     # === 获取样本输入 确保bs == 1 ===
     sample_inputs = next(iter(loader))
     inputs = tuple([item.to(device) for item in sample_inputs][:-1])
@@ -48,7 +48,7 @@ def evaluate_model_efficiency(datamodule, model, log, config):
     eval_repeats = 100
     eval_times = []
     model.eval()
-    
+
     with torch.no_grad():
         for _ in range(eval_repeats):
             inputs = [item.to(config.device) for item in sample_inputs][:-1]
@@ -66,45 +66,53 @@ def evaluate_model_efficiency(datamodule, model, log, config):
 
     gc.collect()
     torch.cuda.empty_cache()
-    
+
     efficiency = {
-        'Parameters': {
-            'Count': params,
-            'Size_Bytes': param_bytes,
-            'Size_KB': param_kb,
-            'Size_MB': param_mb,
-            'Size_GB': param_gb,
+        "Parameters": {
+            "Count": params,
+            "Size_Bytes": param_bytes,
+            "Size_KB": param_kb,
+            "Size_MB": param_mb,
+            "Size_GB": param_gb,
         },
-        'FLOPs': {
-            'Count': flops,
-            'MFLOPs': flops_m,
-            'GFLOPs': flops_g,
+        "FLOPs": {
+            "Count": flops,
+            "MFLOPs": flops_m,
+            "GFLOPs": flops_g,
         },
-        'GPU_Memory_Usage': {
-            'Bytes': peak_mem_bytes,
-            'KB': peak_mem_kb,
-            'MB': peak_mem_mb,
-            'GB': peak_mem_gb,
+        "GPU_Memory_Usage": {
+            "Bytes": peak_mem_bytes,
+            "KB": peak_mem_kb,
+            "MB": peak_mem_mb,
+            "GB": peak_mem_gb,
         },
-        'Inference_Cost_Per_Epoch': {
-            'Seconds': eval_time_s,
-            'Milliseconds': eval_time_ms,
-        }
+        "Inference_Cost_Per_Epoch": {
+            "Seconds": eval_time_s,
+            "Milliseconds": eval_time_ms,
+        },
     }
 
     try:
-        log('*' * 15 + 'Model Efficiency Evaluation' + '*' * 15)
-        log(f"FLOPs: {efficiency['FLOPs']['Count']:.0f} "
+        log("*" * 15 + "Model Efficiency Evaluation" + "*" * 15)
+        log(
+            f"FLOPs: {efficiency['FLOPs']['Count']:.0f} "
             f"(MFLOPs: {efficiency['FLOPs']['MFLOPs']:.2f}, "
-            f"GFLOPs: {efficiency['FLOPs']['GFLOPs']:.4f})")
-        log(f"Params: {efficiency['Parameters']['Count']:.0f} "
+            f"GFLOPs: {efficiency['FLOPs']['GFLOPs']:.4f})"
+        )
+        log(
+            f"Params: {efficiency['Parameters']['Count']:.0f} "
             f"(MB: {efficiency['Parameters']['Size_MB']:.2f}, "
-            f"GB: {efficiency['Parameters']['Size_GB']:.4f})")
-        log(f"GPU Memory Peak: {efficiency['GPU_Memory_Usage']['MB']:.2f} MB "
-            f"({efficiency['GPU_Memory_Usage']['GB']:.4f} GB)")
-        log(f"Inference time per epoch: {efficiency['Inference_Cost_Per_Epoch']['Milliseconds']:.2f} ms "
-            f"({efficiency['Inference_Cost_Per_Epoch']['Seconds']:.2f} s)")
-        log('*' * 15 + 'Model Efficiency Evaluation' + '*' * 15)
+            f"GB: {efficiency['Parameters']['Size_GB']:.4f})"
+        )
+        log(
+            f"GPU Memory Peak: {efficiency['GPU_Memory_Usage']['MB']:.2f} MB "
+            f"({efficiency['GPU_Memory_Usage']['GB']:.4f} GB)"
+        )
+        log(
+            f"Inference time per epoch: {efficiency['Inference_Cost_Per_Epoch']['Milliseconds']:.2f} ms "
+            f"({efficiency['Inference_Cost_Per_Epoch']['Seconds']:.2f} s)"
+        )
+        log("*" * 15 + "Model Efficiency Evaluation" + "*" * 15)
     except Exception as e:
         log(f"[ERROR] Model efficiency evaluation failed: {e}")
 

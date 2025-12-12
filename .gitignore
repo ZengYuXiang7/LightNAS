@@ -44,3 +44,4 @@ venv/
 /layers/my_ddpm_model/
 /data/*
 /data_process/nas_101_api/nasbench_full.tfrecord
+/runs/*

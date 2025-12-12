@@ -204,6 +204,7 @@ class DataModule:
             "narformer",
             "narformer2",
             "nnformer",
+            "ours"
         ]:
             # 不需要 sampler，直接用 batch_size
             return DataLoader(

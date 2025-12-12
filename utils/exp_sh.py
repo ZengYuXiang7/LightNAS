@@ -11,15 +11,14 @@ from run_train import get_experiment_name
 from utils.exp_config import get_config
 
 
-
 def write_and_print(string):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    with open('./run.log', 'a') as f:
+    with open("./run.log", "a") as f:
         print(string)
         f.write(f"[{timestamp}] {string}\n")
         # f.write(string + '\n')
-        
+
     return True
 
 
@@ -29,64 +28,98 @@ def add_parameter(command: str, params: dict) -> str:
         command += f" --{param_name} {param_value}"
     return command
 
-def once_experiment(exper_name, hyper_dict, monitor_metric, reverse=False, grid_search=0, retrain=1, debug=0):
+
+def once_experiment(
+    exper_name,
+    hyper_dict,
+    monitor_metric,
+    reverse=False,
+    grid_search=0,
+    retrain=1,
+    debug=0,
+    run_again=False,
+):
     # 先进行超参数探索
-    best_hyper = hyper_search(exper_name, hyper_dict, monitor_metric=monitor_metric, reverse=reverse, grid_search=grid_search, retrain=retrain, debug=debug)
+    best_hyper = hyper_search(
+        exper_name,
+        hyper_dict,
+        monitor_metric=monitor_metric,
+        reverse=reverse,
+        grid_search=grid_search,
+        retrain=retrain,
+        debug=debug,
+    )
 
-    # 再跑最佳参数实验
-    commands = []
-    command = f"python run_train.py --exp_name {exper_name} --retrain 1"
-    commands.append(command)
+    if run_again:
+        # 再跑最佳参数实验
+        commands = []
+        command = f"python run_train.py --exp_name {exper_name} --retrain 1"
+        commands.append(command)
 
-    commands = [add_parameter(command, best_hyper) for command in commands]
+        commands = [add_parameter(command, best_hyper) for command in commands]
 
-    # 执行所有命令
-    for command in commands:
-        run_command(command)
+        # 执行所有命令
+        for command in commands:
+            run_command(command)
     return True
 
 
-def hyper_search(exp_name, hyper_dict, monitor_metric, reverse=False, grid_search=0, retrain=1, debug=0):
+def hyper_search(
+    exp_name,
+    hyper_dict,
+    monitor_metric,
+    reverse=False,
+    grid_search=0,
+    retrain=1,
+    debug=0,
+):
     """
     入口函数：选择使用网格搜索还是逐步搜索
     """
     if grid_search:
-        return grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug)
+        return grid_search_hyperparameters(
+            exp_name, hyper_dict, retrain, monitor_metric, reverse, debug
+        )
     else:
-        return sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug)
+        return sequential_hyper_search(
+            exp_name, hyper_dict, retrain, monitor_metric, reverse, debug
+        )
 
 
 def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=False):
     """
     运行训练命令，并提取 metric
     """
-    timestamp = time.strftime('|%Y-%m-%d %H:%M:%S| ')
-    print(f"\033[1;38;2;151;200;129m{timestamp}\033[0m \033[1;38;2;100;149;237m{cmd_str}\033[0m")
+    timestamp = time.strftime("|%Y-%m-%d %H:%M:%S| ")
+    print(
+        f"\033[1;38;2;151;200;129m{timestamp}\033[0m \033[1;38;2;100;149;237m{cmd_str}\033[0m"
+    )
     config.__dict__.update(chosen_hyper)
     log_filename = get_experiment_name(config)[0]
 
     print(log_filename, chosen_hyper)
     subprocess.run(cmd_str, shell=True)
 
-    metric_file_address = f'./results/metrics/' + get_experiment_name(config)[0]
-    this_expr_metrics = pickle.load(open(metric_file_address + '.pkl', 'rb'))
+    metric_file_address = f"./results/metrics/" + get_experiment_name(config)[0]
+    this_expr_metrics = pickle.load(open(metric_file_address + ".pkl", "rb"))
 
     # 选择最优 metric
     best_value = np.mean(this_expr_metrics[monitor_metric])
     return best_value
 
 
-
-def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug):
+def sequential_hyper_search(
+    exp_name, hyper_dict, retrain, monitor_metric, reverse, debug
+):
     """
     逐步搜索超参数，每次调整一个参数，并保持其他最优值
     """
     config = get_config(exp_name)
 
-    log_file = f'./run.log'
+    log_file = f"./run.log"
     best_hyper = {}
 
-    with open(log_file, 'a') as f:
+    with open(log_file, "a") as f:
         # f.write("================== Sequential Hyper Search ==================\n")
 
         for hyper_name, hyper_values in hyper_dict.items():
@@ -112,7 +145,10 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, rever
 
                 # 对其他 hyper 未探索过的，使用它们的第一个值
                 for other_hyper_name, other_hyper_values in hyper_dict.items():
-                    if other_hyper_name not in best_hyper and other_hyper_name != hyper_name:
+                    if (
+                        other_hyper_name not in best_hyper
+                        and other_hyper_name != hyper_name
+                    ):
                         config.other_hyper_name = other_hyper_values[0]
                         best_hyper[other_hyper_name] = other_hyper_values[0]
                         command += f"--{other_hyper_name} {other_hyper_values[0]} "
@@ -120,13 +156,15 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, rever
                 # 运行命令、获取 metric
                 chosen_dict = best_hyper.copy()
                 chosen_dict[hyper_name] = value
-                
+
                 # Debug
                 if debug:
                     command += f"--debug 1 "
 
                 # f.write(f"COMMAND: {command}\n")
-                current_metric = run_and_get_metric(command, config, chosen_dict, monitor_metric, debug)
+                current_metric = run_and_get_metric(
+                    command, config, chosen_dict, monitor_metric, debug
+                )
 
                 # 比较更新最优
                 if reverse:
@@ -141,34 +179,38 @@ def sequential_hyper_search(exp_name, hyper_dict, retrain, monitor_metric, rever
                 write_and_print(f"{hyper_name}: {value}, Metric: {current_metric:5.4f}")
             # 结束后，更新最优
             best_hyper[hyper_name] = current_best_value
-            write_and_print(f"==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric:5.4f}\n")
-            
+            write_and_print(
+                f"==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric:5.4f}\n"
+            )
+
         # 全部结束后，打印并写日志
         write_and_print(f"The Best Hyperparameters: {best_hyper}\n")
     return best_hyper
 
 
-def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, reverse, debug):
+def grid_search_hyperparameters(
+    exp_name, hyper_dict, retrain, monitor_metric, reverse, debug
+):
     """
     进行网格搜索（笛卡尔积搜索所有超参数组合）
     """
     config = get_config(exp_name)
 
-    log_file = f'./run.log'
+    log_file = f"./run.log"
     hyper_keys = list(hyper_dict.keys())
     hyper_values_list = [hyper_dict[k] for k in hyper_keys]
 
     best_metric = 0 if reverse else 1e9
     best_combo = None
 
-    with open(log_file, 'a') as f:
+    with open(log_file, "a") as f:
         f.write("\n=== Grid Search ===\n")
         for combo in product(*hyper_values_list):
             # combo 是一个元组，如 (10, 0.1) -> 对应 (Rank=10, Order=0.1)
             combo_dict = dict(zip(hyper_keys, combo))
 
             # 构建命令
-            command = f"python train_model.py --exp_name {exp_name} --hyper_search 1 --retrain {retrain} "
+            command = f"python run_train.py --exp_name {exp_name} --hyper_search 1 --retrain {retrain} "
             # 在命令里添加所有超参数
             for param_key, param_val in combo_dict.items():
                 command += f"--{param_key} {param_val} "
@@ -180,7 +222,9 @@ def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, r
 
             f.write(f"COMMAND: {command}\n")
             # 运行并获取结果
-            current_metric = run_and_get_metric(command, config, combo_dict, monitor_metric, debug)
+            current_metric = run_and_get_metric(
+                command, config, combo_dict, monitor_metric, debug
+            )
 
             if reverse:
                 # 分类，metric 越大越好
@@ -199,8 +243,7 @@ def grid_search_hyperparameters(exp_name, hyper_dict, retrain, monitor_metric, r
     return best_combo
 
 
-
-def run_command(command, log_file='./run.log', retry_count=0):
+def run_command(command, log_file="./run.log", retry_count=0):
     success = False
     while not success:
         # 获取当前时间并格式化
@@ -213,18 +256,21 @@ def run_command(command, log_file='./run.log', retry_count=0):
             retry_message = "Running"
 
         # 将执行的命令和时间写入日志文件
-        
+
         write_and_print(f"{retry_message} at {current_time}: {command}\n")
 
         # 直接执行命令，将输出和错误信息打印到终端
-        process = subprocess.run(f'ulimit -s unlimited; ulimit -c unlimited&& ulimit -a && echo {command} &&' + command, shell=True)
+        process = subprocess.run(
+            f"ulimit -s unlimited; ulimit -c unlimited&& ulimit -a && echo {command} &&"
+            + command,
+            shell=True,
+        )
 
         # 根据返回码判断命令是否成功执行
         if process.returncode == 0:
             success = True
         else:
-            with open(log_file, 'a') as f:
+            with open(log_file, "a") as f:
                 f.write(f"Command failed, retrying in 3 seconds: {command}\n")
             retry_count += 1
             time.sleep(3)  # 等待一段时间后重试
-

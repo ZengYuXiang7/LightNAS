@@ -14,10 +14,10 @@ class TransNAS(nn.Module):
         super(TransNAS, self).__init__()
         self.config = config
         self.d_model = config.d_model
-        
+
         # self.op_embedding = torch.nn.Embedding(7, config.d_model)
         self.op_embedding = DiscreteEncoder(
-            num_operations=7,
+            num_operations=8,
             encoding_dim=self.d_model,
             encoding_type=config.op_encoder,
             output_dim=self.d_model,
@@ -35,46 +35,63 @@ class TransNAS(nn.Module):
             output_dim=self.d_model,
         )
 
+        self.lap_encoder = nn.Linear(1 * config.lp_d_model, self.d_model, bias=True)
         self.att_bias = SPDSpatialBias(num_heads=config.num_heads, max_dist=99)
 
-        self.tokenGT = TokenGT(
-            c_node=self.d_model,
-            d_model=self.d_model,
-            lap_dim=config.lp_d_model,
-            use_edge=False,
-        )
+        # [graph] special token
+        self.graph_tok = nn.Parameter(torch.randn(1, 1, self.d_model))
 
         self.encoder = Transformer(
             self.d_model,
-            config.num_layers,
-            config.num_heads,
-            "rms",
-            "ffn",
-            config.att_method,
+            num_layers=config.num_layers,
+            num_heads=config.num_heads,
+            norm_method="rms",
+            ffn_method="ffn",
+            att_method=config.att_method,
         )
         # enc_layer = nn.TransformerEncoderLayer(d_model, nhead, batch_first=True)
         # self.encoder = nn.TransformerEncoder(enc_layer, num_layers=num_layers)
 
-        self.pred_head = nn.Linear(config.d_model, 1)  # 回归或分类
+        # 回归或分类
+        self.pred_head = nn.Sequential(
+            nn.Linear(config.d_model, 1),
+            # nn.Dropout(0.10)
+        )
 
-    def forward(self, graphs, features, eigvec, indgree, outdegree, dij):
-        # seq_embeds = self.op_embedding(features)
+    def forward(
+        self, graphs, features, eigvec, indgree, outdegree, dij, key_padding_mask
+    ):
+        B, _ = features.shape
+
+        # 首先给节点加入拓扑信息
         seq_embeds = (
             self.op_embedding(features)
             + self.indeg_embedding(indgree)
             + self.outdeg_embedding(outdegree)
         )
 
+        # 给节点加入相对位置信息？
+        seq_embeds = seq_embeds + self.lap_encoder(eigvec)  # [B, n, d]
+
         # [B, seq_len, d_model]
-        seq_embeds, att_mask = self.tokenGT(graphs, seq_embeds, eigvec)
+        # 图级 token
+        graph_tok = self.graph_tok.expand(B, -1, -1)  # [B, 1, d]
+        seq_embeds = torch.cat([graph_tok] + [seq_embeds], dim=1)  # [B, 1+n(+max_m), d]
 
         # 获得距离嵌入
         if self.config.att_bias:
-            att_bias = self.att_bias(dij)  # [B, H, N, N]
+            attn_mask = self.att_bias(dij)  # [B, H, N, N]
         else:
-            att_bias = None
+            attn_mask = None
 
-        cls_out = self.encoder(seq_embeds, att_bias)[:, 0, :]  # [B, d_model]
+        # 因为加了CLS所以多了一位
+        # B, L, _ = seq_embeds.shape   # 这里 L = max_len
+        # device = seq_embeds.device
+        # cls_pad = torch.zeros(B, 1, dtype=torch.bool, device=device)  # [B, 1], False
+        # key_padding_mask = torch.cat([cls_pad, key_padding_mask], dim=1)  # [B, 8]
+        # print(seq_embeds.shape, attn_mask.shape, key_padding_mask.shape)
+
+        cls_out = self.encoder(seq_embeds, attn_mask)[:, 0, :]  # [B, d_model]
 
         y = self.pred_head(cls_out)  # 回归或分类
 
@@ -89,84 +106,34 @@ class SPDSpatialBias(nn.Module):
     def __init__(self, num_heads: int, max_dist: int):
         super().__init__()
         # 每个距离值 d -> 每个 head 的一个标量
-        self.spatial_pos_encoder = nn.Embedding(100, num_heads)
+        self.spatial_pos_encoder = nn.Embedding(15, num_heads)
 
     def forward(self, spatial_pos: torch.Tensor) -> torch.Tensor:
         """
-        spatial_pos: [B, N, N], 取值范围 [0, max_dist]
-        return: attn_bias [B, H, N, N]
+        spatial_pos: [B, N, N]
+        return: attn_bias [B, H, N+1, N+1]
         """
-        # [B, N, N, H] -> [B, H, N, N]
-        spatial_bias = self.spatial_pos_encoder(spatial_pos).permute(0, 3, 1, 2)
+        # [B, N, N, H]
+        spatial_bias = self.spatial_pos_encoder(spatial_pos)
 
-        B, H, N, N = spatial_bias.shape
+        # ---- mask 掉取值为 14 的位置 ----
+        mask = (spatial_pos == 14).unsqueeze(-1)  # [B, N, N, 1]
+        spatial_bias = spatial_bias.masked_fill(mask, float("-inf"))
+
+        # -> [B, H, N, N]
+        spatial_bias = spatial_bias.permute(0, 3, 1, 2)
+
+        B, H, N, _ = spatial_bias.shape
+
+        # ---- 初始化 CLS 扩展矩阵，全 0 ----
         with_cls_spatial_bias = torch.zeros(
             B, H, N + 1, N + 1, device=spatial_bias.device, dtype=spatial_bias.dtype
         )
+
+        # ---- 节点间 bias 填回去 ----
         with_cls_spatial_bias[:, :, 1:, 1:] = spatial_bias
 
         return with_cls_spatial_bias
-
-
-class TokenGT(nn.Module):
-    def __init__(
-        self,
-        c_node: int,
-        d_model: int = 128,
-        lap_dim: int = 8,
-        use_edge: bool = False,
-        lap_node_id_sign_flip=True,
-    ):
-        super().__init__()
-        self.use_edge = use_edge
-        self.lap_dim = lap_dim
-        self.lap_node_id_sign_flip = lap_node_id_sign_flip
-
-        # 节点 token 投影
-        # self.node_proj = nn.Linear(c_node + 2 * lap_dim, d_model)
-        self.lap_encoder = nn.Linear(1 * lap_dim, d_model, bias=True)
-
-        # 边 token 投影 (用常数 + LapPE(u)+LapPE(v))
-        if use_edge:
-            self.edge_proj = nn.Linear(1 + 2 * lap_dim, d_model)
-
-        # type embedding (0=node, 1=edge)
-        self.type_embed = nn.Embedding(2, d_model)
-
-        # [graph] special token
-        self.graph_tok = nn.Parameter(torch.randn(1, 1, d_model))
-
-    def forward(
-        self,
-        adj: torch.Tensor,
-        node_feats: torch.Tensor,
-        eigvec: torch.Tensor,
-        num_nodes=None,
-    ):
-        """
-        adj:        [B, n, n]
-        node_feats: [B, n, xdim]
-        P:          [B, n, lap_dim]  (外部已算好 LapPE；如需内部计算，可自行打开注释)
-        """
-        B, n, _ = adj.shape
-        device = adj.device
-        node_tok = node_feats + self.lap_encoder(eigvec)  # [B, n, d]
-
-        tokens = [node_tok]  # 先放节点
-
-        pad_mask_edges = torch.zeros(B, 0, dtype=torch.bool, device=device)
-
-        # 图级 token
-        graph_tok = self.graph_tok.expand(B, -1, -1)  # [B, 1, d]
-        seq_embeds = torch.cat([graph_tok] + tokens, dim=1)  # [B, 1+n(+max_m), d]
-
-        # key padding mask：前 1+n 个位置（图级 + 节点）都为有效(False)；边用 pad_mask_edges
-        pad_mask = torch.cat(
-            [torch.zeros(B, 1 + n, dtype=torch.bool, device=device), pad_mask_edges],
-            dim=1,
-        )  # [B, 1+n(+max_m)]
-
-        return seq_embeds, pad_mask
 
 
 class PairwiseDiffLoss(nn.Module):

@@ -6,24 +6,36 @@ from datetime import datetime
 
 # 在这里写下超参数探索空间
 hyper_dict = {
-    "d_model": [128, 192, 96, 256],
-    "att_method": ["self"],  # 'self', 'full', 'sa', 'external',  'gqa'
-    "try_exp": [1, 2, 3, 4, 5, 6, 7, 8],  # 1-8
-    "sample_method": ["ours", "random"],
+    "d_model": [128, 192, 256],
+    "num_layers": [4, 3, 5, 6],
 }
 
 
 ######################################################################################################
 # 这里是总执行实验顺序！！！！！！！！
 def experiment_run():
-    Our_model()
+    # bench201 ["1:4:95", "3:4:93", "5:4:91", "10:4:86"]
+    # bench101 ["0.025:4:95.9775", "0.04:4:95.96", "0.1:4:95.9", "1:4:95"]
+    # for data_split in ["1:4:95", "3:4:93", "5:4:91", "10:4:86"]:
+    for data_split in ["3:4:93", "5:4:91", "10:4:86"]:
+        now_hyper_dict = {
+            "spliter_ratio": [data_split],
+            **hyper_dict,
+        }
+        # print(now_hyper_dict)
+        Our_model(now_hyper_dict)
     return True
 
 
 def Our_model(hyper=None):
     # monitor_metric = NMAE KendallTau
     once_experiment(
-        "OurModelConfig", hyper_dict, monitor_metric="KendallTau", reverse=True, debug=0
+        "OurModelConfig",
+        hyper,
+        monitor_metric="KendallTau",
+        reverse=True,
+        debug=0,
+        grid_search=0,
     )
     return True
 
