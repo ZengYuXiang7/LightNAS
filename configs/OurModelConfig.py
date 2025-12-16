@@ -5,6 +5,7 @@
 
 from configs.default_config import *
 from dataclasses import dataclass, field
+from typing import Optional, Tuple
 
 
 @dataclass
@@ -20,10 +21,11 @@ class OurModelConfig(
     model: str = "ours"
     # loss_func: str = "L1Loss"  # L1Loss  MSELoss
 
-    bs: int = 256
-    spliter_ratio: str = "5:4:91"
     epochs: int = 2000
     verbose: int = epochs
+    bs: int = 256
+    spliter_ratio: str = "5:4:91"
+
     patience: int = 200
 
     # model
@@ -53,3 +55,4 @@ class OurModelConfig(
     ac_loss: bool = True  #
 
     try_exp: int = 1  # 1-8
+

@@ -12,6 +12,10 @@ from torch.cuda.amp import autocast
 from torch.optim.lr_scheduler import LambdaLR
 from tqdm import *
 
+# from timm.utils import ModelEma
+# from timm.optim import create_optimizer_v2, optimizer_kwargs
+from torch.optim import lr_scheduler
+
 
 def build_stable_warmup_hold_cosine(
     optimizer,
@@ -70,7 +74,7 @@ class BasicModel(torch.nn.Module):
                 self.optimizer,
                 total_units=config.epochs,
                 warmup_ratio=0.05,
-                hold_ratio=0.02,
+                hold_ratio=0.02,  # 0.02 0.00
                 min_lr_ratio=0.05,
             )
         else:
@@ -82,6 +86,29 @@ class BasicModel(torch.nn.Module):
                 threshold=0.0,
                 min_lr=1e-6,
             )
+
+        # 2025年12月14日20:30:10 尝试NNformer的？
+        # nbatches = self.config.train_size
+        # warm_step = 0.1
+        # self.optimizer = create_optimizer_v2(
+        #     self.parameters(), **optimizer_kwargs(config)
+        # )
+        # self.scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(
+        #     self.optimizer,
+        #     num_warmup_steps=warm_step * nbatches * self.config.epochs,
+        #     num_training_steps=nbatches * self.config.epochs,
+        #     num_cycles=1,
+        #     min_ratio=1e-2,
+        # )
+
+        # 2025年12月15日15:02:37 尝试Pathformer的
+        # self.scheduler = lr_scheduler.OneCycleLR(
+        # optimizer=self.optimizer,
+        # steps_per_epoch=config.train_size,
+        # pct_start=config.pct_start,
+        # epochs=config.epochs,
+        # max_lr=config.lr,
+        # )
 
 
 def exec_train_one_epoch(model, dataModule, config):
@@ -97,15 +124,10 @@ def exec_train_one_epoch(model, dataModule, config):
     for train_batch in dataModule.train_loader:
         all_item = [item.to(config.device) for item in train_batch]
         inputs, label = all_item[:-1], all_item[-1]
-
-        # 优化器在 real_model (原始模型) 里
         real_model.optimizer.zero_grad()
 
         if config.use_amp:
             with torch.amp.autocast(device_type=config.device):
-                # !!! 关键点 !!!
-                # 这里调用的是 model (可能是多卡包装器)，而不是 real_model
-                # 这样 inputs 才会自动切分到多张卡上
                 pred = model(*inputs)
                 loss = compute_loss(real_model, pred, label, config)
 
@@ -117,6 +139,10 @@ def exec_train_one_epoch(model, dataModule, config):
             loss = compute_loss(real_model, pred, label, config)
             loss.backward()
             real_model.optimizer.step()
+
+        # 2025年12月14日20:43:35 临时使用Transformer训练器
+        # 2025年12月15日15:07:34 Pathformer
+        real_model.scheduler.step()
 
     t2 = time()
     return loss.cpu().item(), t2 - t1
@@ -165,11 +191,76 @@ def exec_evaluate_one_epoch(model, dataModule, config, mode="valid"):
         ), dataModule.y_scaler.inverse_transform(preds)
 
     if mode == "valid":
-        # 调度器也在 real_model 里
-        # 注意：UserWarning 可能会提示 scheduler.step() 应该在 optimizer.step() 之后，但这里逻辑没大问题
         if isinstance(real_model.scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
             real_model.scheduler.step(val_loss)
         else:
             real_model.scheduler.step()
 
     return ErrorMetrics(reals, preds, config)
+
+
+## 临时
+import math
+from functools import partial
+
+from torch.optim import Optimizer
+from torch.optim.lr_scheduler import LambdaLR
+
+
+def _get_cosine_with_hard_restarts_schedule_with_warmup_lr_lambda(
+    current_step: int,
+    *,
+    num_warmup_steps: int,
+    num_training_steps: int,
+    num_cycles: int,
+    min_ratio: float = 1e-2,
+):
+    if current_step < num_warmup_steps:
+        return float(current_step) / float(max(1, num_warmup_steps))
+    progress = float(current_step - num_warmup_steps) / float(
+        max(1, num_training_steps - num_warmup_steps)
+    )
+    if progress >= 1.0:
+        return min_ratio
+    return min_ratio + (1 - min_ratio) * 0.5 * (
+        1.0 + math.cos(math.pi * ((float(num_cycles) * progress) % 1.0))
+    )
+
+
+def get_cosine_with_hard_restarts_schedule_with_warmup(
+    optimizer: Optimizer,
+    num_warmup_steps: int,
+    num_training_steps: int,
+    num_cycles: int = 1,
+    last_epoch: int = -1,
+    min_ratio: float = 1e-2,
+):
+    """
+    Create a schedule with a learning rate that decreases following the values of the cosine function between the
+    initial lr set in the optimizer to 0, with several hard restarts, after a warmup period during which it increases
+    linearly between 0 and the initial lr set in the optimizer.
+
+    Args:
+        optimizer ([`~torch.optim.Optimizer`]):
+            The optimizer for which to schedule the learning rate.
+        num_warmup_steps (`int`):
+            The number of steps for the warmup phase.
+        num_training_steps (`int`):
+            The total number of training steps.
+        num_cycles (`int`, *optional*, defaults to 1):
+            The number of hard restarts to use.
+        last_epoch (`int`, *optional*, defaults to -1):
+            The index of the last epoch when resuming training.
+
+    Return:
+        `torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.
+    """
+
+    lr_lambda = partial(
+        _get_cosine_with_hard_restarts_schedule_with_warmup_lr_lambda,
+        num_warmup_steps=num_warmup_steps,
+        num_training_steps=num_training_steps,
+        num_cycles=num_cycles,
+        min_ratio=min_ratio,
+    )
+    return LambdaLR(optimizer, lr_lambda, last_epoch)

@@ -117,8 +117,8 @@ class SPDSpatialBias(nn.Module):
         spatial_bias = self.spatial_pos_encoder(spatial_pos)
 
         # ---- mask 掉取值为 14 的位置 ----
-        mask = (spatial_pos == 14).unsqueeze(-1)  # [B, N, N, 1]
-        spatial_bias = spatial_bias.masked_fill(mask, float("-inf"))
+        # mask = (spatial_pos == 14).unsqueeze(-1)  # [B, N, N, 1]
+        # spatial_bias = spatial_bias.masked_fill(mask, float("-inf"))
 
         # -> [B, H, N, N]
         spatial_bias = spatial_bias.permute(0, 3, 1, 2)

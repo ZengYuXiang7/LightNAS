@@ -55,6 +55,7 @@ class DataModule:
             f"Valid_length : {len(self.valid_set)} "
             f"Test_length : {len(self.test_set)}"
         )
+        config.train_size = len(self.train_set)
 
         # 开始构建 DataLoader
         self.train_loader = self.build_loader(
