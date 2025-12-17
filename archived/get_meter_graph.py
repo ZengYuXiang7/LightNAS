@@ -3,7 +3,7 @@ import os
 from typing import List, Tuple
 import numpy as np
 import torch
-import dgl
+# import dgl
 from nn_meter.utils.graph_tool import ModelGraph
 from nn_meter.builder.kernel_predictor_builder.predictor_builder.extract_feature import get_feature_parser
 
