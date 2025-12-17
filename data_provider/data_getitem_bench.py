@@ -83,7 +83,6 @@ class NasBenchDataset(Dataset):
         if self.config.model == "ours":
 
             if self.config.dataset == "201_acc":
-
                 features = self.data["features"][idx]
                 y = self.data[self.config.predict_target][idx]
 
@@ -119,7 +118,8 @@ class NasBenchDataset(Dataset):
                     y,
                 )
 
-            elif self.config.dataset == "101_acc":
+            # elif self.config.dataset in ["101_acc", "nnlqp"]:
+            elif self.config.dataset in ["101_acc"]:
                 adj_matrix = self.data["adj_matrix"][idx]  # 直接取邻接矩阵
                 features = self.data["features"][idx]  # 直接取操作序列
                 features = torch.tensor(features, dtype=torch.long)
@@ -134,12 +134,20 @@ class NasBenchDataset(Dataset):
                 y = self.data[self.config.predict_target][idx].reshape(-1)
 
                 # padding
-                N, max_len = len(adj_matrix), 7
+                N, max_len = len(adj_matrix), (
+                    7 if self.config.dataset == "101_acc" else 245
+                )
                 adj_matrix = padding_2d(adj_matrix, max_len=max_len, padding_value=0)
                 features = padding_1d(
-                    features, max_len=max_len, padding_value=7
-                )  # 7代表NUll操作
-                dij = padding_2d(dij, max_len=max_len, padding_value=14)
+                    features,
+                    max_len=max_len,
+                    padding_value=7 if self.config.dataset == "101_acc" else 33,
+                )  # 7代表NUll操作 33 代表Null操作
+                dij = padding_2d(
+                    dij,
+                    max_len=max_len,
+                    padding_value=14 if self.config.dataset == "101_acc" else 244,
+                )
                 eigvec = padding_feat_2d(eigvec, max_len=max_len, padding_value=0)
                 indgree = padding_1d(indgree, max_len=max_len, padding_value=0)
                 outdegree = padding_1d(outdegree, max_len=max_len, padding_value=0)
@@ -148,6 +156,37 @@ class NasBenchDataset(Dataset):
                 # print(adj_padded.shape, features_padded.shape, key_padding_mask.shape)
                 # print(adj_matrix.shape, features.shape, eigvec.shape, indgree.shape, outdegree.shape, dij.shape, y.shape)
                 # print(adj_padded.shape, features_padded.shape, key_padding_mask.shape, eigvec.shape, indgree.shape, outdegree.shape, dij.shape, y.shape)
+                return (
+                    adj_matrix,
+                    features,
+                    eigvec,
+                    indgree,
+                    outdegree,
+                    dij,
+                    key_padding_mask,
+                    y,
+                )
+            elif self.config.dataset == 'nnlqp':
+                adj_matrix = self.data["adj_matrix"][idx]  # 直接取邻接矩阵
+                features = self.data["features"][idx]  # 直接取操作序列
+                features = torch.tensor(features, dtype=torch.long)
+                adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
+
+                eigvec = laplacian_node_ids_from_adj(adj_matrix, self.config.lp_d_model)
+                indgree, outdegree, dij = preprocess_binary_inout_and_spd(
+                    adj_matrix,
+                    include_self_loops_in_degree=False,
+                    directed_for_spd=True,  # 如需无向最短路可改成 False
+                )
+                y = self.data[self.config.predict_target][idx].reshape(-1)
+                
+                # padding
+                N, max_len = len(adj_matrix), (
+                    7 if self.config.dataset == "101_acc" else 245
+                )
+                key_padding_mask = torch.zeros(max_len, dtype=torch.bool)
+                key_padding_mask[:N] = True
+                
                 return (
                     adj_matrix,
                     features,

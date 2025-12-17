@@ -7,7 +7,7 @@ from dataclasses import dataclass
 class DatasetInfo:
     path: str = "./data"
     task: str = "bench201"
-    dataset: str = "101_acc"  #  101_acc 201_acc
+    dataset: str = "nnlqp"  #  101_acc 201_acc nnlqp
     predict_target: str = "accuracy"  #  latency accuracy
 
     eval_set: bool = True
@@ -16,6 +16,12 @@ class DatasetInfo:
     # spliter_ratio: str = '7:1:2'
     spliter_ratio: str = "5:1:94"
     sample_method: str = "random"  # random  ours
+    tqdm: bool = False
+    # nnlqp
+    indomain: bool = False
+    test_model_type: str = (
+        "resnet18"  # ['resnet18', 'vgg16', 'efficientb0', 'mobilenetv2', 'mobilenetv3', 'mnasnet', 'alexnet', 'squeezenet', 'googlenet', 'nasbench201']
+    )
 
 
 @dataclass

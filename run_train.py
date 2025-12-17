@@ -11,6 +11,7 @@ from exp.exp_train import RunOnce
 from exp.exp_model import Model
 import exp.exp_efficiency
 import utils.utils
+import pickle
 
 torch.set_default_dtype(torch.float32)
 
@@ -51,20 +52,25 @@ def RunExperiments(log, config):
         config.runid = runid
         log.set_runid(runid)
         utils.utils.set_seed(config.seed + runid)
+
         datamodule = DataModule(config)
         model = Model(config)
-        if runid == 0:
-            exp.exp_efficiency.evaluate_model_efficiency(datamodule, model, log, config)
-            log.log_config_text(config)
+
         log.plotter.reset_round()
         results = RunOnce(config, runid, model, datamodule, log)
         log.log_model_graph(
             model, datamodule, config.device
         )  # 记录模型图 (可能会报错，如果不兼容可以直接注释)
         # log.log_hparams(config, results)
+
         for key in results:
             metrics[key].append(results[key])
         log.plotter.append_round()
+
+        if runid + 1 == config.rounds:
+            log.only_print("Start the efficiency experiment.")
+            exp.exp_efficiency.evaluate_model_efficiency(datamodule, model, log, config)
+            log.log_config_text(config)
 
     log("*" * 20 + "Experiment Results:" + "*" * 20)
     log(log.exper_detail)
@@ -76,10 +82,9 @@ def RunExperiments(log, config):
         log(f"{key}: {np.mean(metrics[key]):.4f} ± {np.std(metrics[key]):.4f}")
 
     log.save_in_log(metrics)
+    log.save_result(metrics)
+    log.plotter.record_metric(metrics)
 
-    if config.record:
-        log.save_result(metrics)
-        log.plotter.record_metric(metrics)
     log("*" * 20 + "Experiment Success" + "*" * 20)
     log.end_the_experiment(model)
     return metrics
@@ -104,10 +109,13 @@ if __name__ == "__main__":
     config = get_config("OurModelConfig")
     set_settings(config)
 
-    # config.dataset = '101_acc'
-
     if config.dataset == "nnlqp":
+        config.predict_target = "latency"
+        config.sample_method = "nnlqp"
         config.input_size = 29
+        config.bs = 128
+        config.tqdm = True
+
         if config.model == "narformer":
             config.input_size = 1216
             config.graph_d_model = 960

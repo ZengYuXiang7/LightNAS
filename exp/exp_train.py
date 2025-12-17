@@ -15,7 +15,7 @@ def RunOnce(config, runid, model: BasicModel, datamodule: DataModule, log: Logge
 
     # 创建保存模型的目录
     os.makedirs(f"./checkpoints/{config.model}", exist_ok=True)
-    model_path = f"./checkpoints/{config.model}/{log.filename}_round_{runid}.pt"
+    model_path = f"./checkpoints/{config.model}/{log.log_filename}_round_{runid}.pt"
 
     # 判断是否需要重新训练：
     # 若 config.retrain==1 表示强制重训；
@@ -118,7 +118,7 @@ def full_retrain(
                 runid, epoch, monitor, train_loss, valid_error, train_time
             )
 
-            if epoch % int(0.1 * config.epochs) == 0:
+            if not config.debug and epoch % int(0.1 * config.epochs) == 0 :
                 log.log_histograms(model, epoch)
 
             # 更新日志可视化（如绘图）

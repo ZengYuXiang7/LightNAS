@@ -14,8 +14,8 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 class Logger:
-    def __init__(self, filename, exper_detail, plotter, config, show_params=True):
-        self.filename = filename
+    def __init__(self, log_filename, exper_detail, plotter, config, show_params=True):
+        self.log_filename = log_filename
         self.exper_detail = exper_detail
         self.plotter = plotter
         self.config = config
@@ -34,7 +34,7 @@ class Logger:
         self._prepare_experiment(show_params)
 
         # 创建tensorboard
-        self.base_log_dir = os.path.join("./runs", config.model, self.filename)
+        self.base_log_dir = os.path.join("./runs", config.model, self.log_filename)
         self.tb_writer = None  # 先占个位，不在 init 里创建
 
     # 初始化日志文件路径
@@ -42,7 +42,7 @@ class Logger:
         fileroot = f"./results/{self.config.model}/" + time.strftime("%Y%m%d") + "/log/"
         os.makedirs(fileroot, exist_ok=True)
         timestamp = time.strftime("%H_%M_%S")
-        self.exper_filename = os.path.join(fileroot, f"{timestamp}_{self.filename}")
+        self.exper_filename = os.path.join(fileroot, f"{timestamp}_{self.log_filename}")
 
     # 打印初始配置参数
     def _prepare_experiment(self, show_params):
@@ -94,7 +94,7 @@ class Logger:
             **{f"{k}_mean": np.mean(metrics[k]) for k in metrics},
             **{f"{k}_std": np.std(metrics[k]) for k in metrics},
         }
-        with open(f"./results/metrics/{self.filename}.pkl", "wb") as f:
+        with open(f"./results/metrics/{self.log_filename}.pkl", "wb") as f:
             pickle.dump(result, f)
 
     # 日志输出（含彩色打印）

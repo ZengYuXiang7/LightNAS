@@ -75,41 +75,9 @@ def get_bench101_acc(config):
 
 
 def get_nnlqp(config):
-    if not config.transfer:
-        root_dir = "./data/nnlqp/unseen_structure"
-        with open("./data/nnlqp/unseen_structure/gt.txt", "r") as f:
-            dataset = f.readlines()
-        x, y = [], []
-        for line in dataset:  # gt.txt
-            # model_types.add(line.split()[4])
-            line = line.rstrip()
-            items = line.split(" ")
-            speed_id = str(items[0])
-            graph_id = str(items[1])
-            batch_size = int(items[2])
-            cost_time = float(items[3])
-            plt_id = int(items[5])
-            x.append(speed_id)
-            y.append(cost_time)
-        x, y = np.array(x), np.array(y)
-    else:
-        root_dir = ".data/nnlqp/multi_platform/gt.txt"
-        with open("./data/nnlqp/multi_platform/gt.txt", "r") as f:
-            dataset = f.readlines()
-        x, y = [], []
-        for line in dataset:  # gt.txt
-            # model_types.add(line.split()[4])
-            line = line.rstrip()
-            items = line.split(" ")
-            speed_id = str(items[0])
-            graph_id = str(items[1])
-            batch_size = int(items[2])
-            cost_time = float(items[3])
-            plt_id = int(items[5])
-            x.append(speed_id)
-            y.append(cost_time)
-        x, y = np.array(x), np.array(y)
-    return x, y
+    with open("./data/nnlqp_latency_data.pkl", "rb") as f:
+        data = pickle.load(f)
+    return data
 
 
 """

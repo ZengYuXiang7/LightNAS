@@ -17,7 +17,7 @@ class TransNAS(nn.Module):
 
         # self.op_embedding = torch.nn.Embedding(7, config.d_model)
         self.op_embedding = DiscreteEncoder(
-            num_operations=8,
+            num_operations=8 if self.config.dataset != "nnlqp" else 34,
             encoding_dim=self.d_model,
             encoding_type=config.op_encoder,
             output_dim=self.d_model,
@@ -106,7 +106,7 @@ class SPDSpatialBias(nn.Module):
     def __init__(self, num_heads: int, max_dist: int):
         super().__init__()
         # 每个距离值 d -> 每个 head 的一个标量
-        self.spatial_pos_encoder = nn.Embedding(15, num_heads)
+        self.spatial_pos_encoder = nn.Embedding(245, num_heads)
 
     def forward(self, spatial_pos: torch.Tensor) -> torch.Tensor:
         """

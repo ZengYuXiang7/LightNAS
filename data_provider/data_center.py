@@ -16,6 +16,7 @@ from tqdm import *
 from data_provider.data_control import get_dataset, load_data
 from data_provider.data_scaler import get_scaler
 from data_provider.data_smapler import FixedLengthBatchSampler
+from data_provider.data_spliter import *
 
 
 # 数据集定义
@@ -41,19 +42,15 @@ class DataModule:
         self.valid_data = self.normalize_data(
             self.valid_data, self.x_scaler, self.y_scaler, config
         )
-        self.test_data = self.normalize_data(
-            self.test_data, self.x_scaler, self.y_scaler, config
-        )
 
         self.train_set = get_dataset(self.train_data, "train", config)
         self.valid_set = get_dataset(self.valid_data, "valid", config)
-        self.test_set = get_dataset(self.test_data, "test", config)
 
         # 打印数据集长度信息
         config.log.only_print(
             f"Train_length : {len(self.train_set)} "
             f"Valid_length : {len(self.valid_set)} "
-            f"Test_length : {len(self.test_set)}"
+            f"Test_length : {len(self.data[config.predict_target]) - len(self.train_set)  - len(self.valid_set)}"
         )
         config.train_size = len(self.train_set)
 
@@ -67,6 +64,10 @@ class DataModule:
 
     # 有的时候测试集是大数据量，我们单独构建一个函数来获取测试集的 DataLoader
     def get_testloader(self):
+        self.test_data = self.normalize_data(
+            self.test_data, self.x_scaler, self.y_scaler, self.config
+        )
+        self.test_set = get_dataset(self.test_data, "test", self.config)
         self.test_loader = self.build_loader(
             self.test_set, bs=self.config.bs, is_train=False
         )
@@ -74,80 +75,50 @@ class DataModule:
 
     def get_split_dataset(self, data, config):
         """
-        仅切分，不做归一化。
-        输入:
-            - data: dict[str -> list]，各字段第一维长度一致
-            - config: 需包含 spliter_ratio（如 '8:1:1'），可选 seed
-        返回:
-            - train_data, valid_data, test_data  (与 data 同结构的 dict，值是切片后的 list)
+        仅切分，不做归一化
         """
-        assert isinstance(data, dict) and len(data) > 0, "data 必须是非空 dict"
+        assert isinstance(data, dict) and data, "data 必须是非空 dict"
 
-        # 确保全是 list，并校验样本数一致
+        # -------- 1. 统一转 list & 校验长度 --------
         N = None
         for k, v in data.items():
             if isinstance(v, np.ndarray):
-                v = v.tolist()  # 转成 list
+                v = v.tolist()
                 data[k] = v
-            elif not isinstance(v, list):
-                v = list(v)  # 其他类型也转 list
-                data[k] = v
+            else:
+                data[k] = list(v)
 
             if N is None:
                 N = len(v)
             else:
-                assert (
-                    len(v) == N
-                ), f"字段 {k} 的样本数 {len(v)} 与其他字段不一致（应为 {N})"
+                assert len(v) == N, f"{k} 样本数不一致"
 
-        # 解析比例
-        ratio_str = config.spliter_ratio
-        parts = list(map(float, ratio_str.strip().split(":")))
-        total = sum(parts)
-        tr, vr, te = [p / total for p in parts]
+        # -------- 2. 解析比例 --------
+        parts = list(map(float, config.spliter_ratio.split(":")))
+        tr, vr, te = [p / sum(parts) for p in parts]
 
-        idx = list(range(N))
-        n_train = int(N * tr)
-        n_valid = int(N * vr)
+        # -------- 3. 调用切分策略 --------
+        method = config.sample_method
+        assert method in SPLIT_STRATEGIES, f"未知切分方法 {method}"
 
-        # 切分训练验证测试集
-        if config.sample_method == "random":
-            rng = np.random.default_rng(config.seed)
-            rng.shuffle(idx)
-            # 计算切分点
-            train_idx = idx[:n_train]
-            valid_idx = idx[n_train : n_train + n_valid]
-            test_idx = idx[n_train + n_valid :]
+        train_idx, valid_idx, test_idx = SPLIT_STRATEGIES[method](
+            data=data,
+            N=N,
+            tr=tr,
+            vr=vr,
+            seed=config.seed,
+            config=config
+        )
 
-        # 采用自己设计的采样方法
-        elif config.sample_method == "ours":
-            if config.dataset == "201_acc":
-                address = "./data/201_traing_sample.pkl"
-            elif config.dataset == "101_acc":
-                address = "./data/101_traing_sample.pkl"
-            train_idx = pickle.load(open(address, "rb"))[n_train]
-
-            # 剩余样本索引用于valid/test
-            remaining_idx = [i for i in idx if i not in set(train_idx)]
-            rng = np.random.default_rng(config.seed)
-            rng.shuffle(remaining_idx)
-
-            valid_idx = remaining_idx[:n_valid]
-            test_idx = remaining_idx[n_valid:]
-            print("成功采用自己设计的采样方法")
-
-        # 按索引切片为三个 dict
+        # -------- 4. 按索引切 dict --------
         def slice_dict(d, indices):
-            out = {}
-            for k, v in d.items():
-                out[k] = [v[i] for i in indices]  # 保持 list
-            return out
+            return {k: [v[i] for i in indices] for k, v in d.items()}
 
-        train_data = slice_dict(data, train_idx)
-        valid_data = slice_dict(data, valid_idx)
-        test_data = slice_dict(data, test_idx)
-
-        return train_data, valid_data, test_data
+        return (
+            slice_dict(data, train_idx),
+            slice_dict(data, valid_idx),
+            slice_dict(data, test_idx),
+        )
 
     def get_scalers(self, data: dict, config):
         """
@@ -159,6 +130,7 @@ class DataModule:
         返回:
             scalers: dict[str -> StandardScaler]
         """
+        # 每次实验改这里
         x_keys = ("flops", "params")
         x_scaler = {}
         for key in x_keys:
@@ -201,12 +173,11 @@ class DataModule:
             max_workers = 0
             prefetch_factor = None
 
-        if self.config.dataset in ["201_acc"] or self.config.model in [
-            "narformer",
-            "narformer2",
-            "nnformer",
-            "ours"
-        ]:
+        if (
+            self.config.dataset in ["201_acc"]
+            or self.config.model in ["narformer", "narformer2", "nnformer", "ours"]
+            and self.config.dataset != "nnlqp"
+        ):
             # 不需要 sampler，直接用 batch_size
             return DataLoader(
                 dataset,
