@@ -94,56 +94,71 @@ def full_retrain(
     train_time = []
 
     if config.epochs != 0:
-        t = trange(config.epochs, leave=True)
-        for epoch in t:
+        try:
+            t = trange(config.epochs, leave=True)
+            for epoch in t:
 
-            if monitor.early_stop:
-                break  # 若满足early stopping条件则提前终止训练
+                if monitor.early_stop:
+                    break  # 若满足early stopping条件则提前终止训练
 
-            # 训练一个epoch并记录耗时
-            train_loss, time_cost = exec_train_one_epoch(model, datamodule, config)
+                # 训练一个epoch并记录耗时
+                train_loss, time_cost = exec_train_one_epoch(model, datamodule, config)
 
-            train_time.append(time_cost)
+                train_time.append(time_cost)
 
-            # 验证集上评估当前模型误差
-            valid_error = exec_evaluate_one_epoch(
-                model, datamodule, config, mode="valid"
-            )
+                # 验证集上评估当前模型误差
+                valid_error = exec_evaluate_one_epoch(
+                    model, datamodule, config, mode="valid"
+                )
 
-            # 将当前epoch的验证误差传递给early stopping模块进行跟踪
-            monitor.track_one_epoch(epoch, model, valid_error, config.monitor_metric)
+                # 将当前epoch的验证误差传递给early stopping模块进行跟踪
+                monitor.track_one_epoch(
+                    epoch, model, valid_error, config.monitor_metric
+                )
 
-            # 输出当前epoch的训练误差和验证误差，并记录训练时间
-            log.show_epoch_error(
-                runid, epoch, monitor, train_loss, valid_error, train_time
-            )
+                # 输出当前epoch的训练误差和验证误差，并记录训练时间
+                log.show_epoch_error(
+                    runid, epoch, monitor, train_loss, valid_error, train_time
+                )
 
-            if not config.debug and epoch % int(0.1 * config.epochs) == 0 :
-                log.log_histograms(model, epoch)
+                if not config.debug and epoch % int(0.1 * config.epochs) == 0:
+                    log.log_histograms(model, epoch)
 
-            # 更新日志可视化（如绘图）
-            log.plotter.append_epochs(train_loss, valid_error)
+                # 更新日志可视化（如绘图）
+                log.plotter.append_epochs(train_loss, valid_error)
 
-            # 暂存模型参数（即使不是最优，也为了中断续训做准备）
-            torch.save(model.state_dict(), model_path)
+                # 暂存模型参数（即使不是最优，也为了中断续训做准备）
+                torch.save(model.state_dict(), model_path)
 
-            # tqdm的后缀显示
-            be, delta_epochs = monitor.best_epoch or epoch, monitor.counter
-            metric_name, best_val_str = getattr(config, "monitor_metric", "val_loss"), (
-                f"{monitor.best_score:.4f}" if monitor.best_score is not None else "N/A"
-            )
+                # tqdm的后缀显示
+                be, delta_epochs = monitor.best_epoch or epoch, monitor.counter
+                metric_name, best_val_str = getattr(
+                    config, "monitor_metric", "val_loss"
+                ), (
+                    f"{monitor.best_score:.4f}"
+                    if monitor.best_score is not None
+                    else "N/A"
+                )
 
-            # 右侧后缀信息
-            t.set_description(
-                f"Training: Best@{be} {metric_name}={best_val_str} Δ={delta_epochs}"
-            )
+                # 右侧后缀信息
+                t.set_description(
+                    f"Training: Best@{be} {metric_name}={best_val_str} Δ={delta_epochs}"
+                )
+                # 累计训练时间（仅使用前best_epoch轮）
+                sum_time = sum(train_time[: monitor.best_epoch])
+
+        except KeyboardInterrupt as e:
+            log("*" * 20 + "Keyboard Interrupt Detected! (Ctrl+C)" + "*" * 20)
+            log("*" * 20 + "Start evaluating test set performance temporarily..." + "*" * 20)
+            model.load_state_dict(monitor.best_model)
+            results = exec_evaluate_one_epoch(model, datamodule, config, mode="valid")
+            log.show_test_error(runid, monitor, results, sum_time)
+            results = exec_evaluate_one_epoch(model, datamodule, config, mode="test")
+            log.show_test_error(runid, monitor, results, sum_time)
+            exit(1)
 
         # 加载最优模型参数（来自early stopping）
         model.load_state_dict(monitor.best_model)
-
-        # 累计训练时间（仅使用前best_epoch轮）
-        sum_time = sum(train_time[: monitor.best_epoch])
-
         # 使用最优模型在测试集评估
         results = exec_evaluate_one_epoch(model, datamodule, config, mode="test")
 

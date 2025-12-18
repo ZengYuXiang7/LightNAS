@@ -7,6 +7,7 @@ from models.layers.transformer import Transformer
 import torch
 import torch.nn as nn
 import torch.nn.init as init
+import torch.nn.functional as F
 
 
 class TransNAS(nn.Module):
@@ -95,8 +96,19 @@ class TransNAS(nn.Module):
 
         y = self.pred_head(cls_out)  # 回归或分类
 
-        return y
-
+        # Normal
+        if self.config.try_exp == 1:
+            return y
+        elif self.config.try_exp == 2:
+            # NNFormer Trcik. with norm
+            return y + 0.5
+        elif self.config.try_exp == 3:
+            # NNFormer Trcik. without norm
+            return y + 0.5
+        elif self.config.try_exp == 4:
+            # NNLQP Trcik
+            return -F.logsigmoid(y)
+            
 
 class SPDSpatialBias(nn.Module):
     """

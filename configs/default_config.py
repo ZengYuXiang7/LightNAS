@@ -7,7 +7,7 @@ from dataclasses import dataclass
 class DatasetInfo:
     path: str = "./data"
     task: str = "bench201"
-    dataset: str = "nnlqp"  #  101_acc 201_acc nnlqp
+    dataset: str = "201_acc"  #  101_acc 201_acc nnlqp
     predict_target: str = "accuracy"  #  latency accuracy
 
     eval_set: bool = True
@@ -18,7 +18,7 @@ class DatasetInfo:
 
     # nrom
     scale: bool = True
-    scaler_method: str = "minmax"
+    scaler_method: str = "stander"
 
     # nnlqp
     indomain: bool = True
@@ -40,7 +40,7 @@ class TrainingConfig:
     device: str = "cuda"
     use_amp: bool = False
 
-    monitor_metric: str = "NMAE"
+    monitor_metric: str = "MAPE"
     monitor_reverse: bool = False
 
 

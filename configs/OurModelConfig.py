@@ -31,13 +31,12 @@ class OurModelConfig(
     # model
     op_encoder: str = "embedding"  # embedding, onehot, discrete
     input_size: int = 192
-    d_model: int = 192
+    d_model: int = 256
     lp_d_model: int = 8
-    lap_node_id_sign_flip: bool = True  # 是否对 LapPE 做随机符号翻转增强
     optim: str = "Adam"
 
     #
-    num_layers: int = 4
+    num_layers: int = 6
     num_heads: int = 4
 
     monitor_reverse: bool = True
@@ -55,4 +54,3 @@ class OurModelConfig(
     ac_loss: bool = True  #
 
     try_exp: int = 1  # 1-8
-

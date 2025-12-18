@@ -1170,3 +1170,30 @@ COMMAND: python run_train.py --exp_name OurModelConfig --hyper_search 1 --retrai
 
 [2025-12-16 00:32:30] d_model: 128, Metric: 0.6562
 [2025-12-16 01:53:13] d_model: 192, Metric: 0.6631
+[2025-12-18 16:52:54] Experiment Start!!!
+[2025-12-18 16:53:04] Experiment interrupted by user.
+[2025-12-18 16:53:04] All commands executed successfully.
+
+[2025-12-18 16:53:18] Experiment Start!!!
+[2025-12-18 16:53:26] try_exp: 1, Metric: 0.5247
+[2025-12-18 16:53:35] try_exp: 2, Metric: 0.5137
+[2025-12-18 16:53:44] try_exp: 3, Metric: -0.2592
+[2025-12-18 16:53:53] try_exp: 4, Metric: 0.5878
+[2025-12-18 16:53:53] ==> Best try_exp: 4, local_best_metric: 0.5878
+
+[2025-12-18 16:53:53] The Best Hyperparameters: {'try_exp': 4}
+
+[2025-12-18 16:53:53] All commands executed successfully.
+
+[2025-12-18 16:54:57] Experiment Start!!!
+[2025-12-18 16:55:06] try_exp: 1, Metric: 0.5247
+[2025-12-18 16:55:15] try_exp: 2, Metric: 0.5137
+[2025-12-18 16:55:23] try_exp: 3, Metric: -0.2592
+[2025-12-18 16:55:32] try_exp: 4, Metric: 0.2219
+[2025-12-18 16:55:32] ==> Best try_exp: 1, local_best_metric: 0.5247
+
+[2025-12-18 16:55:32] The Best Hyperparameters: {'try_exp': 1}
+
+[2025-12-18 16:55:32] All commands executed successfully.
+
+[2025-12-18 16:57:00] Experiment Start!!!

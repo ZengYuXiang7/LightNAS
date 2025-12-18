@@ -5,13 +5,17 @@ from utils.exp_sh import once_experiment
 from datetime import datetime
 
 # 在这里写下超参数探索空间
-hyper_dict = {
+"""
     # 'op_encoder': ['embedding'],  # 'embedding', 'nerf', 'nape'
     # 'd_model': [128, 192, 96, 256],
-    "num_layers": [3, 4, 5, 6],
-    "att_method": ["self", "full"],  # 'self', 'full', 'sa', 'external',  'gqa'
-    # 'try_exp': [1, 2, 3, 4, 5, 6, 7, 8],  # 1-8
+    # "num_layers": [3, 4, 5, 6],
+    # "att_method": ["self", "full"],  # 'self', 'full', 'sa', 'external',  'gqa'
     # 'sample_method': ['ours', 'random'],
+    
+"""
+
+hyper_dict = {
+    "try_exp": [1, 2, 3, 4],  # 1-8
 }
 
 

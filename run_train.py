@@ -128,6 +128,10 @@ if __name__ == "__main__":
         config.sample_method = "random"
         # config.spliter_ratio = '1:4:95'  #  '0.02:4:95.98' '0.04:4:95.96' '0.1:4:95.9'
 
+    
+    if config.try_exp == 3:
+        config.scale = False
+        
     log_filename, exper_detail = get_experiment_name(config)
     plotter = MetricsPlotter(log_filename, config)
     log = Logger(log_filename, exper_detail, plotter, config)

@@ -36,7 +36,6 @@ class DataModule:
         )
 
         if config.scale:
-            config.log.only_print(f"✅ Data normalization is enabled | Norm method used: {config.scaler_method}!")
             self.x_scaler, self.y_scaler = self.get_scalers(self.train_data, config)
             self.train_data = self.normalize_data(
                 self.train_data, self.x_scaler, self.y_scaler, config
@@ -47,8 +46,13 @@ class DataModule:
             self.test_data = self.normalize_data(
                 self.test_data, self.x_scaler, self.y_scaler, self.config
             )
+            config.log.only_print(
+                f"✅ Data normalization is enabled | Norm method used: {config.scaler_method}!"
+            )
         else:
-            config.log.only_print(f"❌ Data normalization is disabled | Configured norm method [{config.scaler_method}] is NOT in effect!")
+            config.log.only_print(
+                f"❌ Data normalization is disabled | Configured norm method [{config.scaler_method}] is NOT in effect!"
+            )
 
         self.train_set = get_dataset(self.train_data, "train", config)
         self.valid_set = get_dataset(self.valid_data, "valid", config)
