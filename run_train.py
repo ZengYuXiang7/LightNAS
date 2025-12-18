@@ -112,9 +112,12 @@ if __name__ == "__main__":
     if config.dataset == "nnlqp":
         config.predict_target = "latency"
         config.sample_method = "nnlqp"
-        config.input_size = 29
-        config.bs = 128
+        config.input_size = 32
+        config.bs = 32
         config.tqdm = True
+        config.epochs = 200
+        config.monitor_metric = "MAPE"
+        config.monitor_reverse = False
 
         if config.model == "narformer":
             config.input_size = 1216

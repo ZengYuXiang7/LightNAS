@@ -1,0 +1,38 @@
+nohup: ignoring input
+/home/rtx4090/anaconda3/lib/python3.12/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+2025-12-18 11:05:23.368210: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-12-18 11:05:23.392886: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-12-18 11:05:23.826319: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+<module 'module.name' from '/home/rtx4090/code/python/current/LightNAS/configs/OurModelConfig.py'> OurModelConfig
+✅ All __pycache__ folders removed
+[1;38;2;151;200;129m|2025-12-18 11:05:24| [0m[1m{
+     'ablation': 0, 'ac_loss': True, 'att_bias': True
+     'att_method': self, 'bs': 128, 'classification': False
+     'continue_train': False, 'd_model': 192, 'dataset': nnlqp
+     'debug': False, 'decay': 0.0001, 'device': cuda
+     'epochs': 30, 'eval_set': True, 'hyper_search': False
+     'indomain': False, 'input_size': 29, 'lap_node_id_sign_flip': True
+     'log': <utils.exp_logger.Logger object at 0x7ddc8cf5fe00>, 'logger': zyx, 'loss_func': MSELoss
+     'lp_d_model': 8, 'lr': 0.001, 'model': ours
+     'monitor_metric': MAPE, 'monitor_reverse': False, 'num_heads': 4
+     'num_layers': 4, 'op_encoder': embedding, 'optim': Adam
+     'path': ./data, 'patience': 200, 'predict_target': latency
+     'rank_loss': True, 'record': True, 'retrain': True
+     'rounds': 5, 'runid': 0, 'sample_method': nnlqp
+     'scaler_method': minmax, 'seed': 0, 'shuffle': False
+     'spliter_ratio': 5:4:91, 'task': bench201, 'test_model_type': resnet18
+     'tqdm': True, 'transfer': False, 'try_exp': 1
+     'ts_var': 1, 'use_amp': False, 'verbose': 2000
+}[0m
+[1;38;2;151;200;129m|2025-12-18 11:05:24| [0m[1m********************Experiment Start********************[0m
+Cleaned up old logs in: ./runs/ours/Modelours_datasetnnlqp_spliterratio5:4:91_dmodel192_OpEncoderembedding/Round_0
+NNLQP的切分方式
+[1;38;2;151;200;129m|2025-12-18 11:05:24| [0m[1mTrain_length : 18000 Valid_length : 2000 Test_length : 0[0m
+[1;38;2;151;200;129m|2025-12-18 11:05:24| [0m[1m单 GPU 训练模式[0m
+  0%|          | 0/30 [00:00<?, ?it/s]
+  0%|          | 0/154 [00:00<?, ?it/s][A
+  1%|          | 1/154 [00:28<1:12:12, 28.32s/it][A
+  3%|▎         | 4/154 [00:49<27:43, 11.09s/it]  [A
+  6%|▋         | 10/154 [01:15<15:11,  6.33s/it][A

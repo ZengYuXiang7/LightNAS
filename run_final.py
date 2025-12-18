@@ -23,7 +23,6 @@ def experiment_run():
             "spliter_ratio": [data_split],
             **hyper_dict,
         }
-        # print(now_hyper_dict)
         Our_model(now_hyper_dict)
     return True
 

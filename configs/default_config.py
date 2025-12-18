@@ -12,13 +12,16 @@ class DatasetInfo:
 
     eval_set: bool = True
     shuffle: bool = False
-    scaler_method: str = "minmax"
-    # spliter_ratio: str = '7:1:2'
-    spliter_ratio: str = "5:1:94"
+    spliter_ratio: str = "5:1:94"  # '7:1:2'
     sample_method: str = "random"  # random  ours
     tqdm: bool = False
+
+    # nrom
+    scale: bool = True
+    scaler_method: str = "minmax"
+
     # nnlqp
-    indomain: bool = False
+    indomain: bool = True
     test_model_type: str = (
         "resnet18"  # ['resnet18', 'vgg16', 'efficientb0', 'mobilenetv2', 'mobilenetv3', 'mnasnet', 'alexnet', 'squeezenet', 'googlenet', 'nasbench201']
     )

@@ -87,8 +87,6 @@ class BasicModel(torch.nn.Module):
                 min_lr=1e-6,
             )
 
-        
-
 
 def exec_train_one_epoch(model, dataModule, config):
     # 处理 DataParallel 带来的差异：
@@ -119,10 +117,6 @@ def exec_train_one_epoch(model, dataModule, config):
             loss.backward()
             real_model.optimizer.step()
 
-        # 2025年12月14日20:43:35 临时使用Transformer训练器
-        # 2025年12月15日15:07:34 Pathformer
-        # real_model.scheduler.step()
-
     t2 = time()
     return loss.cpu().item(), t2 - t1
 
@@ -135,7 +129,7 @@ def exec_evaluate_one_epoch(model, dataModule, config, mode="valid"):
     dataloader = (
         dataModule.valid_loader
         if mode == "valid" and len(dataModule.valid_loader.dataset) != 0
-        else dataModule.get_testloader()
+        else dataModule.test_loader
     )
     preds, reals, val_loss = [], [], 0.0
 
@@ -164,10 +158,11 @@ def exec_evaluate_one_epoch(model, dataModule, config, mode="valid"):
     reals = torch.cat(reals, dim=0)
     preds = torch.cat(preds, dim=0)
 
-    if config.dataset != "weather":
-        reals, preds = dataModule.y_scaler.inverse_transform(
-            reals
-        ), dataModule.y_scaler.inverse_transform(preds)
+    if config.scale:
+        if config.dataset != "weather":
+            reals, preds = dataModule.y_scaler.inverse_transform(
+                reals
+            ), dataModule.y_scaler.inverse_transform(preds)
 
     if mode == "valid":
         if isinstance(real_model.scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
@@ -176,4 +171,3 @@ def exec_evaluate_one_epoch(model, dataModule, config, mode="valid"):
             real_model.scheduler.step()
 
     return ErrorMetrics(reals, preds, config)
-

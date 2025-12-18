@@ -74,7 +74,7 @@ class FixedLengthBatchSampler(Sampler):
     def get_length_map(self):
         length_map = {}
         i = 0
-        for length in tqdm(self.lengths):  # ← 用 sampler 自己的 lengths
+        for length in (self.lengths):  # ← 用 sampler 自己的 lengths
             if self.maxlen and length > self.maxlen:
                 continue
             length_map.setdefault(length, []).append(i)

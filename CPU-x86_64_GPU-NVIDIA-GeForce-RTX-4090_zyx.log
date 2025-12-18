@@ -162,3 +162,7 @@
 |2025-12-17 20:34:14| MAE - 2.0506 MSE - 5.8472 RMSE - 2.4174 MAPE - 0.6921 NMAE - 0.7547 NRMSE - 0.8047 Acc_10 - 0.0100 KendallTau - nan SpearmanRho - nan train_time - 4.9151
 |2025-12-17 20:35:31| Model : ours, dataset : nnlqp, spliter_ratio : 5:4:91, d_model : 192, Op_Encoder : embedding
 |2025-12-17 20:35:31| MAE - 2.0506 MSE - 5.8472 RMSE - 2.4174 MAPE - 0.6921 NMAE - 0.7547 NRMSE - 0.8047 Acc_10 - 0.0100 KendallTau - nan SpearmanRho - nan train_time - 4.8757
+|2025-12-18 11:57:51| Model : brp-nas, dataset : nnlqp, spliter_ratio : 1:4:95, d_model : 64
+|2025-12-18 11:57:51| MAE - 3.3539 MSE - 23.0226 RMSE - 4.7982 MAPE - 0.6284 NMAE - 0.4267 NRMSE - 0.4560 Acc_10 - 0.1434 KendallTau - 0.5959 SpearmanRho - 0.7708 train_time - 40.6987
+|2025-12-18 12:51:48| Model : brp-nas, dataset : nnlqp, spliter_ratio : 1:4:95, d_model : 64
+|2025-12-18 12:51:48| MAE - 3.4203 MSE - 23.2064 RMSE - 4.8173 MAPE - 0.6887 NMAE - 0.4352 NRMSE - 0.4578 Acc_10 - 0.1027 KendallTau - 0.6091 SpearmanRho - 0.7829 train_time - 44.8776

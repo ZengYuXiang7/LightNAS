@@ -35,22 +35,30 @@ class DataModule:
             self.data, config
         )
 
-        self.x_scaler, self.y_scaler = self.get_scalers(self.train_data, config)
-        self.train_data = self.normalize_data(
-            self.train_data, self.x_scaler, self.y_scaler, config
-        )
-        self.valid_data = self.normalize_data(
-            self.valid_data, self.x_scaler, self.y_scaler, config
-        )
+        if config.scale:
+            config.log.only_print(f"✅ Data normalization is enabled | Norm method used: {config.scaler_method}!")
+            self.x_scaler, self.y_scaler = self.get_scalers(self.train_data, config)
+            self.train_data = self.normalize_data(
+                self.train_data, self.x_scaler, self.y_scaler, config
+            )
+            self.valid_data = self.normalize_data(
+                self.valid_data, self.x_scaler, self.y_scaler, config
+            )
+            self.test_data = self.normalize_data(
+                self.test_data, self.x_scaler, self.y_scaler, self.config
+            )
+        else:
+            config.log.only_print(f"❌ Data normalization is disabled | Configured norm method [{config.scaler_method}] is NOT in effect!")
 
         self.train_set = get_dataset(self.train_data, "train", config)
         self.valid_set = get_dataset(self.valid_data, "valid", config)
+        self.test_set = get_dataset(self.test_data, "test", self.config)
 
         # 打印数据集长度信息
         config.log.only_print(
             f"Train_length : {len(self.train_set)} "
             f"Valid_length : {len(self.valid_set)} "
-            f"Test_length : {len(self.data[config.predict_target]) - len(self.train_set)  - len(self.valid_set)}"
+            f"Test_length : {len(self.test_set)}"
         )
         config.train_size = len(self.train_set)
 
@@ -61,17 +69,9 @@ class DataModule:
         self.valid_loader = self.build_loader(
             self.valid_set, bs=config.bs, is_train=False
         )
-
-    # 有的时候测试集是大数据量，我们单独构建一个函数来获取测试集的 DataLoader
-    def get_testloader(self):
-        self.test_data = self.normalize_data(
-            self.test_data, self.x_scaler, self.y_scaler, self.config
-        )
-        self.test_set = get_dataset(self.test_data, "test", self.config)
         self.test_loader = self.build_loader(
             self.test_set, bs=self.config.bs, is_train=False
         )
-        return self.test_loader
 
     def get_split_dataset(self, data, config):
         """
@@ -102,12 +102,7 @@ class DataModule:
         assert method in SPLIT_STRATEGIES, f"未知切分方法 {method}"
 
         train_idx, valid_idx, test_idx = SPLIT_STRATEGIES[method](
-            data=data,
-            N=N,
-            tr=tr,
-            vr=vr,
-            seed=config.seed,
-            config=config
+            data=data, N=N, tr=tr, vr=vr, seed=config.seed, config=config
         )
 
         # -------- 4. 按索引切 dict --------
@@ -139,7 +134,7 @@ class DataModule:
             )
 
         values = np.array(np.array(data[config.predict_target]), dtype=np.float32)
-        y_scaler = get_scaler(values, config, selected_method="stander")
+        y_scaler = get_scaler(values, config, selected_method=config.scaler_method)
         return x_scaler, y_scaler
 
     def normalize_data(self, data, x_scaler, y_scaler, config):

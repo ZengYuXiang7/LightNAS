@@ -217,7 +217,7 @@ class NasBenchDataset(Dataset):
             adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
             features = torch.tensor(features, dtype=torch.long)
 
-            features = F.one_hot(features, num_classes=6).float()
+            features = F.one_hot(features, num_classes=6 if self.config.dataset == "101_acc" else 32).float()
             y = self.data[self.config.predict_target][idx]
             return adj_matrix, features, y
 
@@ -229,7 +229,7 @@ class NasBenchDataset(Dataset):
             graph = dgl.from_scipy(csr_matrix(adj_matrix))
             graph = dgl.to_bidirected(graph)
             features = torch.tensor(features, dtype=torch.long)
-            features = F.one_hot(features, num_classes=6).float()
+            features = F.one_hot(features, num_classes=6 if self.config.dataset == "101_acc" else 32).float()
 
             return graph, features, y
 

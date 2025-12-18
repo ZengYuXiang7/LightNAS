@@ -9,16 +9,19 @@ import random
 def compute_loss(model, pred, label, config):
     pred = pred.reshape(label.shape)
     
+    total_loss = 0.0
+    
     if config.model == 'ours':
-        mse = model.loss_function(pred, label)
+        total_loss += model.loss_function(pred, label)
         
-        # ---- full model: mse + spearman/kendall + sr + ac ----
-        loss_sp, loss_kd = model.rank_loss(pred, label)
-        
-        sr = 0.5 * model.sr_loss(pred, label)   
-        ac = 0.1 * model.ac_loss(pred)
-        
-        total_loss = 1.0 * mse + loss_sp + loss_kd + sr + ac  
+        if config.dataset != "nnlqp":
+            # ---- full model: mse + spearman/kendall + sr + ac ----
+            loss_sp, loss_kd = model.rank_loss(pred, label)
+            
+            sr = 0.5 * model.sr_loss(pred, label)   
+            ac = 0.1 * model.ac_loss(pred)
+            
+            total_loss = loss_sp + loss_kd + sr + ac  
          
         return total_loss
     
