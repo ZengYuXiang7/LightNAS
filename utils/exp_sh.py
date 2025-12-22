@@ -98,7 +98,7 @@ def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=Fals
     log_filename = get_experiment_name(config)[0]
 
     print(log_filename, chosen_hyper)
-    cmd_str += f"--experiment 1 "
+    # cmd_str += f"--experiment 1 "
     subprocess.run(cmd_str, shell=True)
 
     metric_file_address = f"./results/metrics/" + get_experiment_name(config)[0]

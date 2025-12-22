@@ -109,6 +109,7 @@ class NasBenchDataset(Dataset):
                 # print(indgree.shape, outdegree.shape, dij.shape)
                 
                 y *= 0.01 # 2025年12月22日17:36:36
+                
                 return (
                     adj_matrix,
                     features,

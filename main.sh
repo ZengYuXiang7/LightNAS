@@ -1,6 +1,6 @@
 #!/bin/bash
 
-nohup python run_final.py --experiment 1 > train.log 2>&1 &
+nohup python run_final.py > train.log 2>&1 &
 echo $! > train.pid
 echo "Training started with PID $(cat train.pid)"
 

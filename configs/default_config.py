@@ -37,7 +37,7 @@ class TrainingConfig:
     epochs: int = 200
     patience: int = 30
     verbose: int = 10
-    experiment: bool = True
+    experiment: bool = False
     device: str = "cuda"
     use_amp: bool = False
 
