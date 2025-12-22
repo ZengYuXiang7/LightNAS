@@ -102,13 +102,10 @@ class TransNAS(nn.Module):
         elif self.config.try_exp == 2:
             # NNFormer Trcik. with norm
             return y + 0.5
-        elif self.config.try_exp == 3:
-            # NNFormer Trcik. without norm
-            return y + 0.5
         elif self.config.try_exp == 4:
             # NNLQP Trcik
             return -F.logsigmoid(y)
-            
+
 
 class SPDSpatialBias(nn.Module):
     """

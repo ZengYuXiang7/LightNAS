@@ -107,6 +107,8 @@ class NasBenchDataset(Dataset):
                 key_padding_mask[:N] = True
 
                 # print(indgree.shape, outdegree.shape, dij.shape)
+                
+                y *= 0.01 # 2025年12月22日17:36:36
                 return (
                     adj_matrix,
                     features,
@@ -156,6 +158,9 @@ class NasBenchDataset(Dataset):
                 # print(adj_padded.shape, features_padded.shape, key_padding_mask.shape)
                 # print(adj_matrix.shape, features.shape, eigvec.shape, indgree.shape, outdegree.shape, dij.shape, y.shape)
                 # print(adj_padded.shape, features_padded.shape, key_padding_mask.shape, eigvec.shape, indgree.shape, outdegree.shape, dij.shape, y.shape)
+                
+                y *= 0.01 # 2025年12月22日17:36:36
+                
                 return (
                     adj_matrix,
                     features,
@@ -288,7 +293,7 @@ class NasBenchDataset(Dataset):
                 key = self.data["key"][idx]
                 arch_str = get_arch_str_from_arch_vector(key)  # 架构向量转字符串
                 adj_mat, ops_idx = info2mat(arch_str)  # 得到邻接矩阵与操作
-            elif self.config.dataset == "101_acc":
+            elif self.config.dataset in ["101_acc", 'nnlqp']:
                 adj_mat = self.data["adj_matrix"][idx]  # 直接取邻接矩阵
                 ops_idx = self.data["features"][idx]  # 直接取操作序列
 

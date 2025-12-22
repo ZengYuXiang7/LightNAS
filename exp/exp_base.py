@@ -171,3 +171,37 @@ def exec_evaluate_one_epoch(model, dataModule, config, mode="valid"):
             real_model.scheduler.step()
 
     return ErrorMetrics(reals, preds, config)
+
+
+
+def exec_evaluate_whole_dataset(model, dataModule, config):
+    model.eval()
+    torch.set_grad_enabled(False)
+    
+    preds, reals = [], []
+    
+    def get_pred_and_real(loader):
+        context = (
+        torch.amp.autocast(device_type=model.config.device)
+        if model.config.use_amp else
+        contextlib.nullcontext()
+        )
+        with context:
+            for batch in loader:
+                all_item = [item.to(model.config.device) for item in batch]
+                inputs, label = all_item[:-1], all_item[-1]
+                pred = model.forward(*inputs)
+
+                preds.append(pred)
+                reals.append(label)
+    
+    get_pred_and_real(dataModule.train_loader)
+    get_pred_and_real(dataModule.valid_loader)
+    get_pred_and_real(dataModule.test_loader)
+
+    reals = torch.cat(reals, dim=0)
+    preds = torch.cat(preds, dim=0)
+    
+    reals, preds = dataModule.y_scaler.inverse_transform(reals), dataModule.y_scaler.inverse_transform(preds)
+        
+    return ErrorMetrics(reals, preds, model.config)

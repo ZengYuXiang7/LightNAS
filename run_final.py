@@ -7,7 +7,7 @@ from datetime import datetime
 # 在这里写下超参数探索空间
 hyper_dict = {
     "d_model": [128, 192, 256],
-    "num_layers": [4, 3, 5, 6],
+    "num_layers": [4, 5, 6],
 }
 
 
@@ -16,9 +16,9 @@ hyper_dict = {
 def experiment_run():
     # bench201 ["1:4:95", "3:4:93", "5:4:91", "10:4:86"]
     # bench101 ["0.025:4:95.9775", "0.04:4:95.96", "0.1:4:95.9", "1:4:95"]
-    # for data_split in ["1:4:95", "3:4:93", "5:4:91", "10:4:86"]:
+    for data_split in ["1:4:95", "3:4:93", "5:4:91", "10:4:86"]:
     # for data_split in ["3:4:93", "5:4:91", "10:4:86"]:
-    for data_split in ["0.025:4:95.9775", "0.04:4:95.96", "0.1:4:95.9", "1:4:95"]:
+    # for data_split in ["0.025:4:95.9775", "0.04:4:95.96", "0.1:4:95.9", "1:4:95"]:
         now_hyper_dict = {
             "spliter_ratio": [data_split],
             **hyper_dict,

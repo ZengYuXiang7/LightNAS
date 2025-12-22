@@ -48,7 +48,6 @@ def nnlqp_split(data, N, tr, vr, seed, config):
     train_idx = []
     valid_idx = []
     test_idx = []
-    config.indomain = True
     if not config.indomain:
         for i in range(N):
             if data["model_type"][i] != config.test_model_type:

@@ -1197,3 +1197,103 @@ COMMAND: python run_train.py --exp_name OurModelConfig --hyper_search 1 --retrai
 [2025-12-18 16:55:32] All commands executed successfully.
 
 [2025-12-18 16:57:00] Experiment Start!!!
+[2025-12-18 16:58:21] Experiment interrupted by user.
+[2025-12-18 16:58:21] All commands executed successfully.
+
+[2025-12-18 16:58:35] Experiment Start!!!
+[2025-12-18 17:39:18] try_exp: 1, Metric: 0.8675
+[2025-12-18 18:44:58] try_exp: 2, Metric: 0.8736
+[2025-12-18 19:15:33] Experiment interrupted by user.
+[2025-12-18 19:15:33] All commands executed successfully.
+
+[2025-12-18 19:16:05] Experiment Start!!!
+[2025-12-18 19:16:05] The Best Hyperparameters: {'try_exp': 4}
+
+[2025-12-18 19:16:05] All commands executed successfully.
+
+[2025-12-18 19:16:35] Experiment Start!!!
+[2025-12-18 19:24:54] Experiment interrupted by user.
+[2025-12-18 19:24:54] All commands executed successfully.
+
+[2025-12-18 19:24:59] Experiment Start!!!
+[2025-12-18 20:02:08] try_exp: 4, Metric: 0.8703
+[2025-12-18 20:02:15] Experiment interrupted by user.
+[2025-12-18 20:02:15] All commands executed successfully.
+
+[2025-12-18 22:06:29] Experiment Start!!!
+[2025-12-18 22:31:02] d_model: 128, Metric: 0.7103
+[2025-12-18 23:03:57] d_model: 192, Metric: 0.7207
+[2025-12-18 23:25:07] d_model: 256, Metric: 0.7171
+[2025-12-18 23:25:07] ==> Best d_model: 192, local_best_metric: 0.7207
+
+[2025-12-18 23:59:09] num_layers: 4, Metric: 0.7207
+[2025-12-19 13:34:33] Experiment Start!!!
+[2025-12-19 13:52:08] Experiment Start!!!
+[2025-12-19 13:57:21] Experiment Start!!!
+[2025-12-19 14:01:27] d_model: 128, Metric: 0.7103
+[2025-12-19 14:08:39] d_model: 192, Metric: 0.7207
+[2025-12-19 14:11:47] d_model: 256, Metric: 0.7171
+[2025-12-19 14:11:47] ==> Best d_model: 192, local_best_metric: 0.7207
+
+[2025-12-19 14:19:12] num_layers: 4, Metric: 0.7207
+[2025-12-19 14:27:08] num_layers: 5, Metric: 0.7207
+[2025-12-19 14:30:12] num_layers: 6, Metric: 0.7207
+[2025-12-19 14:30:12] ==> Best num_layers: 4, local_best_metric: 0.7207
+
+[2025-12-19 14:30:12] The Best Hyperparameters: {'spliter_ratio': '1:4:95', 'num_layers': 4, 'd_model': 192}
+
+[2025-12-19 14:38:35] Experiment Start!!!
+[2025-12-19 14:39:21] Experiment Start!!!
+[2025-12-19 15:05:35] d_model: 128, Metric: 0.7103
+[2025-12-19 15:40:39] d_model: 192, Metric: 0.7207
+[2025-12-19 16:03:18] d_model: 256, Metric: 0.7171
+[2025-12-19 16:03:18] ==> Best d_model: 192, local_best_metric: 0.7207
+
+[2025-12-19 16:40:43] num_layers: 4, Metric: 0.7207
+[2025-12-19 17:18:27] num_layers: 5, Metric: 0.7191
+[2025-12-19 17:49:35] num_layers: 6, Metric: 0.7229
+[2025-12-19 17:49:35] ==> Best num_layers: 6, local_best_metric: 0.7229
+
+[2025-12-19 17:49:35] The Best Hyperparameters: {'spliter_ratio': '1:4:95', 'num_layers': 6, 'd_model': 192}
+
+[2025-12-19 18:55:01] d_model: 128, Metric: 0.8314
+[2025-12-19 19:51:59] d_model: 192, Metric: 0.8344
+[2025-12-19 20:43:13] d_model: 256, Metric: 0.8291
+[2025-12-19 20:43:13] ==> Best d_model: 192, local_best_metric: 0.8344
+
+[2025-12-19 21:40:44] num_layers: 4, Metric: 0.8344
+[2025-12-19 22:43:42] num_layers: 5, Metric: 0.8367
+[2025-12-19 23:38:18] num_layers: 6, Metric: 0.8326
+[2025-12-19 23:38:18] ==> Best num_layers: 5, local_best_metric: 0.8367
+
+[2025-12-19 23:38:18] The Best Hyperparameters: {'spliter_ratio': '3:4:93', 'num_layers': 5, 'd_model': 192}
+
+[2025-12-20 00:22:16] d_model: 128, Metric: 0.8729
+[2025-12-20 01:12:45] d_model: 192, Metric: 0.8736
+[2025-12-20 02:03:34] d_model: 256, Metric: 0.8737
+[2025-12-20 02:03:34] ==> Best d_model: 256, local_best_metric: 0.8737
+
+[2025-12-20 02:55:39] num_layers: 4, Metric: 0.8737
+[2025-12-20 03:47:04] num_layers: 5, Metric: 0.8745
+[2025-12-20 04:37:42] num_layers: 6, Metric: 0.8779
+[2025-12-20 04:37:42] ==> Best num_layers: 6, local_best_metric: 0.8779
+
+[2025-12-20 04:37:42] The Best Hyperparameters: {'spliter_ratio': '5:4:91', 'num_layers': 6, 'd_model': 256}
+
+[2025-12-20 05:08:32] d_model: 128, Metric: 0.8969
+[2025-12-20 05:44:54] d_model: 192, Metric: 0.8971
+[2025-12-20 06:15:28] d_model: 256, Metric: 0.8959
+[2025-12-20 06:15:28] ==> Best d_model: 192, local_best_metric: 0.8971
+
+[2025-12-20 06:52:10] num_layers: 4, Metric: 0.8971
+[2025-12-20 07:35:24] num_layers: 5, Metric: 0.9005
+[2025-12-20 08:12:23] num_layers: 6, Metric: 0.8996
+[2025-12-20 08:12:23] ==> Best num_layers: 5, local_best_metric: 0.9005
+
+[2025-12-20 08:12:23] The Best Hyperparameters: {'spliter_ratio': '10:4:86', 'num_layers': 5, 'd_model': 192}
+
+[2025-12-20 08:12:23] All commands executed successfully.
+
+[2025-12-22 17:41:10] Experiment Start!!!
+[2025-12-22 17:43:24] Experiment interrupted by user.
+[2025-12-22 17:43:24] All commands executed successfully.

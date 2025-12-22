@@ -31,6 +31,10 @@ def get_pretrained_model(model, runid, config):
     return model
 
 
+def transfer():
+    return True
+
+
 def run_transfer(config, runid, model, datamodule, log):
     # 设置EarlyStopping监控器
     monitor = EarlyStopping(config)
@@ -107,18 +111,6 @@ def RunExperiments(log, config):
         f"Train_length : {len(datamodule.train_loader.dataset)} Valid_length : {len(datamodule.valid_loader.dataset)} Test_length : {len(datamodule.test_loader.dataset)}"
     )
 
-    for key in metrics:
-        log(f"{key}: {np.mean(metrics[key]):.4f} ± {np.std(metrics[key]):.4f}")
-    try:
-        flops, params, inference_time = utils.model_efficiency.get_efficiency(
-            datamodule, Model(config), config
-        )
-        log(f"Flops: {flops:.0f}")
-        log(f"Params: {params:.0f}")
-        log(f"Inference time: {inference_time:.2f} ms")
-    except Exception as e:
-        log("Skip the efficiency calculation")
-
     log.save_in_log(metrics)
 
     if config.record:
@@ -148,14 +140,7 @@ if __name__ == "__main__":
 
     config = get_config("NNFormerConfig")
 
-    if config.dataset == "nnlqp":
-        config.input_size = 29
-        if config.model == "narformer":
-            config.input_size = 1216
-            config.graph_d_model = 960
-            config.d_model = 1216
-    elif config.dataset == "nasbench201":
-        if config.model not in ["ours", "narformer"]:
-            config.input_size = 6
+    if config.model not in ["ours", "narformer"]:
+        config.input_size = 6
 
     run(config)

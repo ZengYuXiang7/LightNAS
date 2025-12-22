@@ -12,7 +12,6 @@ import numpy as np
 
 
 def set_settings(config):
-    
     if config.debug:
         config.rounds = 2
         config.epochs = 1
@@ -26,7 +25,7 @@ def set_settings(config):
 
     else:
         # 如果不是 macOS，你可以选择默认设置为 CPU 或 GPU
-        config.device = "cuda" if torch.cuda.is_available() else "cpu"
+        config.device = config.device if torch.cuda.is_available() else "cpu"
 
     return config
 
@@ -44,13 +43,20 @@ def set_seed(seed):
 
 
 def conduct_statistical_data(x):
+    import numpy as np 
+    import torch 
+    """根据任务类型选择合适的误差计算方式"""
+    if isinstance(x, np.ndarray):
+        x = x.astype(float)
+    elif isinstance(x, torch.Tensor):
+        x = x.cpu().detach().numpy().astype(float)
     # 数据统计汇总
     print("\n=== 数据长度统计 ===")
     print(f"样本总数: {len(x)}")
-    print(f"最小长度: {np.min(x)}")
-    print(f"最大长度: {np.max(x)}")
-    print(f"平均长度: {np.mean(x):.2f}")
-    print(f"中位数长度: {np.median(x)}")
+    print(f"最小数: {np.min(x)}")
+    print(f"最大数: {np.max(x)}")
+    print(f"平均数: {np.mean(x):.2f}")
+    print(f"中位数数: {np.median(x)}")
     print(f"标准差: {np.std(x):.2f}")
     print(f"25% 分位数: {np.percentile(x, 25):.2f}")
     print(f"50% 分位数（即中位数）: {np.percentile(x, 50):.2f}")

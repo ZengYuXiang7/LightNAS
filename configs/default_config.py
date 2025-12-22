@@ -21,7 +21,7 @@ class DatasetInfo:
     scaler_method: str = "stander"
 
     # nnlqp
-    indomain: bool = True
+    indomain: bool = False
     test_model_type: str = (
         "resnet18"  # ['resnet18', 'vgg16', 'efficientb0', 'mobilenetv2', 'mobilenetv3', 'mnasnet', 'alexnet', 'squeezenet', 'googlenet', 'nasbench201']
     )
@@ -37,6 +37,7 @@ class TrainingConfig:
     epochs: int = 200
     patience: int = 30
     verbose: int = 10
+    experiment: bool = True
     device: str = "cuda"
     use_amp: bool = False
 

@@ -15,7 +15,8 @@ from datetime import datetime
 """
 
 hyper_dict = {
-    "try_exp": [1, 2, 3, 4],  # 1-8
+    # "try_exp": [1, 2, 3, 4],  # 1-8
+    "try_exp": [4],  # 1-8
 }
 
 

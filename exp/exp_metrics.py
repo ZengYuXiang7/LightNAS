@@ -3,8 +3,6 @@
 
 import torch as t
 import numpy as np
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-from scipy.stats import stats
 
 
 def ErrorMetrics(realVec, estiVec, config):
@@ -28,6 +26,8 @@ def ErrorMetrics(realVec, estiVec, config):
 
 
 def compute_regression_metrics(realVec, estiVec):
+    from scipy.stats import stats
+
     """计算回归任务 + 排序一致性的评估指标"""
     realVec = np.array(realVec).flatten()
     estiVec = np.array(estiVec).flatten()
@@ -51,19 +51,21 @@ def compute_regression_metrics(realVec, estiVec):
     spearman_rho = stats.spearmanr(realVec, estiVec).correlation
 
     return {
-        "MAE": MAE,
-        "MSE": MSE,
-        "RMSE": RMSE,
         "MAPE": MAPE,
-        "NMAE": NMAE,
-        "NRMSE": NRMSE,
-        "Acc_10": Acc[2],
         "KendallTau": kendall_tau,
-        "SpearmanRho": spearman_rho,
+        "Acc_10": Acc[2],
+        "MAE": MAE,
+        # "MSE": MSE,
+        # "RMSE": RMSE,
+        # "NMAE": NMAE,
+        # "NRMSE": NRMSE,
+        # "SpearmanRho": spearman_rho,
     }
 
 
 def compute_classification_metrics(realVec, estiVec):
+    from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
     """计算分类任务的指标"""
     AC = accuracy_score(realVec, estiVec)
     PR = precision_score(realVec, estiVec, average="macro", zero_division=0)

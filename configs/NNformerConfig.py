@@ -10,7 +10,7 @@ from typing import List, Optional
 @dataclass
 class NNformerConfig(ExperimentConfig, BaseModelConfig, LoggerConfig, DatasetInfo, TrainingConfig, OtherConfig):
     model: str = "nnformer"
-    
+    verbose: int = 1
     # -------- 数据 / dataset --------
     percent: float = 469
     override_data: bool = False

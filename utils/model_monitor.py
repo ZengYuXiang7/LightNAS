@@ -3,6 +3,8 @@
 # 注意，这里的代码已经几乎完善，非必要不要改动（2025年3月9日17:47:08）
 
 import numpy as np
+import torch
+
 
 class EarlyStopping:
     def __init__(self, config):
@@ -36,15 +38,22 @@ class EarlyStopping:
         self.__call__(epoch, params, error)
 
     def save_checkpoint(self, epoch, params, val_loss):
+        # 你这里原来是 epoch + 1，我保留不动（配合你外部的 sum_time 逻辑）
         self.best_epoch = epoch + 1
-        self.best_model = params
+
+        # ✅ 关键修复：深拷贝 state_dict，避免后续训练把 best_model “污染”
+        # 同时搬到 CPU，节省显存，load_state_dict 也完全兼容
+        self.best_model = {k: v.detach().cpu().clone() for k, v in params.items()}
+
         self.val_loss_min = val_loss
 
-    def early_stop(self):
-        return self.counter >= self.patience
 
     def track_one_epoch(self, epoch, model, error, metric):
+        # ✅ 兼容 DataParallel：取真实模型的 state_dict
+        real_model = model.module if isinstance(model, torch.nn.DataParallel) else model
+        state = real_model.state_dict()
+
         if self.monitor_reverse:
-            self.track(epoch, model.state_dict(), -1 * error[metric])
+            self.track(epoch, state, -1 * error[metric])
         else:
-            self.track(epoch, model.state_dict(), error[metric])
+            self.track(epoch, state, error[metric])

@@ -7,7 +7,6 @@ import numpy as np
 import torch
 import collections
 from data_provider.data_center import DataModule
-from exp.exp_train import RunOnce
 from exp.exp_model import Model
 import exp.exp_efficiency
 import utils.utils
@@ -21,7 +20,6 @@ def get_experiment_name(config):
     detail_fields = {
         "Model": config.model,
         "dataset": config.dataset,
-        # 'dst_dataset': config.dst_dataset.split('/')[-1].split('.')[0],
         "spliter_ratio": config.spliter_ratio,
         "d_model": config.d_model,
     }
@@ -44,6 +42,54 @@ def get_experiment_name(config):
     return log_filename, exper_detail
 
 
+# coding : utf-8
+# Author : Yuxiang Zeng
+import os
+import torch
+from tqdm import *
+import pickle
+from exp.exp_base import BasicModel, exec_evaluate_one_epoch, exec_evaluate_whole_dataset, exec_train_one_epoch
+from utils.model_monitor import EarlyStopping
+from utils.exp_logger import Logger
+from data_provider.data_center import DataModule
+
+
+def RunOnce(config, runid, model: BasicModel, datamodule: DataModule, log: Logger):
+    torch.set_float32_matmul_precision("high")
+
+    # 创建保存模型的目录
+    os.makedirs(f"./checkpoints/{config.model}", exist_ok=True)
+    model_path = f"./checkpoints/{config.model}/{log.log_filename}_round_{runid}.pt"
+
+    # 判断是否需要重新训练：
+    # 若 config.retrain==1 表示强制重训；
+    # 或者模型文件不存在 且 设置了 continue_train，则需要重新训练
+    retrain_required = (
+        config.retrain == 1 or not os.path.exists(model_path) and config.continue_train
+    )
+
+    # 如果无需重新训练且已有模型文件，则直接加载模型并评估测试集性能
+    try:
+        # 加载之前记录的训练时间
+        sum_time = pickle.load(
+            open(f"./results/metrics/" + log.log_filename + ".pkl", "rb")
+        )["train_time"][runid]
+        # 加载模型权重（weights_only=True 可忽略 optimizer 等无关信息）
+        model.load_state_dict(
+            torch.load(model_path, weights_only=True, map_location="cpu")
+        )
+        model.setup_optimizer(config)  # 重新设置优化器
+        results = exec_evaluate_whole_dataset(model, datamodule)  # 在测试集评估性能
+        log.show_results(results, sum_time)
+        config.record = False  # 不再记录当前结果
+    except Exception as e:
+        log.only_print(f"Error: {str(e)}")
+        retrain_required = True  # 若加载失败则触发重新训练
+        raise e
+
+    return results
+
+
 def RunExperiments(log, config):
     log("*" * 20 + "Experiment Start" + "*" * 20)
     metrics = collections.defaultdict(list)
@@ -61,16 +107,9 @@ def RunExperiments(log, config):
         log.log_model_graph(
             model, datamodule, config.device
         )  # 记录模型图 (可能会报错，如果不兼容可以直接注释)
-        # log.log_hparams(config, results)
 
         for key in results:
             metrics[key].append(results[key])
-        log.plotter.append_round()
-
-        if runid + 1 == config.rounds:
-            log.only_print("Start the efficiency experiment.")
-            exp.exp_efficiency.evaluate_model_efficiency(datamodule, model, log, config)
-            log.log_config_text(config)
 
     log("*" * 20 + "Experiment Results:" + "*" * 20)
     log(log.exper_detail)
@@ -97,15 +136,6 @@ if __name__ == "__main__":
     from utils.utils import set_settings
     from utils.exp_config import get_config
 
-    # config = get_config('FlopsConfig')
-    # config = get_config('MacConfig')
-    # config = get_config('LSTMConfig')
-    # config = get_config('GRUConfig')
-    # config = get_config('BRPNASConfig')
-    # config = get_config('GATConfig')
-    # config = get_config('NarFormerConfig')
-    # config = get_config('NarFormer2Config')
-    # config = get_config('NNformerConfig')
     config = get_config("OurModelConfig")
     set_settings(config)
 
@@ -118,13 +148,11 @@ if __name__ == "__main__":
         config.epochs = 200
         config.monitor_metric = "MAPE"
         config.monitor_reverse = False
-        config.rounds = 1
 
         if config.model == "narformer":
             config.input_size = 1216
             config.graph_d_model = 960
             config.d_model = 1216
-
     elif config.dataset == "101_acc":
         config.bs = 1024
         config.sample_method = "random"

@@ -38,6 +38,7 @@ class OurModelConfig(
     #
     num_layers: int = 6
     num_heads: int = 4
+    sample_method: str = "ours"  # random  ours
 
     monitor_reverse: bool = True
     monitor_metric: str = "KendallTau"
@@ -53,4 +54,4 @@ class OurModelConfig(
     rank_loss: bool = True  #
     ac_loss: bool = True  #
 
-    try_exp: int = 1  # 1-8
+    try_exp: int = 2  # 1-8

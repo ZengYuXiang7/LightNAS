@@ -98,6 +98,7 @@ def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=Fals
     log_filename = get_experiment_name(config)[0]
 
     print(log_filename, chosen_hyper)
+    cmd_str += f"--experiment 1 "
     subprocess.run(cmd_str, shell=True)
 
     metric_file_address = f"./results/metrics/" + get_experiment_name(config)[0]
@@ -113,60 +114,76 @@ def sequential_hyper_search(
 ):
     """
     逐步搜索超参数，每次调整一个参数，并保持其他最优值
+    - 修复：避免后续超参的第一个值重复执行
+    - 修复：不再把未探索超参写进 best_hyper（避免副作用）
+    - 新增：evaluated_cache，相同配置只跑一次
     """
     config = get_config(exp_name)
-
     log_file = f"./run.log"
     best_hyper = {}
 
-    with open(log_file, "a") as f:
-        # f.write("================== Sequential Hyper Search ==================\n")
+    # 缓存：同一组超参组合 -> metric
+    evaluated_cache = {}
 
+    def make_key(d: dict):
+        return tuple(sorted(d.items()))
+
+    def run_once_with_cache(chosen_dict: dict):
+        key = make_key(chosen_dict)
+        if key in evaluated_cache:
+            return evaluated_cache[key]
+
+        command = f"python run_train.py --exp_name {exp_name} --hyper_search 1 --retrain {retrain} "
+        for k, v in chosen_dict.items():
+            command += f"--{k} {v} "
+
+        if debug:
+            command += "--debug 1 "
+
+        current_metric = run_and_get_metric(
+            command, config, chosen_dict, monitor_metric, debug
+        )
+        evaluated_cache[key] = current_metric
+        return current_metric
+
+    with open(log_file, "a") as f:
         for hyper_name, hyper_values in hyper_dict.items():
             if len(hyper_values) == 1:
                 best_hyper[hyper_name] = hyper_values[0]
                 continue
 
-            # f.write(f"\nHyper: {hyper_name}, Values: {hyper_values}\n")
             print(f"{hyper_name} => {hyper_values}")
-            local_best_metric = 0 if reverse else 1e9
-            current_best_value = None
-            for value in hyper_values:
-                # 根据目前已有最优超参数 + 当前超参数构建命令
-                command = f"python run_train.py --exp_name {exp_name} --hyper_search 1 --retrain {retrain} "
 
-                # 先写入之前已经确定的 best_hyper
-                for best_param_key, best_param_value in best_hyper.items():
-                    config.best_param_key = best_param_value
-                    command += f"--{best_param_key} {best_param_value} "
+            # 先构造“固定参数”：已确定的 best_hyper + 其他未搜索参数的默认值（但不写入 best_hyper）
+            fixed_params = dict(best_hyper)
+            for other_name, other_values in hyper_dict.items():
+                if other_name == hyper_name:
+                    continue
+                if other_name not in fixed_params:
+                    fixed_params[other_name] = other_values[0]
 
-                # 再加当前要测试的
-                command += f"--{hyper_name} {value} "
+            # baseline（默认取当前超参的第一个值）
+            baseline_val = hyper_values[0]
+            baseline_dict = dict(fixed_params)
+            baseline_dict[hyper_name] = baseline_val
 
-                # 对其他 hyper 未探索过的，使用它们的第一个值
-                for other_hyper_name, other_hyper_values in hyper_dict.items():
-                    if (
-                        other_hyper_name not in best_hyper
-                        and other_hyper_name != hyper_name
-                    ):
-                        config.other_hyper_name = other_hyper_values[0]
-                        best_hyper[other_hyper_name] = other_hyper_values[0]
-                        command += f"--{other_hyper_name} {other_hyper_values[0]} "
+            # 先确保 baseline 有 metric（有缓存就直接用；没有就跑一次）
+            baseline_metric = run_once_with_cache(baseline_dict)
 
-                # 运行命令、获取 metric
-                chosen_dict = best_hyper.copy()
+            # 初始化本轮最优为 baseline（这样就可以“直接从第二个值开始试”，但仍保留 baseline 作为比较基准）
+            local_best_metric = baseline_metric
+            current_best_value = baseline_val
+            write_and_print(
+                f"{hyper_name}: {baseline_val}, Metric: {baseline_metric:5.4f} (baseline)"
+            )
+
+            # 直接从第二个值开始（避免重复）
+            for value in hyper_values[1:]:
+                chosen_dict = dict(fixed_params)
                 chosen_dict[hyper_name] = value
 
-                # Debug
-                if debug:
-                    command += f"--debug 1 "
+                current_metric = run_once_with_cache(chosen_dict)
 
-                # f.write(f"COMMAND: {command}\n")
-                current_metric = run_and_get_metric(
-                    command, config, chosen_dict, monitor_metric, debug
-                )
-
-                # 比较更新最优
                 if reverse:
                     if current_metric > local_best_metric:
                         local_best_metric = current_metric
@@ -177,14 +194,15 @@ def sequential_hyper_search(
                         current_best_value = value
 
                 write_and_print(f"{hyper_name}: {value}, Metric: {current_metric:5.4f}")
-            # 结束后，更新最优
+
+            # 更新该超参的最优值
             best_hyper[hyper_name] = current_best_value
             write_and_print(
                 f"==> Best {hyper_name}: {current_best_value}, local_best_metric: {local_best_metric:5.4f}\n"
             )
 
-        # 全部结束后，打印并写日志
         write_and_print(f"The Best Hyperparameters: {best_hyper}\n")
+
     return best_hyper
 
 
