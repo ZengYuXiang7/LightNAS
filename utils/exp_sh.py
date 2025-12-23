@@ -38,6 +38,7 @@ def once_experiment(
     retrain=1,
     debug=0,
     run_again=False,
+    args=None
 ):
     # 先进行超参数探索
     best_hyper = hyper_search(
@@ -48,6 +49,7 @@ def once_experiment(
         grid_search=grid_search,
         retrain=retrain,
         debug=debug,
+        args=args
     )
 
     if run_again:
@@ -72,21 +74,22 @@ def hyper_search(
     grid_search=0,
     retrain=1,
     debug=0,
+    args=None
 ):
     """
     入口函数：选择使用网格搜索还是逐步搜索
     """
     if grid_search:
         return grid_search_hyperparameters(
-            exp_name, hyper_dict, retrain, monitor_metric, reverse, debug
+            exp_name, hyper_dict, retrain, monitor_metric, reverse, debug, args
         )
     else:
         return sequential_hyper_search(
-            exp_name, hyper_dict, retrain, monitor_metric, reverse, debug
+            exp_name, hyper_dict, retrain, monitor_metric, reverse, debug, args
         )
 
 
-def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=False):
+def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=False, args=None):
     """
     运行训练命令，并提取 metric
     """
@@ -98,7 +101,8 @@ def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=Fals
     log_filename = get_experiment_name(config)[0]
 
     print(log_filename, chosen_hyper)
-    # cmd_str += f"--experiment 1 "
+    if args.experiment:
+        cmd_str += f"--experiment 1 "
     subprocess.run(cmd_str, shell=True)
 
     metric_file_address = f"./results/metrics/" + get_experiment_name(config)[0]
@@ -110,7 +114,7 @@ def run_and_get_metric(cmd_str, config, chosen_hyper, monitor_metric, debug=Fals
 
 
 def sequential_hyper_search(
-    exp_name, hyper_dict, retrain, monitor_metric, reverse, debug
+    exp_name, hyper_dict, retrain, monitor_metric, reverse, debug, args
 ):
     """
     逐步搜索超参数，每次调整一个参数，并保持其他最优值
@@ -141,7 +145,7 @@ def sequential_hyper_search(
             command += "--debug 1 "
 
         current_metric = run_and_get_metric(
-            command, config, chosen_dict, monitor_metric, debug
+            command, config, chosen_dict, monitor_metric, debug, args
         )
         evaluated_cache[key] = current_metric
         return current_metric
@@ -207,7 +211,7 @@ def sequential_hyper_search(
 
 
 def grid_search_hyperparameters(
-    exp_name, hyper_dict, retrain, monitor_metric, reverse, debug
+    exp_name, hyper_dict, retrain, monitor_metric, reverse, debug, args
 ):
     """
     进行网格搜索（笛卡尔积搜索所有超参数组合）
@@ -241,7 +245,7 @@ def grid_search_hyperparameters(
             f.write(f"COMMAND: {command}\n")
             # 运行并获取结果
             current_metric = run_and_get_metric(
-                command, config, combo_dict, monitor_metric, debug
+                command, config, combo_dict, monitor_metric, debug, args
             )
 
             if reverse:

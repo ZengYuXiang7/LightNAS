@@ -16,7 +16,7 @@ class DatasetInfo:
     sample_method: str = "random"  # random  ours
     tqdm: bool = False
 
-    # nrom
+    # norm
     scale: bool = True
     scaler_method: str = "stander"
 

@@ -113,7 +113,10 @@ class Logger:
     # 终端彩色输出辅助函数
     def only_print(self, string):
         timestamp = time.strftime("|%Y-%m-%d %H:%M:%S| ")
-        print(f"\033[1;38;2;151;200;129m{timestamp}\033[0m\033[1m{string}\033[0m")
+        if self.config.experiment:
+            print(f"{timestamp}{string}")
+        else:
+            print(f"\033[1;38;2;151;200;129m{timestamp}\033[0m\033[1m{string}\033[0m")
 
     # 展示一次完整实验结果
     def show_results(self, results, sum_time):

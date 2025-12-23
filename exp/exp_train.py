@@ -98,7 +98,7 @@ def full_retrain(
     if config.epochs != 0:
         try:
             log.only_print("Start Training!")
-            t = trange(config.epochs, leave=True, disable=not config.experiment)
+            t = trange(config.epochs, leave=True, disable=config.experiment)
 
             for epoch in t:
 
@@ -127,7 +127,7 @@ def full_retrain(
 
                 torch.save(model.state_dict(), model_path)
 
-                if config.experiment:
+                if not config.experiment:
                     be = monitor.best_epoch or epoch
                     delta_epochs = monitor.counter
                     metric_name = getattr(config, "monitor_metric", "val_loss")

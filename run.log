@@ -1302,3 +1302,53 @@ COMMAND: python run_train.py --exp_name OurModelConfig --hyper_search 1 --retrai
 [2025-12-22 17:54:47] Experiment Start!!!
 [2025-12-22 18:32:34] d_model: 128, Metric: 0.7245 (baseline)
 [2025-12-22 19:09:01] d_model: 192, Metric: 0.7364
+[2025-12-22 19:42:31] d_model: 256, Metric: 0.7202
+[2025-12-22 19:42:31] ==> Best d_model: 192, local_best_metric: 0.7364
+
+[2025-12-22 19:42:31] num_layers: 4, Metric: 0.7364 (baseline)
+[2025-12-22 20:24:38] num_layers: 5, Metric: 0.7345
+[2025-12-22 21:04:43] num_layers: 6, Metric: 0.7298
+[2025-12-22 21:04:43] ==> Best num_layers: 4, local_best_metric: 0.7364
+
+[2025-12-22 21:04:43] The Best Hyperparameters: {'spliter_ratio': '1:4:95', 'd_model': 192, 'num_layers': 4}
+
+[2025-12-22 22:15:17] d_model: 128, Metric: 0.8130 (baseline)
+[2025-12-22 23:14:56] d_model: 192, Metric: 0.8148
+[2025-12-23 00:19:35] d_model: 256, Metric: 0.8173
+[2025-12-23 00:19:35] ==> Best d_model: 256, local_best_metric: 0.8173
+
+[2025-12-23 00:19:35] num_layers: 4, Metric: 0.8173 (baseline)
+[2025-12-23 01:07:11] num_layers: 5, Metric: 0.8120
+[2025-12-23 02:02:38] num_layers: 6, Metric: 0.8126
+[2025-12-23 02:02:38] ==> Best num_layers: 4, local_best_metric: 0.8173
+
+[2025-12-23 02:02:38] The Best Hyperparameters: {'spliter_ratio': '3:4:93', 'd_model': 256, 'num_layers': 4}
+
+[2025-12-23 03:19:07] d_model: 128, Metric: 0.8649 (baseline)
+[2025-12-23 04:36:10] d_model: 192, Metric: 0.8670
+[2025-12-23 05:42:49] d_model: 256, Metric: 0.8694
+[2025-12-23 05:42:49] ==> Best d_model: 256, local_best_metric: 0.8694
+
+[2025-12-23 05:42:49] num_layers: 4, Metric: 0.8694 (baseline)
+[2025-12-23 06:56:28] num_layers: 5, Metric: 0.8690
+[2025-12-23 08:06:30] num_layers: 6, Metric: 0.8707
+[2025-12-23 08:06:30] ==> Best num_layers: 6, local_best_metric: 0.8707
+
+[2025-12-23 08:06:30] The Best Hyperparameters: {'spliter_ratio': '5:4:91', 'd_model': 256, 'num_layers': 6}
+
+[2025-12-23 09:36:32] d_model: 128, Metric: 0.8923 (baseline)
+[2025-12-23 11:04:00] d_model: 192, Metric: 0.8970
+[2025-12-23 12:16:57] d_model: 256, Metric: 0.8925
+[2025-12-23 12:16:57] ==> Best d_model: 192, local_best_metric: 0.8970
+
+[2025-12-23 12:16:57] num_layers: 4, Metric: 0.8970 (baseline)
+[2025-12-23 13:38:31] num_layers: 5, Metric: 0.8945
+[2025-12-23 14:21:49] num_layers: 6, Metric: 0.8945
+[2025-12-23 14:21:49] ==> Best num_layers: 4, local_best_metric: 0.8970
+
+[2025-12-23 14:21:49] The Best Hyperparameters: {'spliter_ratio': '10:4:86', 'd_model': 192, 'num_layers': 4}
+
+
+[2025-12-23 14:32:23] Experiment Start!!!
+[2025-12-23 14:43:59] Experiment Start!!!
+[2025-12-23 14:46:10] Experiment Start!!!
