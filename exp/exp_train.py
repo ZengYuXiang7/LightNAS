@@ -87,7 +87,9 @@ def full_retrain(
             # model.compile()
             # except Exception as e:
             # print(f"Skip the model.compile() because {e}")
-
+    else:
+        model.setup_optimizer(config)
+        
     # 设置EarlyStopping监控器
     monitor = EarlyStopping(config)
 

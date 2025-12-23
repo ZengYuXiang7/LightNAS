@@ -89,7 +89,6 @@ class NasBenchDataset(Dataset):
                 key = self.data["key"][idx]
                 arch_str = get_arch_str_from_arch_vector(key)  # 架构向量转字符串
                 adj_matrix, features = info2mat(arch_str)
-
                 features = torch.tensor(features, dtype=torch.long)
                 adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
                 # 获得拉普拉斯节点相对位置特征
@@ -107,9 +106,9 @@ class NasBenchDataset(Dataset):
                 key_padding_mask[:N] = True
 
                 # print(indgree.shape, outdegree.shape, dij.shape)
-                
-                y *= 0.01 # 2025年12月22日17:36:36
-                
+
+                y *= 0.01  # 2025年12月22日17:36:36
+
                 return (
                     adj_matrix,
                     features,
@@ -137,19 +136,17 @@ class NasBenchDataset(Dataset):
                 y = self.data[self.config.predict_target][idx].reshape(-1)
 
                 # padding
-                N, max_len = len(adj_matrix), (
-                    7 if self.config.dataset == "101_acc" else 245
-                )
+                N, max_len = len(adj_matrix), 7
                 adj_matrix = padding_2d(adj_matrix, max_len=max_len, padding_value=0)
                 features = padding_1d(
                     features,
                     max_len=max_len,
-                    padding_value=7 if self.config.dataset == "101_acc" else 33,
+                    padding_value=7,
                 )  # 7代表NUll操作 33 代表Null操作
                 dij = padding_2d(
                     dij,
                     max_len=max_len,
-                    padding_value=14 if self.config.dataset == "101_acc" else 244,
+                    padding_value=14,
                 )
                 eigvec = padding_feat_2d(eigvec, max_len=max_len, padding_value=0)
                 indgree = padding_1d(indgree, max_len=max_len, padding_value=0)
@@ -159,9 +156,9 @@ class NasBenchDataset(Dataset):
                 # print(adj_padded.shape, features_padded.shape, key_padding_mask.shape)
                 # print(adj_matrix.shape, features.shape, eigvec.shape, indgree.shape, outdegree.shape, dij.shape, y.shape)
                 # print(adj_padded.shape, features_padded.shape, key_padding_mask.shape, eigvec.shape, indgree.shape, outdegree.shape, dij.shape, y.shape)
-                
-                y *= 0.01 # 2025年12月22日17:36:36
-                
+
+                y *= 0.01  # 2025年12月22日17:36:36
+
                 return (
                     adj_matrix,
                     features,
@@ -172,7 +169,7 @@ class NasBenchDataset(Dataset):
                     key_padding_mask,
                     y,
                 )
-            elif self.config.dataset == 'nnlqp':
+            elif self.config.dataset == "nnlqp":
                 adj_matrix = self.data["adj_matrix"][idx]  # 直接取邻接矩阵
                 features = self.data["features"][idx]  # 直接取操作序列
                 features = torch.tensor(features, dtype=torch.long)
@@ -185,14 +182,12 @@ class NasBenchDataset(Dataset):
                     directed_for_spd=True,  # 如需无向最短路可改成 False
                 )
                 y = self.data[self.config.predict_target][idx].reshape(-1)
-                
+
                 # padding
-                N, max_len = len(adj_matrix), (
-                    7 if self.config.dataset == "101_acc" else 245
-                )
+                N, max_len = len(adj_matrix), 245
                 key_padding_mask = torch.zeros(max_len, dtype=torch.bool)
                 key_padding_mask[:N] = True
-                
+
                 return (
                     adj_matrix,
                     features,
@@ -219,12 +214,33 @@ class NasBenchDataset(Dataset):
         elif self.config.model == "brp-nas":
             adj_matrix = self.data["adj_matrix"][idx]
             features = self.data["features"][idx]
+            y = self.data[self.config.predict_target][idx]
 
             adj_matrix = torch.tensor(adj_matrix, dtype=torch.float32)
             features = torch.tensor(features, dtype=torch.long)
 
-            features = F.one_hot(features, num_classes=6 if self.config.dataset == "101_acc" else 32).float()
-            y = self.data[self.config.predict_target][idx]
+            if self.config.dataset in ["101_acc", "nnlqp"]:
+                # ====== add global node at index 0 ======
+                N = adj_matrix.shape[0]
+
+                # 1) adjacency: (N, N) -> (N+1, N+1), shift old graph to [1:, 1:]
+                new_adj = torch.zeros((N + 1, N + 1), dtype=torch.float32)
+                new_adj[1:, 1:] = adj_matrix
+
+                # 2) connect global node (0) <-> all other nodes
+                new_adj[0, 1:] = 1.0
+                # new_adj[1:, 0] = 1.0
+
+                adj_matrix = new_adj
+
+                # 3) features: prepend global op id = 32
+                global_op = 6 if self.config.dataset in ["101_acc", "201_acc"] else 32
+                features = torch.cat(
+                    [torch.tensor([global_op], dtype=torch.long), features], dim=0
+                )  # (N+1,)
+
+            num_classes = 7 if self.config.dataset in ["101_acc", "201_acc"] else 33
+            features = F.one_hot(features, num_classes=num_classes).float()
             return adj_matrix, features, y
 
         elif self.config.model == "gat":
@@ -235,7 +251,9 @@ class NasBenchDataset(Dataset):
             graph = dgl.from_scipy(csr_matrix(adj_matrix))
             graph = dgl.to_bidirected(graph)
             features = torch.tensor(features, dtype=torch.long)
-            features = F.one_hot(features, num_classes=6 if self.config.dataset == "101_acc" else 32).float()
+            features = F.one_hot(
+                features, num_classes=6 if self.config.dataset == "101_acc" else 32
+            ).float()
 
             return graph, features, y
 
@@ -294,7 +312,7 @@ class NasBenchDataset(Dataset):
                 key = self.data["key"][idx]
                 arch_str = get_arch_str_from_arch_vector(key)  # 架构向量转字符串
                 adj_mat, ops_idx = info2mat(arch_str)  # 得到邻接矩阵与操作
-            elif self.config.dataset in ["101_acc", 'nnlqp']:
+            elif self.config.dataset in ["101_acc", "nnlqp"]:
                 adj_mat = self.data["adj_matrix"][idx]  # 直接取邻接矩阵
                 ops_idx = self.data["features"][idx]  # 直接取操作序列
 

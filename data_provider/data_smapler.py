@@ -68,7 +68,7 @@ class FixedLengthBatchSampler(Sampler):
         self.reset()
 
     def _get_length_fast(self, i):
-        adj = self.data_source.data["adj_matrix"][i]
+        adj = np.array(self.data_source.data["adj_matrix"][i])
         return adj.shape[0]
 
     def get_length_map(self):
