@@ -15,22 +15,14 @@ the complete architecture set rather than a held-out test set.
 
 ## RTX4090 environment
 
-Use Python 3.11 and the CUDA 12.1 packages listed in
-`requirements-rtx4090.txt`:
+The RTX4090 environment uses Python 3.11, PyTorch 2.15.0 with CUDA 13.2,
+and a locally built DGL package. The DGL wheel is stored in `.wheels/` on
+RTX4090 and is not included in Git. See the [environment guide](docs/rtx4090-environment.md)
+for its source and build options.
 
 ```bash
 uv venv --python 3.11 .venv
 uv pip install --python .venv/bin/python -r requirements-rtx4090.txt
-```
-
-If the DGL wheel host is unavailable, the RTX4090 project has a local wheel
-in `.wheels/`, repacked from the [DGL team's CUDA 12.1 Conda package](https://conda.anaconda.org/dglteam/label/cuXX/linux-64/dgl-1.1.3.cu121-py311_0.tar.bz2).
-For that machine, install the other requirements and then the local DGL wheel:
-
-```bash
-sed '/^dgl @ /d' requirements-rtx4090.txt > /tmp/lightnas-rtx4090-requirements.txt
-uv pip install --python .venv/bin/python -r /tmp/lightnas-rtx4090-requirements.txt
-uv pip install --python .venv/bin/python .wheels/dgl-1.1.3+cu121-cp311-cp311-linux_x86_64.whl
 ```
 
 The 4090 baseline configuration is in
