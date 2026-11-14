@@ -1,6 +1,7 @@
 ./archived
 .venv/
 .uv-cache/
+.wheels/
 *.egg-info/
 __pycache__/
 *.py[cod]
@@ -9,8 +10,10 @@ __pycache__/
 .sync-backups/
 .git-llgat-backup-*/
 models/chatgpt.py
+models/baselines/flops.pkl
 data/*.pickle
 data/*.pkl
+data/old_data/
 data/agu/*.pickle
 data/agu/*.pkl
 checkpoints/
