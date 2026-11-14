@@ -1,2 +1,0 @@
-  "FlopsConfig"
-#   "MacConfig"

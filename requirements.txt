@@ -1,6 +1,0 @@
-torch
-thop
-pandas  
-torch_geometric
-torch_scatter
-tensorboard
