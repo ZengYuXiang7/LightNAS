@@ -1,6 +1,7 @@
 """解析数据、训练和所选模型的命令行参数。"""
 
 import argparse
+import platform
 
 
 def parse_bool(value):
@@ -70,6 +71,10 @@ def get_config(argv=None):
         parser.add_argument('--print_freq', type=int, default=500)
         parser.add_argument('--tqdm', type=parse_bool, default=True)
         parser.add_argument('--device', choices=('cpu', 'cuda', 'mps'), default='cpu')
+        num_workers_default = 6
+        if platform.system() == 'Darwin':
+            num_workers_default = 0
+        parser.add_argument('--num_workers', type=int, default=num_workers_default)
         parser.add_argument('--decay', type=float, default=0.0001)
         parser.add_argument('--loss_func', choices=('L1Loss', 'MSELoss', 'SmoothL1Loss'), default='L1Loss')
         parser.add_argument('--optim', default='AdamW')

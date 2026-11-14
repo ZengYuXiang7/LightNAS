@@ -1,6 +1,5 @@
 # coding : utf-8
 # Author : Anonymous
-import platform
 import numpy as np
 import torch
 import pickle
@@ -163,11 +162,7 @@ def custom_collate_fn(batch, args):
 
 
 def get_dataloaders(train_set, valid_set, test_set, args):
-    # 检查操作系统
-    if platform.system() == "Darwin":  # "Darwin" 是 macOS 的系统标识
-        max_workers = 0
-    else:
-        max_workers = 6
+    # 训练、验证和测试使用同一组明确指定的数据加载配置。
     train_loader = DataLoader(
         train_set,
         batch_size=args.bs,
@@ -175,7 +170,7 @@ def get_dataloaders(train_set, valid_set, test_set, args):
         shuffle=True,
         pin_memory=True,
         collate_fn=lambda batch: custom_collate_fn(batch, args),
-        num_workers=max_workers,
+        num_workers=args.num_workers,
         # prefetch_factor=4
     )
     valid_loader = DataLoader(
@@ -185,7 +180,7 @@ def get_dataloaders(train_set, valid_set, test_set, args):
         shuffle=False,
         pin_memory=True,
         collate_fn=lambda batch: custom_collate_fn(batch, args),
-        num_workers=max_workers,
+        num_workers=args.num_workers,
         # prefetch_factor=4
     )
     test_loader = DataLoader(
@@ -195,7 +190,7 @@ def get_dataloaders(train_set, valid_set, test_set, args):
         shuffle=False,
         pin_memory=True,
         collate_fn=lambda batch: custom_collate_fn(batch, args),
-        num_workers=max_workers,
+        num_workers=args.num_workers,
         # prefetch_factor=4
     )
     return train_loader, valid_loader, test_loader

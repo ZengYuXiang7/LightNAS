@@ -82,6 +82,7 @@ def build_train_config(args):
         train_config['epochs'] = args.epochs
         train_config['patience'] = args.patience
         train_config['batch_size'] = args.bs
+        train_config['num_workers'] = args.num_workers
         train_config['device'] = args.device
         train_config['learning_rate'] = args.lr
         train_config['optimizer'] = args.optim

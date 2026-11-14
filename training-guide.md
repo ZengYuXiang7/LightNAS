@@ -17,6 +17,8 @@
 
 本批分别使用 100、400、900 个训练样本，每个设备、样本数和方法运行 5 轮，种子为 0–4；神经网络最多训练 3000 epoch、早停 patience 为 300，每 500 epoch 输出一次。所有任务在 RTX4090 上串行运行，GBDT 使用 CPU 计算。运行入口为 `run_exp/baselines/11.14-p300-representatives/run-baselines.sh`。
 
+经 GRU、100 训练样本的实际训练和验证测速，本批后续 MLP、GRU、LSTM、BiRNN 和 FLOPs 使用 `--num_workers 0`；数据处理不同的 BRP-NAS 仍使用 6。切换前完成的神经网络实验使用原来的 6 workers，切换后的记录保存实际 worker 数。
+
 ## 可选训练设备
 
 以下 43 个设备标签均有实测延迟。不同 batch 或测量配置分别作为标签列出，不一定代表不同物理设备；各标签的有效架构数量和测量条件见 [设备表](data/DEVICE_TABLE.md)。
