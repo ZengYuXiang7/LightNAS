@@ -1,7 +1,7 @@
 # RTX4090 environment
 
 The project environment is `.venv` on RTX4090. It uses Python 3.11,
-PyTorch 2.15.0 with CUDA 13.2, and DGL 2.5 built from
+PyTorch 2.15.0 with CUDA 13.2, and a DGL 2.5 development snapshot built from
 [DGL source commit `3d16000`](https://github.com/dmlc/dgl/tree/3d16000b4170fa741ed9e9667f22ba84d3493026).
 The DGL wheel targets the RTX 4090's compute capability 8.9 and lives at
 `.wheels/dgl-2.5-cp311-cp311-linux_x86_64.whl`; it is not committed to Git.
