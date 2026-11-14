@@ -8,7 +8,7 @@ LLGAT 默认读取该表，并通过 `--train_device` 选择设备；读取时�
 
 该表每个架构记录包含 `flops` 和 `params`，分别以 MFLOPs 和百万参数为单位。两项均来自 NAS-Bench-201 官方本体的 `cifar10-valid`、12 epoch 数据，按官方 API 对多个种子取均值。FLOPs 基线从同一表按架构字符串读取 `flops`。
 
-串行运行各模型的脚本为 `run_exp/baselines/11.13/run-all-models.sh`，其中 ML 分支运行 GBDT。脚本头部可修改设备标签、硬件描述、训练样本数和轮次；默认使用原项目的 i7-7820x CPU 延迟标签及 CPU 计算。LLGAT 的硬件描述须与所选设备匹配。
+串行运行各模型的脚本为 `run_exp/baselines/11.13/run-all-models.sh`，其中 ML 分支运行 GBDT。脚本头部可修改设备标签、硬件描述、训练样本数和轮次；默认使用 i7-7820x CPU 延迟标签，神经网络计算使用 RTX4090 的 CUDA，GBDT 使用 CPU。LLGAT 的硬件描述须与所选设备匹配。
 
 单独运行示例：
 
