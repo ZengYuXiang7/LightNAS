@@ -30,11 +30,11 @@ class ExpLatency:
         self.model_path = result_checkpoint_path(args.dataset_name, result_name, run_id + 1)
         self.model_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # 验证损失的调度方向与原回归实现保持一致。
+        # 验证损失下降时保持学习率，停滞时降低学习率。
         self.model.to(args.device)
         self.loss_function = get_loss_function(args).to(args.device)
         self.optimizer = get_optimizer(self.model.parameters(), lr=args.lr, decay=args.decay, args=args)
-        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='max', factor=0.5, patience=args.patience // 1.5, threshold=0.0)
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=args.patience // 1.5, threshold=0.0)
 
     def train_epoch(self):
         # 每个批次按原顺序更新参数，并返回最后一批损失及本轮耗时。

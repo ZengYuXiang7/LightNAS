@@ -88,6 +88,11 @@ def build_train_config(args):
         train_config['optimizer'] = args.optim
         train_config['weight_decay'] = args.decay
         train_config['loss'] = args.loss_func
+        train_config['lr_scheduler'] = 'ReduceLROnPlateau'
+        train_config['lr_scheduler_metric'] = 'validation_loss'
+        train_config['lr_scheduler_mode'] = 'min'
+        train_config['lr_scheduler_factor'] = 0.5
+        train_config['lr_scheduler_patience'] = args.patience // 1.5
     return train_config
 
 
