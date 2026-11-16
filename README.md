@@ -13,6 +13,15 @@ The evaluation set contains all valid architectures for the selected device,
 including the training and validation sets. Reported metrics therefore describe
 the complete architecture set rather than a held-out test set.
 
+## Standalone NAS-Bench-201 model code
+
+`data/nasbench201_code/models/model_00000.py` through `model_15624.py` contain
+one complete, architecture-fixed PyTorch model per benchmark candidate.
+Each file is an independent code input and needs no architecture configuration
+or project imports. `manifest.jsonl` links the files to architecture strings and
+the existing eight-node graph encoding, without latency or accuracy labels.
+See [export and verification](docs/nasbench201-code.md).
+
 ## RTX4090 environment
 
 The RTX4090 environment uses Python 3.11, PyTorch 2.15.0 with CUDA 13.2,
