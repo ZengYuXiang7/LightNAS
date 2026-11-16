@@ -76,13 +76,16 @@ cell 的逐项加法也保留官方 `sum(generator)` 从整数 0 起步的顺序
    pooled features、logits 逐元素完全相同。
 4. 上述模型的参数量与现有数据表一致。
 
-数值验证需要上述固定版本的四份模型源文件，按原路径放在一个参考目录中。
-该目录只需保留 `xautodl/models/...` 包结构；无需安装完整 AutoDL 项目。
-在 RTX4090 项目根目录设置 `NASBENCH201_REFERENCE_ROOT` 后执行：
+交付成品的 `verification/reference/` 保存本次比对使用的固定版本参考源码，
+`verification/` 同时保存导出和测试日志。无需安装完整 AutoDL 项目。
+在 RTX4090 项目根目录执行：
 
 ```bash
-NASBENCH201_REFERENCE_ROOT=/path/to/reference .venv/bin/python -m unittest discover -s tests -p test_nasbench201_code.py -v
+NASBENCH201_REFERENCE_ROOT=data/nasbench201_code/verification/reference .venv/bin/python -m unittest discover -s tests -p test_nasbench201_code.py -v
 ```
+
+单独重新导出时，导出器不下载参考源码；数值验证可复用已交付的参考目录，
+或按上述固定版本与原始 `xautodl/models/...` 路径另行准备四份模型源文件。
 
 测试使用 CPU、单线程、随机输入和相同参数，不运行训练、搜索或时延评估实验。
 
